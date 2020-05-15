@@ -327,3 +327,13 @@ We can also generate a heatmap to demonstrate the extent of statistically signif
 - There are many package-specific functions and tools you can use to explore your results. These are one example, you may prefer another. 
 - There are other 'diagnostic plots' that should be generated in an RNA-seq analysis, to confirm the analysis is robust. These depend on the tool used and you should consult the tools documentation to figure out which plots you should generate for your dataset. 
 - Differential transcript utilization analyses require a different analytical framework (e.g. DEXseq)
+
+
+
+## Exercises
+1. Your PI is upset that their favourite gene was not found to be differentially expressed. They demand to know why. Generate a simple plot using the count data to help demonstrate that it was not expressed between the conditions. 
+
+2. You run differential exprression analysis on your exteremly well-powered dataset (6 replicates per conditions, with replicates showing good excellent concordance within experimental condition in the PCA plot), but 4000 genes are differentially expressed at the significance threshold you chose. What do you do? Can modifying the lfcthreshold argument in DESEq2's *results()* function help here? 
+
+
+
