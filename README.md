@@ -2,7 +2,7 @@
 
 # Day 2 - Differential expression  
 
-![][DE_overview.png]
+![DE overview](DE_overview.png)
 
 
 ### What is a differential expression analysis?
