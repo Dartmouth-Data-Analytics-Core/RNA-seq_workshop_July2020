@@ -3,8 +3,8 @@
 ### What is a differential expression analysis?
 - Statistical testing of individual genes for differential abundances across experimental conditions
 - Requires read counts (from alignments) to be normalized between sequencing libraries, and modelled using an appropriate statistical distribution
-- Several R-packges exist for differential expression analysis, each leverging different algorithms for steps such as normalization and model fitting. e.g. DESeq2, edgeR, limma-voom
-- For the workshop, we will use DESeq2, described in [Love et al, 2014](https://genomebiology.biomedcentral.com/articles/10.1186/s13059-014-0550-8)
+- Several R-packges exist for differential expression analysis, each leverging different algorithms for steps such as normalization and model fitting. e.g. *DESeq2*, *edgeR*, *limma-voom*
+- For the workshop, we will use *DESeq2*, described in [Love et al, 2014](https://genomebiology.biomedcentral.com/articles/10.1186/s13059-014-0550-8)
 
 ![DE overview](figures/DE_overview.png)
 
@@ -44,7 +44,7 @@ sampleFiles <- sampleFiles[order(sampleFiles)]
 all(sampleFiles == samples$sample)
 ```
 
-R the read quantification results into R using DESeq2
+R the read quantification results into R using *DESeq2*
 ```R
 # set df up containing these
 sampleTable <- data.frame(sampleName = samples$sample,
@@ -199,6 +199,32 @@ dev.off()
 
 What are the values being plotted here? How should they be interpreted? 
 
+
+### Count summary measures:
+
+RPKM, FPKM, CPM & Model Based:
+- RPKM - Reads per kilobase per million mapped reads (single-end data)
+- FPKM - Fragments per kilobase per million mapped reads (paired-end data)
+- CPM –  Counts per million 
+- TPM - Transcripts per million 
+- Model based - original read counts are not themselves transformed, but rather correction factors are used in the DE model itself.
+
+How do you calculate TPM? 
+
+
+TPM is generally considered more robust than FPKM. 
+
+RPKM, FPKM, and CPM/TPM correct counts for individual gene length. This is critical to do when comparing expression levels betwen genes in the same sample, as one gene may have 10x more expression than another simply because it has more exons and is longer, so inherently accumulates more reads during sequencing. 
+
+While these are useful summary measures, approaches that normalize for gene length are not well-suited to differential expression analysis, and can introduce bias into the analysis. Conceptually, when testing a gene for differential expression, it is assumed the gene is the same length in all samples, so there is no need for length normalization (caveat: differentially expressed transcripts will be missed by making this assumption). 
+
+
+
+
+
+
+
+
 ### Differential expression analysis 
 
 Now we can run the differential expression analysis: 
@@ -318,9 +344,10 @@ We can also generate a heatmap to demonstrate the extent of statistically signif
 
 
 
-### What can we do with differential expression results: 
+### What do we do next:
 - Gene ontology (GO)/pathway analyses 
 - Integrate with other genomics data (intregrative genomics), e.g. ChIP-seq, ATAC-seq, proteomics 
+- Differential transcript utilization analysis (if data is paired-end) 
 
 
 ### Additional notes: 
@@ -329,11 +356,17 @@ We can also generate a heatmap to demonstrate the extent of statistically signif
 - Differential transcript utilization analyses require a different analytical framework (e.g. DEXseq)
 
 
+### Resources & further learning
+- DESeq2 tutorial & manual on Bioconductor 
+- Video summarizing the DESeq2 normalization procedure 
+- 
+
 
 ## Exercises
-1. Your PI is upset that their favourite gene was not found to be differentially expressed. They demand to know why. Generate a simple plot using the count data to help demonstrate that it was not expressed between the conditions. 
+
+1. Your PI is upset that their favourite gene (TMEM220) was not found to be differentially expressed in your dataset. They demand to know why. Generate a simple plot using the count data to help demonstrate that it was not expressed between the conditions. 
 
 2. You run differential exprression analysis on your exteremly well-powered dataset (6 replicates per conditions, with replicates showing good excellent concordance within experimental condition in the PCA plot), but 4000 genes are differentially expressed at the significance threshold you chose. What do you do? Can modifying the lfcthreshold argument in DESEq2's *results()* function help here? 
 
-
+3. Your PI has recovered from finding out their favourite gene was not differentially expressed. They give you a list of 10 genes they now want to see the differential expression results for. Their list is of HUGO gene symbols. Use the annotation data to identify 
 
