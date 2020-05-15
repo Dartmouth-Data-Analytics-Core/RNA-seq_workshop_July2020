@@ -2,6 +2,9 @@
 
 # Day 2 - Differential expression  
 
+![][DE_overview.png]
+
+
 ### What is a differential expression analysis?
 - Statistical testing of individual genes for differential abundances across experimental conditions
 - Requires read counts (from alignments) to be normalized between sequencing libraries, and modelled using an appropriate statistical distribution
