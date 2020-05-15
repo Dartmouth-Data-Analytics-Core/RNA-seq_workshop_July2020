@@ -1,15 +1,12 @@
-# RNA-seq_workshop_July2020
-
-# Day 2 - Differential expression  
-
-![DE overview](DE_overview.png)
-
+# Day 2 - Differential expression 
 
 ### What is a differential expression analysis?
 - Statistical testing of individual genes for differential abundances across experimental conditions
 - Requires read counts (from alignments) to be normalized between sequencing libraries, and modelled using an appropriate statistical distribution
 - Several R-packges exist for differential expression analysis, each leverging different algorithms for steps such as normalization and model fitting. e.g. DESeq2, edgeR, limma-voom
 - For the workshop, we will use DESeq2, described in [Love et al, 2014](https://genomebiology.biomedcentral.com/articles/10.1186/s13059-014-0550-8)
+
+![figures/DE overview](DE_overview.png)
 
 ### Brief outline of analytical workflow:
 - Assemble gene expression matrix from read counts of individual samples
