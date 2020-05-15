@@ -6,7 +6,7 @@
 - Several R-packges exist for differential expression analysis, each leverging different algorithms for steps such as normalization and model fitting. e.g. DESeq2, edgeR, limma-voom
 - For the workshop, we will use DESeq2, described in [Love et al, 2014](https://genomebiology.biomedcentral.com/articles/10.1186/s13059-014-0550-8)
 
-![figures/DE overview](DE_overview.png)
+![DE overview](figures/DE_overview.png)
 
 ### Brief outline of analytical workflow:
 - Assemble gene expression matrix from read counts of individual samples
