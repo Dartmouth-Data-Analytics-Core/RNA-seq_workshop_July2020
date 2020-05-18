@@ -273,27 +273,50 @@ If we use a nominal significance threshold of 5% (P<0.05), then 5% of all fold-c
 
 Run a multiple testing example
 ```R
-# draw random values from a normal distribution 
-rnorm(0, 1, 1)
-# run t.test comparing the means of the distibution
+# lets make 2 normally distributed random variables w/ means of 1
+x <- rnorm(1000, mean = 1, sd = 2)
+y <- rnorm(1000, mean = 1, sd = 2)
+
+# check the distribution 
+hist(x)
+
+# run a t-test 
+res <- t.test(x , y)
+
+# check the P-value 
+res$p.value
+
+# now repeat procedure 10,000 times and save the P-values 
+pvals <- c()
+for(i in 1:10000){
+  x <- rnorm(1000, mean = 0, sd = 2)
+  y <- rnorm(1000, mean = 0, sd = 2)
+  res <- t.test(x , y)
+  pvals[i] <- res$p.value
+}
 
 # plot the results 
-plot(-log10(res$pvalue), main = "-log10 P-value for 10,000 t.tests")
+plot(-log10(pvals), main = "-log10 P-value for 10,000 t.tests", 
+     las = 1, ylab = "- log10 P-value", xlab = "Test number", ylim = c(0, 5.5))
 
-# add a line for Bonferonni significance threshold 
-abline(h= -log10(0.05))
+# add line for P-value 
+abline(h= -log10(0.05), lty =2 , col = "red", lwd = 2)
+
 ```
 
 How many tests have a P-value < 0.05?
 ```R
-sum(res$pvalue < 0.05)
+sum(pvals < 0.05)
 ```
 
 Clearly, there are many false-positives here..
 
 How many tests have a Bonferonni adjusted P-value < 0.05?
 ```R
-sum(res$pvalue < (0.05/nrow(res)))
+# add a line for Bonferonni significance threshold 
+abline(h= -log10(0.05/(length(pvals))), lty =2 , col = "blue", lwd = 2)
+
+sum(pvals < (0.05/nrow(res)))
 ```
 
 Multiple testing is critical in RNA-seq data analysis. The method you use to adjust for multiple testing and the threshold you choose are dictated by the nature of your experiment and the confidence you require. 
