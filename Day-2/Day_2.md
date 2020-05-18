@@ -6,7 +6,7 @@
 - Several R-packges exist for differential expression analysis, each leverging different algorithms for steps such as normalization and model fitting. e.g. *DESeq2*, *edgeR*, *limma-voom*
 - For the workshop, we will use *DESeq2*, described in [Love et al, 2014](https://genomebiology.biomedcentral.com/articles/10.1186/s13059-014-0550-8)
 
-![DE overview](figures/DE_overview.png)
+![DE overview](../figures/DE_overview.png)
 
 ### Brief outline of analytical workflow:
 - Assemble gene expression matrix from read counts of individual samples
@@ -362,6 +362,11 @@ We can also generate a heatmap to demonstrate the extent of statistically signif
 - 
 
 
+### Review:
+- Using pipelines 
+
+
+
 ## Exercises
 
 1. Your PI is upset that their favourite gene (TMEM220) was not found to be differentially expressed in your dataset. They demand to know why. Generate a simple plot using the count data to help demonstrate that it was not expressed between the conditions. 
@@ -369,4 +374,11 @@ We can also generate a heatmap to demonstrate the extent of statistically signif
 2. You run differential exprression analysis on your exteremly well-powered dataset (6 replicates per conditions, with replicates showing good excellent concordance within experimental condition in the PCA plot), but 4000 genes are differentially expressed at the significance threshold you chose. What do you do? Can modifying the lfcthreshold argument in DESEq2's *results()* function help here? 
 
 3. Your PI has recovered from finding out their favourite gene was not differentially expressed. They give you a list of 10 genes they now want to see the differential expression results for. Their list is of HUGO gene symbols. Use the annotation data to identify 
+
+
+
+
+
+
+
 
