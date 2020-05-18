@@ -23,9 +23,13 @@
 ### Read alignment  
 - Principles of gapped short read alignment (mentioning splice junctions)
 - Perform alignment with STAR
+- Read clipping 
+- View & explore some reads in IGV (show difference on read distributions in full-length transcript & 3'end data)
+- Quick mention of quasi-mapping with tools like salmon 
 
 ### Post-alignment quality control 
 - Picard tools CollectRNASeqMetrics 
+- Identiofy PCR duplicates, discuss value of checking, and controversey of removing them 
 - RNA-seq QC metrics 
 - Discuss a bad QC report 
 - Using MultiQC to synthesize a QC report 
