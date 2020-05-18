@@ -1,4 +1,4 @@
-### Dartmouth Data Analytics Core, RNA-seq workshop, July 2020
+## Dartmouth Data Analytics Core, RNA-seq workshop, July 2020
 
 This workshop will be delivered on July 8th-9th 2020 by the Data Analytics Core (DAC) of the [Center for Quantitative Biology at Dartmouth](https://sites.dartmouth.edu/cqb/). 
 
@@ -8,14 +8,14 @@ If you have questions about this workshop, or would like to discuss data analysi
 
 <img src="figures/logo.jpg" width="250" height="140" >
 
-## Workshop goals: 
+### Workshop goals: 
 - Develop a working understanding of the analytical workflow for a typical RNA-seq experiment
 - Pre-process raw data in FASTQ format to generate a gene expression matrix
 - Learn how to perform a detailed quality control analysis 
 - Perform a differential expression analysis using R/Bioconductor packages 
 - Learn how to explore the results and make robust insights from your data  
 
-## Workshop Contacts: 
+### Workshop Contacts: 
 - Shannon Soucy (Shannon.Margaret.Soucy@Dartmouth.edu)
 - Owen Wilkins (omw@Dartmouth.edu)
 
