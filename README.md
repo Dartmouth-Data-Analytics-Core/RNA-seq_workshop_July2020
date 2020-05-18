@@ -2,7 +2,7 @@
 
 
 
-<img src="logo.jpg" width="250" height="140" >
+<img src="figures/logo.jpg" width="250" height="140" >
 
 RNA-seq workshop July2020
 
