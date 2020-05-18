@@ -1,4 +1,4 @@
-## Dartmouth Data Analytics Core, RNA-seq workshop, July 2020
+## RNA-seq data analysis workshop, July 2020
 
 This workshop will be delivered on July 8th-9th 2020 by the Data Analytics Core (DAC) of the [Center for Quantitative Biology at Dartmouth](https://sites.dartmouth.edu/cqb/). 
 
