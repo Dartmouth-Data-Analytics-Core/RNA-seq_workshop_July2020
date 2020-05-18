@@ -4,7 +4,7 @@ This workshop will be delivered on July 8th-9th 2020 by the Data Analytics Core 
 
 The DAC aims to facilitate advanced bioinformatic, computational, and statistical analysis of complex genomics data for the Dartmouth research community. 
 
-If you have questions about this workshop, or would like to discuss data analysis services available from the Data Analytics Core, please visit out [website] (https://sites.dartmouth.edu/cqb/projects-and-cores/data-analytics-core/), or email us at: DataAnalyticsCore@groups.dartmouth.edu
+If you have questions about this workshop, or would like to discuss data analysis services available from the Data Analytics Core, please visit out [website](https://sites.dartmouth.edu/cqb/projects-and-cores/data-analytics-core/), or email us at: DataAnalyticsCore@groups.dartmouth.edu
 
 <img src="figures/logo.jpg" width="250" height="140" >
 
