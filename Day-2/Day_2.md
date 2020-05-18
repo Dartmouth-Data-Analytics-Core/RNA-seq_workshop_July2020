@@ -156,6 +156,8 @@ There are several ways to handle batch effects, including directlty adjusting fo
 
 How do the differences between samples for the most variable features look at the indvidual gene level? We can plot a heatmap to explore this. 
 
+![Hierachical clustering](../figures/h_clustering.png)
+
 
 
 ```R
