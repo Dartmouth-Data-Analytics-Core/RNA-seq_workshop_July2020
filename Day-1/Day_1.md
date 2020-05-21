@@ -16,6 +16,26 @@ fastqc infile.fq.gz --outdir=fastqc_out
 
 <br>
 
+
+### Working with FASTQ files 
+
+- FASTQ file format 
+- Viewing records in a FASTQ file 
+- How many records do we have 
+- Count unique barcodes in file
+- Find matches for specific sequence in FASTQ file 
+- Piping operations together 
+- Iterating over multiple files in a loop 
+- Running this using an executable shell script 
+
+- Example of same stuff with a FASTA file 
+
+- Running in the background with nohup 
+
+
+
+
+
 ### Basics 
 - Read number required for experiment  
 - Single-end vs paired-end 
@@ -77,6 +97,17 @@ cutadapt -a ADAPT1 -A ADAPT2 [options] -o out1.fastq -p out2.fastq in1.fastq in2
 - Mention of more complex probablistic methods (e.g. RSEM)
 
 <br>
+
+
+### Homework: 
+- Catch-up if needed
+- Exercises (if time)
+- Bring questions of discussion points for end of day 2
+
+
+
+
+
 
 ### Exercises? (if time, could be take home) 
 Just ideas...
