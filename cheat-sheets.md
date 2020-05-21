@@ -1,8 +1,8 @@
 # Cheat Sheets 
 
 ### UNIX
-[Linux Command Line Cheat Sheet.pdf](./misc/cheat-sheets/Linux-Command-Line-Cheat-Sheet.pdf)  
-[Short-refcard.pdf](./misc/cheat-sheets/Short-refcard.pdf)  
+[Linux Command Line Cheat Sheet](./misc/cheat-sheets/Linux-Command-Line-Cheat-Sheet.pdf)  
+[Short-refcard](./misc/cheat-sheets/Short-refcard.pdf)  
 
 ### R programming
 [Base R](./misc/cheat-sheets/base-r.pdf)  
