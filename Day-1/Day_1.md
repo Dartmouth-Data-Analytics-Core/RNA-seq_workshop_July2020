@@ -8,7 +8,7 @@ Base quality (Q score) is the probability that the correct base was called. The 
 
 Many short reads, skewed GC content, and high duplication rates can indicate contamination by adapters, bacteria, etc. 
 
-![Example FastQC Report](../figures/good_sequence_short.txt FastQC Report.pdf)
+![Example FastQC Report](../figures/Screen Shot 2020-05-21 at 4.03.10 PM.png)
 
 ```bash
 fastqc infile.fq.gz --outdir=fastqc_out
