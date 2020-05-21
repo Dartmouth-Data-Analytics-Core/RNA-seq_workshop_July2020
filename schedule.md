@@ -48,6 +48,7 @@
 ### Afternoon session
 
 <hr />
+
 - **1:00 pm** - Running the DE analysis (hands on)  
 - **1:30 pm** - Exploring & interpreting the results (hands on)  
 - **3:00 am** - 15 minute break 
