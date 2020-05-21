@@ -1,5 +1,21 @@
 ## Day 1 
 
+### 
+### Introduction lecture (Owen) 
+#### Cover: 
+- Basic sequencing and demultiplexing 
+
+- Read number required for experiment  
+- Single-end vs paired-end 
+- Full-length vs 3'-end assays 
+- Replicates & experimental design 
+- Structure of a for loop
+
+
+
+
+
+
 ### Pre-processing and quality control of raw data 
 
 Before you begin working with genomic data it is important to asses the quality of the data, look for possible contamination, and get an idea of what you can expect the assembled product to look like. The distribution of base qualities, the distribution of read lengths, GC bias, and duplication rates are all informative metrics for assessing raw sequencing data. 
@@ -21,27 +37,78 @@ fastqc infile.fq.gz --outdir=fastqc_out
 
 - FASTQ file format 
 - Viewing records in a FASTQ file 
-- How many records do we have 
-- Count unique barcodes in file
-- Find matches for specific sequence in FASTQ file 
-- Piping operations together 
-- Iterating over multiple files in a loop 
-- Running this using an executable shell script 
+```bash
+zcat sample.fastq.gz | head
+```
 
-- Example of same stuff with a FASTA file 
+How many records do we have? 
+```bash
+zcat sample.fastq.gz | wc -l
+```
+
+How do we capture specific lines of each record recursively?
+```bash
+zcat sample.fastq.gz | wc -l
+```
+
+What if we want to count how many unique barcodes exist in the FASTQ file. 
+```bash
+zcat sample.fastq.gz | sed -n '2~4p' | head -10000 | grep -o .
+```
+Using sed with the -n option and '2~4p' will return the 2nd line, skip to 4 lines, and print again, recursively. We can use head to view this for the first 10,000 lines. 
+
+Next, we can use grep to find all of the instances of each nucleotide across these lines. 
+```bash
+zcat sample.fastq.gz | sed -n '2~4p' | head -10000 | grep -o .
+```
+
+Finally we can sort and count up the unique nucleotides that were found..
+```bash
+zcat sample.fastq.gz | sed -n '2~4p' | head -10000 | grep -o . | sort | uniq -c
+```
+Now we have the number of each nuleotide across the reads from the first 1000 records. A quick and easy program to get GC content! 
+
+### Searching for regular expressions
+
+What if we wanted to find matches for a specific sequence, maybe after a start codon, in the FASTQ file 
+```bash
+zcat sample.fastq.gz | grep -o "ATGGGATCA" | sort | uniq -c
+```
+
+Perhaps this sequence represents some a contaminating sequence from the run that we want to quickly screen all of our samples for (e.g. from bacteria). We can do this by searching for matches and counting how many times it was found, and repeating this process for each sample using a for loop. 
+```bash
+ls *.fastq.gz | 
+for read x; do 
+    echo $x is being processed...; zcat $x | grep -o "ATGGGATCA" | sort | uniq -c; 
+done
+```
+TO DO, need to get a real sequence, or change the exercise a little
+
+- Running this using an executable shell script
+
+- 1 Example of same stuff with a FASTA file 
 
 - Running in the background with nohup 
 
 
+The value of these sorts of tasks may not be immediately clear, but as we start piping together these operations we can calculate useful metrics and gain some basic insight into the reads in the file as a whole. Such operations are used by common bioinformatics tools under the hood to perform routine tasks. For example, we can get a whole bunch of information on our FASTQs using the program FastQC: 
+
+```bash
+fastqc infile.fq.gz --outdir=fastqc_out
+```
+
+FastQC runs several 'analysis' modules on the raw FASTQ files that allow us to evaluate the quality of that sample, and identify potential quality issues that need to be addressed in the downstream analysis steps. Lets have a look at a typical HTML report. 
+
+Openning 1 HTML file at a time to do this is annoying, so we use a tool called MultiQC to aggregate these reports together. 
+```bash
+multiqc .
+```
+MultiQC is very flexible and comprehensive, and will process output from many bioinformatics programs (FastqQC, cutadapt, STAR, picard, samtools), so we can use it to do more QA/QC and collect key metrics later in the pre-processing steps. More on this later. 
 
 
 
-### Basics 
-- Read number required for experiment  
-- Single-end vs paired-end 
-- Full-length vs 3'-end assays 
-- Replicates & experimental design 
-- Structure of a for loop
+
+
 
 <br>
 
