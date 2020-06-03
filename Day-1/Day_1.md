@@ -210,7 +210,8 @@ cat <(cat names.txt | sort | paste -s) tmp_all_counts.txt > all_counts.txt
 head all_counts
 ``` 
 
-# remove all the tmp files 
+Remove all the tmp files 
+```bash 
 rm -f *tmp*
 ```
 
