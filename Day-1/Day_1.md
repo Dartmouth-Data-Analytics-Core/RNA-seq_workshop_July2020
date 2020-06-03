@@ -163,6 +163,63 @@ cutadapt -a ADAPT1 -A ADAPT2 [options] -o out1.fastq -p out2.fastq in1.fastq in2
 - Quantification with HTSeq-count 
 - Mention of more complex probablistic methods (e.g. RSEM)
 
+#### Generate the gene expression matrix of raw read counts
+
+# have a look at the htseq-count output files 
+```bash
+ls -1 *.htseq-counts | sort
+```
+
+# loop over htseq-count output files and extract the read count column 
+```bash
+# set up an array that we will fill with shorthand sample names
+myarray=()
+
+# loop over count files using a while loop 
+while read x;  do 
+	# split up sample names to remove everything after "_trim"
+	sname=`echo bash split.sh "$x" "_trim"`
+	# extract second column of file to get read counts only 
+	echo counts for `$sname` being extracted
+	cut -f2 $x > `$sname`.tmp.counts
+	# save shorthand sample names into an array  
+	sname2=`$sname`
+	myarray+=($sname2) 
+done < <(ls -1 *.htseq-counts | sort) 
+```
+
+Paste all gene IDs into a file with each to make the gene expression matrix
+```bash 
+paste gene_IDs.txt *.tmp.counts > tmp_all_counts.txt
+head tmp_all_counts.txt 
+```
+
+Save sample names in the array into text file 
+```bash 
+# look at the contents of the array we made with shorthand sample names 
+echo ${myarray[@]}
+
+# print contents of array into text file with each element on a new line 
+printf "%s\n" "${myarray[@]}" > names.txt
+cat names.txt
+```
+
+Put sample names in the file with counts to form row headers and complete the gene expression matrix
+```bash 
+cat <(cat names.txt | sort | paste -s) tmp_all_counts.txt > all_counts.txt
+head all_counts
+``` 
+
+# remove all the tmp files 
+rm -f *tmp*
+```
+
+
+
+
+
+
+
 <br>
 
 
