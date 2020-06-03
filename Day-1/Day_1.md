@@ -178,7 +178,7 @@ myarray=()
 # loop over count files using a while loop 
 while read x;  do 
 	# split up sample names to remove everything after "_trim"
-	sname=`echo bash split.sh "$x" "_trim"`
+	sname=`echo bash misc/split.sh "$x" "_trim"`
 	# extract second column of file to get read counts only 
 	echo counts for `$sname` being extracted
 	cut -f2 $x > `$sname`.tmp.counts
