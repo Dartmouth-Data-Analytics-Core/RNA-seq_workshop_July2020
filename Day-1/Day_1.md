@@ -85,7 +85,7 @@ fastqc infile.fq.gz --outdir=fastqc_out
 ```
 Lets have a look at a typical HTML report. 
 
-[Example FastQC](../figures/SRR1039521_1_fastqc.html)
+[Example FastQC](file:///Users/shannonsoucy/OneDrive%20-%20Dartmouth%20College/DAC/rnaseq_workshop/SRR1039521_1_fastqc.html)
 
 
 <br>
