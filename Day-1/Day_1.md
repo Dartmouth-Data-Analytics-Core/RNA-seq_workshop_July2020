@@ -150,21 +150,21 @@ STAR uses a method of seed searching, clustering, stitching, and scoring to find
 STAR --genomeDir myind --sjdbGTFfile mygene --runThreadN 4 --outSAMunmapped Within --outFilterType BySJout --outSAMattributes NH HI AS NM MD --outSAMtype BAM SortedByCoordinate --outFilterMultimapNmax 10 --outFilterMismatchNmax 999 --outFilterMismatchNoverReadLmax 0.04 --alignIntronMin 20 --alignIntronMax 1000000 --alignMatesGapMax 1000000 --alignSJoverhangMin 8 --alignSJDBoverhangMin 1 --readFilesIn trimed_R1_fastq --readFilesCommand zcat --outFileNamePrefix Sample_ID
 ```
 
---genomeDir
+--genomeDir the path to the directory with genome indices
 
---sjdbGTFfile
+--sjdbGTFfile the path to the annotated transcripts in GTF file format
 
---runThreadN
+--runThreadN number of threads to use in the run
 
---outSAMunmapped
+--outSAMunmapped the name of the file to write unmapped reads to 
 
---outFilterType
+--outFilterType how mapped reads will be filtered (normal/BySJout)
 
---outSAMattributes
+--outSAMattributes the attributes to write to the outfile with mapped reads
 
---outSAMtype
+--outSAMtype (BAM unsorted/ BAM SortedByCoordinate)
 
---outFilterMultimapNmax
+--outFilterMultimapNmax 
 
 --outFilterMismatchNmax
 
