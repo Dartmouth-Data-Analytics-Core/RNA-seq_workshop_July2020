@@ -100,10 +100,6 @@ multiqc .
 MultiQC is very flexible and comprehensive, and will process output from many bioinformatics programs (FastqQC, cutadapt, STAR, picard, samtools), so we can use it to do more QA/QC and collect key metrics later in the pre-processing steps. More on this later. 
 
 
-
-
-
-
 <br>
 
 ### Read pre-processing & trimming  
@@ -127,19 +123,68 @@ cutadapt -a ADAPT1 -A ADAPT2 [options] -o out1.fastq -p out2.fastq in1.fastq in2
   done
   ```
 -a trims adapters from the 3' end
+
 -g trims adapters from the 5' end
+
 -b trims adapters from both ends
 
 -m trims reads that are samller than the minimum threshold (length is measured after all quality and adapter trimming)
+
 -q qulaity threshold for trimming bases
+
 --nextseq-trim works like q=20 except that quality scores on Gs are ignored, this accomodates the effects of dark cycles from some illumina instruments that leave a string of high quality but in correct Gs at the 3' end of reads
 
 -o output file
 
+<br>
 ### Read alignment  
-- Principles of gapped short read alignment (mentioning splice junctions)
-- Perform alignment with STAR
-- Read clipping 
+
+Aligning millions of reads to very large reference genomes (such as the human genome) is generally done by splitting the reads and reference into a catalog of shorter reads with unique sequnece structures (kmers). It is improtant when selecting an alignement program to ensure that it is appropriate for the dataset you are working with, for example STAR (Spliced Transcripts Alignment to a Reference) is used to align reads that have come from spliced transcripts. A single read from a spliced transcriptome might map across a splice junction, such that the left side of the read and the right side of the read map hundreds of base paris apart. If your dataset is prokaryotic (non-splicosomal) this would not be the appropriate program for you to align your reads, we would suggest looking into bwa-mem or bowtie2.
+
+STAR uses a method of seed searching, clustering, stitching, and scoring to find the most probable match in the reference sequence for each read. A seed is the longest possible match between a read and the reference sequence. By using multiple seeds on a single read, reads are able to span hundreds of base pairs across splice junctions. Once a read is mapped into multiple seeds STAR attempts to map the remaining unmapped portions of the read by extending the seed match allowing for indels and mismatches. Any portion of the read that cannot be mapped is assumed to be contamination, leftover adapter sequences, or an incorrect base call and these bases are clipped (called soft-clipping).
+
+
+```bash
+STAR --genomeDir myind --sjdbGTFfile mygene --runThreadN 4 --outSAMunmapped Within --outFilterType BySJout --outSAMattributes NH HI AS NM MD --outSAMtype BAM SortedByCoordinate --outFilterMultimapNmax 10 --outFilterMismatchNmax 999 --outFilterMismatchNoverReadLmax 0.04 --alignIntronMin 20 --alignIntronMax 1000000 --alignMatesGapMax 1000000 --alignSJoverhangMin 8 --alignSJDBoverhangMin 1 --readFilesIn trimed_R1_fastq --readFilesCommand zcat --outFileNamePrefix Sample_ID
+```
+
+--genomeDir
+
+--sjdbGTFfile
+
+--runThreadN
+
+--outSAMunmapped
+
+--outFilterType
+
+--outSAMattributes
+
+--outSAMtype
+
+--outFilterMultimapNmax
+
+--outFilterMismatchNmax
+
+--outFilterMismatchNoverReadLmax
+
+--alignIntronMin
+
+--alignIntronMax
+
+--alignMatesGapMax
+
+--alignSJoverhangMin
+
+--alignSJBDoverhangMin
+
+--readFilesIn
+
+--readFilesCommand
+
+--outFileNamePrefix
+
+
 - View & explore some reads in IGV (show difference on read distributions in full-length transcript & 3'end data)
 - Quick mention of quasi-mapping with tools like salmon 
 
