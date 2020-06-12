@@ -78,20 +78,15 @@ The value of these sorts of tasks may not be immediately clear, but as we start 
 
 Before you begin working with genomic data it is important to asses the quality of the data, look for possible contamination, and get an idea of what you can expect the assembled product to look like. The distribution of base qualities, the distribution of read lengths, GC bias, and duplication rates are all informative metrics for assessing raw sequencing data. 
 
-FastQC runs several 'analysis' modules on the raw FASTQ files that allow us to evaluate the quality of that sample, and identify potential quality issues that need to be addressed in the downstream analysis steps. Lets have a look at a typical HTML report. 
-
-{% include '../figures/SRR1039521_1_fastqc.html' %}
-
-
-Base quality (Q score) is the probability that the correct base was called. The higher the Q score the more likely the base call is accurate. A Q score of 30 indicates a 99.9% chance that the base call was accurate, a Q score of 20 indicates a 99% changes of accuracy,etc.
-
-Many short reads, skewed GC content, and high duplication rates can indicate contamination by adapters, bacteria, etc. 
-
-![](../figures/Screen Shot 2020-05-21 at 4.03.10 PM.png)
+FastQC runs several 'analysis' modules on the raw FASTQ files that allow us to evaluate the quality of that sample, and identify potential quality issues that need to be addressed in the downstream analysis steps. Many short reads, skewed GC content, and high duplication rates can indicate contamination by adapters, bacteria, etc. 
 
 ```bash
 fastqc infile.fq.gz --outdir=fastqc_out
 ```
+Lets have a look at a typical HTML report. 
+
+[Example FastQC](../figures/SRR1039521_1_fastqc.html)
+
 
 <br>
  
