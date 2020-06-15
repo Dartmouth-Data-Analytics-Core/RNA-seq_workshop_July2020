@@ -164,27 +164,27 @@ STAR --genomeDir myind --sjdbGTFfile mygene --runThreadN 4 --outSAMunmapped With
 
 --outSAMtype (BAM unsorted/ BAM SortedByCoordinate)
 
---outFilterMultimapNmax 
+--outFilterMultimapNmax maximum number of alignments allowed for a read, reads that exceed this will be considered unmapped
 
---outFilterMismatchNmax
+--outFilterMismatchNmax maximum number of mismatches per pair, 999 turns this filter off
 
---outFilterMismatchNoverReadLmax
+--outFilterMismatchNoverReadLmax maximum number of mismatches per pair relative to read length, 0.4 with 100bp allows for 8 mismatches across the pair
 
---alignIntronMin
+--alignIntronMin minimum intron length
 
---alignIntronMax
+--alignIntronMax maximum intron length
 
---alignMatesGapMax
+--alignMatesGapMax maximum genomic distance between mates
 
---alignSJoverhangMin
+--alignSJoverhangMin minimum overhang for unannotated junctions
 
---alignSJBDoverhangMin
+--alignSJBDoverhangMin minimum overhang for annotated junctions
 
---readFilesIn
+--readFilesIn read files to map to reference alignment
 
---readFilesCommand
+--readFilesCommand uncompression command to apply to read files
 
---outFileNamePrefix
+--outFileNamePrefix prefix for outfiles generated in the run
 
 
 - View & explore some reads in IGV (show difference on read distributions in full-length transcript & 3'end data)
