@@ -140,7 +140,7 @@ cutadapt -a ADAPT1 -A ADAPT2 [options] -o out1.fastq -p out2.fastq in1.fastq in2
 
 ### Read alignment  
 
-Aligning millions of reads to very large reference genomes (such as the human genome) is generally done by splitting the reads and reference into a catalog of shorter reads with unique sequnece structures (kmers). It is improtant when selecting an alignement program to ensure that it is appropriate for the dataset you are working with, for example STAR (Spliced Transcripts Alignment to a Reference) is used to align reads that have come from spliced transcripts. A single read from a spliced transcriptome might map across a splice junction, such that the left side of the read and the right side of the read map hundreds of base paris apart. If your dataset is prokaryotic (non-splicosomal) this would not be the appropriate program for you to align your reads, we would suggest looking into bwa-mem or bowtie2.
+Aligning millions of reads to very large reference genomes (such as the human genome) is generally done by splitting the reads and reference into a catalog of shorter reads with unique sequnece structures (kmers). It is improtant when selecting an alignement program to ensure that it is appropriate for the dataset you are working with, for example STAR (Spliced Transcripts Alignment to a Reference) is used to align reads that have come from spliced transcripts. A single read from a spliced transcriptome might map across a splice junction, such that the left side of the read and the right side of the read map hundreds of base pairs apart. If your dataset is prokaryotic (non-splicosomal) this would not be the appropriate program for you to align your reads, we would suggest looking into bwa-mem or bowtie2. If you are in a hurry and not interested in obtaining read alignments and only need count data quasi-mapping with a tool like Salmon might be a good option. 
 
 #### STAR read aligner
 STAR uses a method of seed searching, clustering, stitching, and scoring to find the most probable match in the reference sequence for each read. A seed is the longest possible match between a read and the reference sequence. By using multiple seeds on a single read, reads are able to span hundreds of base pairs across splice junctions. Once a read is mapped into multiple seeds STAR attempts to map the remaining unmapped portions of the read by extending the seed match allowing for indels and mismatches. Any portion of the read that cannot be mapped is assumed to be contamination, leftover adapter sequences, or an incorrect base call and these bases are clipped (called soft-clipping).
@@ -188,9 +188,20 @@ STAR --genomeDir myind --sjdbGTFfile mygene --runThreadN 4 --outSAMunmapped With
 
 
 - View & explore some reads in IGV (show difference on read distributions in full-length transcript & 3'end data)
-- Quick mention of quasi-mapping with tools like salmon 
+
+<br>
 
 ### Post-alignment quality control 
+Once you have your reads aligned you need to assess the quality of your alignment. Before running FastQC or MultiQC it is prudent to get more information about the aligned files. Picard has some useful tools for assesing the quality of an alignment. CollectRNASeqMetrics 
+
+```bash java -jar picard.jar CollectRnaSeqMetrics \
+      I=input.bam \
+      O=output.RNA_Metrics \
+      REF_FLAT=ref_flat.txt \
+      STRAND=SECOND_READ_TRANSCRIPTION_STRAND \
+      RIBOSOMAL_INTERVALS=ribosomal.interval_list
+ ```
+    
 - Picard tools CollectRNASeqMetrics 
 - Identiofy PCR duplicates, discuss value of checking, and controversey of removing them 
 - RNA-seq QC metrics 
