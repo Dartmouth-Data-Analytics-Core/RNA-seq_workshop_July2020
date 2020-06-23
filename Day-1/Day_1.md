@@ -215,6 +215,11 @@ Once you have your reads aligned you need to assess the quality of your alignmen
 - Quantification with HTSeq-count 
 - Mention of more complex probablistic methods (e.g. RSEM)
 
+![DE overview](../figures/quant_principle.png)
+
+
+
+
 #### Generate the gene expression matrix of raw read counts
 
 # have a look at the htseq-count output files 
