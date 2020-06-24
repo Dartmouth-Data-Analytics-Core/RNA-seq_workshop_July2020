@@ -202,9 +202,13 @@ java -jar picard.jar CollectRnaSeqMetrics I=input.bam O=output.RNA_Metrics REF_F
       
  ```
  I= input aligned bam file
+ 
  O= output RNAseq metrics
+ 
  REF_FLAT= Gene annotations in refFlat form. Format described here: http://genome.ucsc.edu/goldenPath/gbdDescriptionsOld.html#RefFlat
+ 
  STRAND= For strand-specific library prep. For unpaired reads, use FIRST_READ_TRANSCRIPTION_STRAND if the reads are expected to be on the transcription strand.
+ 
  RIBOSOMAL_INTERVALS= Location of rRNA sequences in genome, in interval_list format. If not specified no bases will be identified as being ribosomal. Format described here: http://samtools.github.io/htsjdk/javadoc/htsjdk/htsjdk/samtools/util/IntervalList.html
  
 #### MarkDuplicates
@@ -213,9 +217,13 @@ This tool detects duplicate reads that might have been generated during library 
 java -Xmx32G -jar picard.jar MarkDuplicates I=myInBam O=myOutBam M=myTxt OPTICAL_DUPLICATE_PIXEL_DISTANCE=100 CREATE_INDEX=false
 ```
 I= input aligned bam file
+
 O= output with duplicate reads marked
+
 M= file to write duplication metrics to
+
 OPTICAL_DUPLICATE_PIXEL_DISTANCE= The maximum offset between two duplicate clusters in order to consider them optical duplicates
+
 CREATE_INDEX= (TRUE/FALSE) Whether to create a BAM index when writing a coordinate-sorted BAM file.
 
 - RNA-seq QC metrics 
