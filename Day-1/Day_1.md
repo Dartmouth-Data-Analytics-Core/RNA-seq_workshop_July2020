@@ -192,18 +192,32 @@ STAR --genomeDir myind --sjdbGTFfile mygene --runThreadN 4 --outSAMunmapped With
 <br>
 
 ### Post-alignment quality control 
-Once you have your reads aligned you need to assess the quality of your alignment. Before running FastQC or MultiQC it is prudent to get more information about the aligned files. Picard has some useful tools for assesing the quality of an alignment. CollectRNASeqMetrics 
+Once you have your reads aligned you need to assess the quality of your alignment. Before running FastQC or MultiQC it is prudent to get more information about the aligned files. Picard has some useful tools for assesing the quality of an alignment. 
 
-```bash java -jar picard.jar CollectRnaSeqMetrics \
-      I=input.bam \
-      O=output.RNA_Metrics \
-      REF_FLAT=ref_flat.txt \
-      STRAND=SECOND_READ_TRANSCRIPTION_STRAND \
-      RIBOSOMAL_INTERVALS=ribosomal.interval_list
+#### CollectRNASeqMetrics 
+This tool will generate a file with several metrics relating to the quality of the alignment. These metrics can be used to diagnose problems with the library that can either be mitigated or taken into consideratoin in assessing the alignment of the data. Metrics reported include the dsitribution of bases within transcripts, the total number and fraction of nucleotides within genomic regions (UTR, introns, exons, intragenic regions, etc.), the number of bases that pass wuality filters, median coverage, the ratio of 5' to 3' biases, and the number of reads designated to the correct strand. 
+
+```bash 
+java -jar picard.jar CollectRnaSeqMetrics I=input.bam O=output.RNA_Metrics REF_FLAT=ref_flat.txt STRAND=SECOND_READ_TRANSCRIPTION_STRAND RIBOSOMAL_INTERVALS=ribosomal.interval_list
+      
  ```
-    
-- Picard tools CollectRNASeqMetrics 
-- Identiofy PCR duplicates, discuss value of checking, and controversey of removing them 
+ I= input aligned bam file
+ O= output RNAseq metrics
+ REF_FLAT= Gene annotations in refFlat form. Format described here: http://genome.ucsc.edu/goldenPath/gbdDescriptionsOld.html#RefFlat
+ STRAND= For strand-specific library prep. For unpaired reads, use FIRST_READ_TRANSCRIPTION_STRAND if the reads are expected to be on the transcription strand.
+ RIBOSOMAL_INTERVALS= Location of rRNA sequences in genome, in interval_list format. If not specified no bases will be identified as being ribosomal. Format described here: http://samtools.github.io/htsjdk/javadoc/htsjdk/htsjdk/samtools/util/IntervalList.html
+ 
+#### MarkDuplicates
+This tool detects duplicate reads that might have been generated during library preparation or the sequencing run. Duplicates are reads that originate from a single piece of DNA. Duplicate reads are idnetified by comparing the sequences in the 5' end of both reads and read pairs. A high rate of duplicate reads left in your library will skew the count matrix you generate downstream, and ultimately affect the differential expression analysis. If one or more of your libraries have a high proportion of duplicate reads it may be worth removing them before generating a count matrix. 
+```bash 
+java -Xmx32G -jar picard.jar MarkDuplicates I=myInBam O=myOutBam M=myTxt OPTICAL_DUPLICATE_PIXEL_DISTANCE=100 CREATE_INDEX=false
+```
+I= input aligned bam file
+O= output with duplicate reads marked
+M= file to write duplication metrics to
+OPTICAL_DUPLICATE_PIXEL_DISTANCE= The maximum offset between two duplicate clusters in order to consider them optical duplicates
+CREATE_INDEX= (TRUE/FALSE) Whether to create a BAM index when writing a coordinate-sorted BAM file.
+
 - RNA-seq QC metrics 
 - Discuss a bad QC report 
 - Using MultiQC to synthesize a QC report 
