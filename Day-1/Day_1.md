@@ -112,6 +112,10 @@ MultiQC is very flexible and comprehensive, and will process output from many bi
 #### Principles of read trimming: Downstream steps are more efficient
 Read trimming is used to clean up the library of raw reads. Trimming can be used to trim adapter sequences, polyA tails, low quality bases, or reads that are too short. Mostly trimming is used to remove low quality bases, generally 20 is the lowest filter we would recommend for quality trimming. 
 
+
+![Read alignment](../figures/read_processing.png)
+
+
 #### Example command for read trimming with cutadapt 
 (If you use Cutadapt, please cite DOI:10.14806/ej.17.1.200)
 
@@ -143,6 +147,12 @@ cutadapt -a ADAPT1 -A ADAPT2 [options] -o out1.fastq -p out2.fastq in1.fastq in2
 -o output file
 
 <br>
+
+
+![Read alignment](../figures/read_alignment.png)
+
+
+
 
 ### Read alignment  
 
