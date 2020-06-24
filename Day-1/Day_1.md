@@ -12,6 +12,12 @@
 - Structure of a for loop
 
 
+
+### Duplicate removal 
+
+
+
+
 ### Working with FASTQ files 
 
 - FASTQ file format 
