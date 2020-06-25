@@ -18,6 +18,7 @@ If you have questions about this workshop, or would like to discuss data analysi
 ### Workshop Contacts: 
 - Shannon Soucy (Shannon.Margaret.Soucy@Dartmouth.edu)
 - Owen Wilkins (omw@Dartmouth.edu)
+- Yue Wang (yue.wang@Dartmouth.edu)
 
 
 
