@@ -207,11 +207,11 @@ STAR --genomeDir myind --sjdbGTFfile mygene --runThreadN 4 --outSAMunmapped With
 
 <br>
 
-## viewing Alignments in IGV
+## Viewing Alignments in IGV
 
-The Integrative Genomics Viewer (IGV) from the Broad Institute is an extremely useful tool for visulazation of alignment files. Viewing your alignments in this way can be used to explore your data, troubleshoot issues you are having downstream of alignment, inspect coverage in specific regions of interest, and read quality and evidence for features identified downstream (e.g. in variant calling). I strongly encourage you to download the IGV for your computer from their [website](http://software.broadinstitute.org/software/igv/) and play around with some BAM file to get familar with all its various features. 
+The Integrative Genomics Viewer (IGV) from the Broad Institute is an extremely useful tool for visulazation of alignment files (as well as other genomic file formats). Viewing your alignments in this way can be used to explore your data, troubleshoot issues you are having downstream of alignment, and inspect coverage for and quality of reads in specific regions of interest (e.g. in variant calling). I strongly encourage you to download the IGV for your computer from their [website](http://software.broadinstitute.org/software/igv/) and play around with some BAM file to get familar with all its various features. 
 
-Here, we will create a small subset of a BAM file, download it onto our local machines, and view it using the IGV web app (for speed). You can open the OGV web app in your browser [here](https://igv.org/app/). 
+Here, we will create a small subset of a BAM file, download it onto our local machines, and view it using the IGV web app (for speed). You can open the IGV web app in your browser [here](https://igv.org/app/). 
 
 Lets go ahead and subset our BAM file for reads aligning only to chromosome 22. We also need to create an index. 
 ```bash
@@ -231,6 +231,7 @@ cd rnaseq_wrksp/
 # download the file using secure copy (scp)
 ##### modify this for your discovery ID, AND the directory your in 
 scp d41294d@discovery7.dartmouth.edu:/dartfs-hpc/rc/lab/G/GMBSR_bioinfo/workshops/rnaseq-july20/data/bam/chr22.bam* .
+##### you will be promoted for your password for discovery/polaris 
 
 # you may also need to modify the permissions 
 chmod a+rwx chr22*
@@ -242,7 +243,7 @@ Now navigate to the IGV web app, and follow the below steps:
 3. Navigate to chromosome 22, and zoom in on ...
 4. Use the setting at the side of the track to set colors by *read strand*
 
-![IGV](igv_webapp.png)
+![IGV](../figures/igv_webapp.png)
 
 - Can you find an example of a highly expressed gene?
 - What do you notice about the orientation of the aligning reads? 
