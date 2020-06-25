@@ -137,7 +137,7 @@ The major factors affecting how much a gene's dispersion is shrunk toward the pr
 1. the number of sample in the group under consideration (use more replicates!)
 2. how far the inital dispersion is from the prior mean
 
-![DEseq2 dispersion estimation](/Users/OwenW/Desktop/dispersion_estimation.png)
+![DEseq2 dispersion estimation](../figures/dispersion_estimation.png)
 
 This Figure taken frm the DESeq2 paper demonstrates the process of shrinkage, where the inital dispersion esimates for each gene (estimated by maximum-likelihood) are shrunken towards the prior mean (based on the fitted curve in red) to a final MAP estimate. For dispersion estimates further away from the line, you can see that their estimates are shrunken more than those are are originally closer to the line. 
 
@@ -158,7 +158,7 @@ If there was a lot more structure in these plots, we would be concerned that the
 
 Now that we understand how the dispersions are estimated, we are ready to fit the data and test each gene for differential expression. We fit the data using a generalized linear model (GLM) of the negative binomial family. GLM's are a family of statistical models that generalize linear regression such that response variables can be modelled by distributions other than the normal distribution (which we know isn't approrpiate for RNA-seq data). Essentially, the GLM allows us to model a *response variable* (in this case, the experimental group) as a linear combination of a set of variables, including gene expression across samples. 
 
-![DEseq2 formula](/Users/OwenW/Desktop/figures_July2020.png)
+![DEseq2 formula](../figures/neg-binom.png)
 
 In order to fit the GLM, we need the mean count of each gene across the samples in each experimental group, and the dispersion of that gene in those groups. The mean count is a combination of the expected expression level and the size factor, so that our model is corrected for library size and composition. 
 
