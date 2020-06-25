@@ -6,31 +6,22 @@ output:
       keep_md: TRUE
 ---
 
-# Exploratory data analysis 
-## Bulk RNA-seq data analysis data analysis workshop, July 2020
 
-Several popular R packges designed for exploration and statistical analysis of bulk RNA-seq data exist, including [*EdgeR*](https://www.bioconductor.org/packages/release/bioc/html/edgeR.html), [*limma-voom*](http://bioconductor.org/packages/release/bioc/html/limma.html), [*DESeq2*](https://bioconductor.org/packages/release/bioc/html/DESeq2.html). For the purposes of this workshop, we will use DESeq2 to perform the parts of the analysis, including reading in the data, normalization of read counts, and fitting statistical models to test differential expression. [Detailed tutorials](https://bioconductor.org/packages/release/bioc/vignettes/DESeq2/inst/doc/DESeq2.html) for using DESeq2 can be found on its Bioconductor page. 
-
-DESeq2 is a very well organized package that applies robust algorithms to perform several aspects of RNA-seq data analysis. If you plan to use DESeq2 for your work, you should read both the tutorials made available on their Bioconductor page, and the original manuscript for DESeq2, in [Love *et al*, 2014](https://genomebiology.biomedcentral.com/articles/10.1186/s13059-014-0550-8) to develop an understanding of the theory behind DESeq2 and the proccesses implemented by its functions. Despite DESeq2's extensive functionality, a different package may be appropriate for the analysis of RNA-seq data with unique experimental designs, for example using linear-mixed effects models to perform difgferential expression analysis of clustered datasets. 
-
-
-
-
-Replace with image???
-Intro for the point of a DE analysis 
 ADD EXECISES?
 CLEAN UP MARKDOWN
 
 
 
-Brief outline of analytical workflow:  
-* Read in the gene expression matrix of raw read counts 
-* Filter genes with low or no read counts  
-* Transform data and perform exploratory analyses (e.g. clustering)  
-* Normalize for library size and compsition  
-* Fit statistical models and test differential expression (adjusting for multiple testing)  
-* Annotate results & export them  
-* Visualize results  
+# Exploratory data analysis 
+## Bulk RNA-seq data analysis data analysis workshop, July 2020
+
+Several popular R packges designed for exploration and statistical analysis of bulk RNA-seq data exist, including [*EdgeR*](https://www.bioconductor.org/packages/release/bioc/html/edgeR.html), [*limma-voom*](http://bioconductor.org/packages/release/bioc/html/limma.html), [*DESeq2*](https://bioconductor.org/packages/release/bioc/html/DESeq2.html). For the purposes of this workshop, we will use DESeq2 to perform the parts of the analysis, including reading in the data, normalization of read counts, and fitting statistical models to test differential expression. [Detailed tutorials](https://bioconductor.org/packages/release/bioc/vignettes/DESeq2/inst/doc/DESeq2.html) for using DESeq2 can be found on its Bioconductor page. 
+
+DESeq2 is a very well organized package that applies robust algorithms to perform several aspects of RNA-seq data analysis. If you plan to use DESeq2 for your work, you should read both the tutorials made available on their Bioconductor page, and the original manuscript for DESeq2, in [Love *et al*, 2014](https://genomebiology.biomedcentral.com/articles/10.1186/s13059-014-0550-8) to develop an understanding of the theory behind DESeq2 and the proccesses implemented by its functions. Despite DESeq2's extensive functionality, a different package may be appropriate for the analysis of RNA-seq data with unique experimental designs, for example using linear-mixed effects models to perform differential expression analysis of clustered datasets. 
+
+
+![Overview](../figures/overview.png)
+
 
 Lets start by loading the packages we will need:
 ```{r, warning=FALSE,error=FALSE,message=FALSE}
