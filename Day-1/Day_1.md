@@ -207,6 +207,48 @@ STAR --genomeDir myind --sjdbGTFfile mygene --runThreadN 4 --outSAMunmapped With
 
 <br>
 
+## viewing Alignments in IGV
+
+The Integrative Genomics Viewer (IGV) from the Broad Institute is an extremely useful tool for visulazation of alignment files. Viewing your alignments in this way can be used to explore your data, troubleshoot issues you are having downstream of alignment, inspect coverage in specific regions of interest, and read quality and evidence for features identified downstream (e.g. in variant calling). I strongly encourage you to download the IGV for your computer from their [website](http://software.broadinstitute.org/software/igv/) and play around with some BAM file to get familar with all its various features. 
+
+Here, we will create a small subset of a BAM file, download it onto our local machines, and view it using the IGV web app (for speed). You can open the OGV web app in your browser [here](https://igv.org/app/). 
+
+Lets go ahead and subset our BAM file for reads aligning only to chromosome 22. We also need to create an index. 
+```bash
+# subset for reads just on chr 22 (to make it smaller)
+samtools view -b -@ 8 -o chr22.bam SRR1039508_1.Aligned.sortedByCoord.out.bam 22
+
+# index your new bam file 
+samtools index chr22.bam
+``` 
+
+Now download the files onto your local machine, so that you can load them into the IGV web app. 
+```bash
+# make a directory and go into it 
+mkdir rnaseq_wrksp/
+cd rnaseq_wrksp/
+
+# download the file using secure copy (scp)
+##### modify this for your discovery ID, AND the directory your in 
+scp d41294d@discovery7.dartmouth.edu:/dartfs-hpc/rc/lab/G/GMBSR_bioinfo/workshops/rnaseq-july20/data/bam/chr22.bam* .
+
+# you may also need to modify the permissions 
+chmod a+rwx chr22*
+```
+
+Now navigate to the IGV web app, and follow the below steps:  
+1. Under *'Genomes'* in the top right, select *'GRCh38/hg38'*
+2. Under *'Tracks'* select *'Local file'*, then highlight both the .bam and .bai 
+3. Navigate to chromosome 22, and zoom in on ...
+4. Use the setting at the side of the track to set colors by *read strand*
+
+![IGV](igv_webapp.png)
+
+- Can you find an example of a highly expressed gene?
+- What do you notice about the orientation of the aligning reads? 
+- Why might this cause ambiguity in read quantification for genes that overlap?  
+
+
 ### Post-alignment quality control 
 Once you have your reads aligned you need to assess the quality of your alignment. Before running FastQC or MultiQC it is prudent to get more information about the aligned files. Picard has some useful tools for assesing the quality of an alignment. 
 
