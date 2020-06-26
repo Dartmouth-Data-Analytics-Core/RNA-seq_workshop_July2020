@@ -1,15 +1,66 @@
 ## Day 1 
 
 
+
+### FASTQ file format
+
+FASTQ files are arguably the workhorse format of bioinformatics. FASTQs are used to store sequence reads generated in next-generatoon sequencing (NGS) experiments. Similarly to FASTA files, FASTQ files contain a herder line, followed by the sequence read, however individual quality of base calls from the sequencer are included for each record in a FASTQ file. 
+
+Here is what a the first record of an example FASTQ file looks like
+```
+@SRR1039508.1 HWI-ST177:290:C0TECACXX:1:1101:1225:2130 length=63
+CATTGCTGATACCAANNNNNNNNGCATTCCTCAAGGTCTTCCTCCTTCCCTTACGGAATTACA
++
+HJJJJJJJJJJJJJJ########00?GHIJJJJJJJIJJJJJJJJJJJJJJJJJHHHFFFFFD
+```
+
+**Four rows exist for each record in a FASTQ file:**
+- Row 1: Header line that stores information about the read (always starts with an `@`), such as the *instrument ID*, *flowcell ID*, *lane on flowcell*, *file number*, *cluster coordinates*, *sample barcode*, etc.
+- Row 2: The sequence if bases called
+- Row 3: Usually just a `+` and sometimes followed by the read info. in line 1
+- Row 4: Individual base qualities (must be same length as line 2
+
+Quality scores, also known as **Phred scores**, in row 4 represent the probability that the associated base call is incorrect, which are defined by the below formaula for current Illumina machines:
+```
+Q = -10 x log10(P), where Q = base quality, P = probability of incorrect base call
+
+or 
+
+P = 10^-Q/10
+```
+
+Intuitively, this means that a base with a Phred score of `10` has a `1 in 10` chance of being an incorrectly called base, or *90%*. Likewise, a score of `20` has a `1 in 100` chance (99% accuracy), `30` a `1 in 1000` chance (99.9%) and `40` a `1 in 10,000` chance (99.99%). 
+
+However, we can clearly see that these are not probabilities. Instead, quality scores are encoded by a character that is associated with an *ASCII* code (equal to the *Phred-score +33*). The reason for doing it this way is so that quality scores only take up 1 byte per value in the FASTQ file. 
+
+For example, the first base call in our sequence example above, the `C` has a quality score encoded by an `H`, which corresponds to a Q-score of 39, meaning this is a good quality base call. 
+
+Generally, you can see this would be a good quality read if not for the strech of `#`s indicating a Q-score of 2. Looking at the FASTQ record, you can see these correspond to a string of `N` calls, which are bases that the sequencer was not able to make a base call for. Streches of Ns' are generally not useful for your analysis. 
+
+You can read more about quality score encoding [here](https://support.illumina.com/help/BaseSpace_OLH_009008/Content/Source/Informatics/BS/QualityScoreEncoding_swBS.htm), and view the full table of symbols and *ASCII* codes used to represent Q-scores. 
+
+**Paired-end reads:**  
+
+If you sequenced paired-end reads, you will have two FASTQ files:  
+*..._R1.fastq* - contains the forward reads  
+*..._R2.fastq*- contains the reverse reads  
+
+Most downstream analysis tools will recognize that such files are paired-end, and the reads in the forward file correspond to the reads in the reverse file, although you often have to specify the names of both files to these tools. 
+
+It is critical that the R1 and R2 files have **the same number of records in both files**. If one has more records than the other, which can sometimes happen if there was an issue in the demultiplexing process, you will experience problems using these files as paired-end reads in downstream analyses. 
+
 ### Working with FASTQ files 
 
-- FASTQ file format 
-- Viewing records in a FASTQ file 
+While you don't normally need to go looking within an individual FASTQ file, it is very important to be able to manipulate FASTQ files in you are going to be doing any more involved bioinformatics. There are a lot of operations we can do with a FASTQ file to gain more information about our experiment, and being able to interact with FASTQ files can be useful for troubleshooting problems that might come up in your analyses. 
+
+Due to their large size, we often perform gzip copmpression of FASTQ files so that they take up less space, however this means we have to unzip them if we want to look inside them and perform operations on them. We can do this with the `zcat` command. 
+
+Lets use `zcat` and `head` to have a look at the first few records in our FASTQ file. 
 ```bash
 zcat sample.fastq.gz | head
 ```
 
-How many records do we have? 
+How many records do we have in total? (don't forget to divide by 4..) 
 ```bash
 zcat sample.fastq.gz | wc -l
 ```
