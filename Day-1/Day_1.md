@@ -160,20 +160,14 @@ cutadapt -a ADAPTER [options] [-o output.fastq] input.fastq
 For paired-end reads:
 
 cutadapt -a ADAPT1 -A ADAPT2 [options] -o out1.fastq -p out2.fastq in1.fastq in2.fastq
-    
-  ```bash
-  for i in `cat prefix.list`;
-  do cutadapt -a 'A{76}' -m 5 --nextseq-trim=20 -o "$i".trimmed.fq.gz "$i"_R1_001.fastq.gz >"$i".cutadapt.out;
-  done
-  ```
+
+```bash
+cutadapt -a 'A{76}' -m 5 --nextseq-trim=20 -o "$i".trimmed.fq.gz "$i"_R1_001.fastq.gz >"$i".cutadapt.out;
+```
 -a trims adapters from the 3' end
-
 -g trims adapters from the 5' end
-
 -b trims adapters from both ends
-
 -m trims reads that are samller than the minimum threshold (length is measured after all quality and adapter trimming)
-
 -q qulaity threshold for trimming bases
 
 --nextseq-trim works like q=20 except that quality scores on Gs are ignored, this accomodates the effects of dark cycles from some illumina instruments that leave a string of high quality but in correct Gs at the 3' end of reads
@@ -183,7 +177,6 @@ cutadapt -a ADAPT1 -A ADAPT2 [options] -o out1.fastq -p out2.fastq in1.fastq in2
 <br>
 
 
-![Read alignment](../figures/read_alignment.png)
 
 
 
@@ -192,52 +185,148 @@ cutadapt -a ADAPT1 -A ADAPT2 [options] -o out1.fastq -p out2.fastq in1.fastq in2
 
 Aligning millions of reads to very large reference genomes (such as the human genome) is generally done by splitting the reads and reference into a catalog of shorter reads with unique sequnece structures (kmers). It is improtant when selecting an alignement program to ensure that it is appropriate for the dataset you are working with, for example STAR (Spliced Transcripts Alignment to a Reference) is used to align reads that have come from spliced transcripts. A single read from a spliced transcriptome might map across a splice junction, such that the left side of the read and the right side of the read map hundreds of base pairs apart. If your dataset is prokaryotic (non-splicosomal) this would not be the appropriate program for you to align your reads, we would suggest looking into bwa-mem or bowtie2. If you are in a hurry and not interested in obtaining read alignments and only need count data quasi-mapping with a tool like Salmon might be a good option. 
 
+![Read alignment](../figures/read_alignment.png)
+
+#### Concepts for read alignment 
+
+**SAM/BAM files**
+
+Read alignments are stored in the SAM (.sam) and BAM (.bam) file format. SAM stands for *Sequence Alignment/Map* format and is in tab-delimited text format, making it a human readable file (should you dare to look inside). Bam files are the compressed, indexed, binary version of SAM files and are NOT human readable, but are much fatsre to parse and do complex operations on. You can read all about the SAM/BAM file format specification in the documentation [here](https://samtools.github.io/hts-specs/SAMv1.pdf). While you may never need to actually look inside of a SAM/BAM file, its important to have an understanding of what information is stored in one. 
+
+Both formats contain a number of slots for each read alignment that describe key information about the alignment. 11 slots are mandatory, while others are optional and depend on the aligner used, and the settings used in that alignment.
+
+![SAM file](../figures/sam-file.png)
+
+
+**Notes on select fields:**
+
+**FLAG** encodes important information about the read, for example, is it a primary, secondary, or supplementary alignment. Since one read will likely have a number of properties that we want to 'flag', SAM files use a special way of encoding the FLAG field to pack as much information as possible into one number. While we won't go into detail on this here, it works by decomposing large numbers into their constituents. I encourage you to go read more about FLAGs and how they are specified.  
+
+Try running this to get basic information on FLAGs from samtools. 
+```bash 
+samtools flags
+```
+
+**MAPQ** corresponds to the quality of the mapping. These are calculated in the same way as the Phred scores `Q = -10 x log10(P)`, although are generally considers best guesses form the aligner. A MAPQ of 255 is used where mapping quality is not available. Some aligners also use specific values to represent certain types of alignments, which may affect use of downstream tools, so it is worth understanding those that are specific to your aligner. 
+
+**CIGAR** is an alphanumerical string that tells you information about the alignment. For relatively short reads, these are nice, but for long reads, they are a headache. Numbers correspond to number of bases, and letters correspond to features of those bases. e.g.  
+M = match or mismatch  
+S = soft clip  
+H = hard clip  
+I = insertion  
+D = deletion  
+N = skipping  
+
+So for example, alignment 3 in our SAM file example above (`5S6M`) would describe an alignment where 5 bases are soft-clipped, followed by 6 matching bases. 
+
+Lets have a look at the header for our SAM file:
+```bash 
+samtools view -H tmp.chr22.sam  | head
+```
+
+Now lets have a look at the first few alignment records in our BAM file
+```bash 
+samtools view tmp.chr22.sam  | head
+```
+
+
+flags 
+
+
+CIGAR strings
+
+
+
+**Read clipping**
+
+**Mapping scores**
+
+
+**Splicing**
+
+
+gapped vs ungapoped aligners 
+
+
+**Genome vs transcriptome mapping?**
+
+**What input do I need for an alignmnet?**
+At miniumum:  
+- FASTQ file(s)
+- A reference genome (.fasta)
+
+Optional: 
+- .gtf file for the reference genome that species the geneomic feature annotation. If you are interest in splicing, it can be valuable to 
+
+
+
 #### STAR read aligner
 STAR uses a method of seed searching, clustering, stitching, and scoring to find the most probable match in the reference sequence for each read. A seed is the longest possible match between a read and the reference sequence. By using multiple seeds on a single read, reads are able to span hundreds of base pairs across splice junctions. Once a read is mapped into multiple seeds STAR attempts to map the remaining unmapped portions of the read by extending the seed match allowing for indels and mismatches. Any portion of the read that cannot be mapped is assumed to be contamination, leftover adapter sequences, or an incorrect base call and these bases are clipped (called soft-clipping).
 
+2-pass mapping 
+
+
+#### Constructing a genome index 
+
+Before running an alignment, you generally need to create an index of your reference genome, and specify the location of this index when you run the aligner. 
+
+
 
 ```bash
-STAR --genomeDir myind --sjdbGTFfile mygene --runThreadN 4 --outSAMunmapped Within --outFilterType BySJout --outSAMattributes NH HI AS NM MD --outSAMtype BAM SortedByCoordinate --outFilterMultimapNmax 10 --outFilterMismatchNmax 999 --outFilterMismatchNoverReadLmax 0.04 --alignIntronMin 20 --alignIntronMax 1000000 --alignMatesGapMax 1000000 --alignSJoverhangMin 8 --alignSJDBoverhangMin 1 --readFilesIn trimed_R1_fastq --readFilesCommand zcat --outFileNamePrefix Sample_ID
+STAR --genomeDir myind 
+--sjdbGTFfile mygene 
+--runThreadN 4 
+--outFilterType BySJout 
+--outSAMtype BAM SortedByCoordinate 
+--readFilesIn trimed_R1_fastq 
+--readFilesCommand zcat 
+--outFileNamePrefix Sample_ID
 ```
 
+Option descriptions: 
 --genomeDir the path to the directory with genome indices
-
 --sjdbGTFfile the path to the annotated transcripts in GTF file format
-
 --runThreadN number of threads to use in the run
-
---outSAMunmapped the name of the file to write unmapped reads to 
-
 --outFilterType how mapped reads will be filtered (normal/BySJout)
-
---outSAMattributes the attributes to write to the outfile with mapped reads
-
 --outSAMtype (BAM unsorted/ BAM SortedByCoordinate)
-
---outFilterMultimapNmax maximum number of alignments allowed for a read, reads that exceed this will be considered unmapped
-
---outFilterMismatchNmax maximum number of mismatches per pair, 999 turns this filter off
-
---outFilterMismatchNoverReadLmax maximum number of mismatches per pair relative to read length, 0.4 with 100bp allows for 8 mismatches across the pair
-
---alignIntronMin minimum intron length
-
---alignIntronMax maximum intron length
-
---alignMatesGapMax maximum genomic distance between mates
-
---alignSJoverhangMin minimum overhang for unannotated junctions
-
---alignSJBDoverhangMin minimum overhang for annotated junctions
-
 --readFilesIn read files to map to reference alignment
-
 --readFilesCommand uncompression command to apply to read files
-
 --outFileNamePrefix prefix for outfiles generated in the run
 
 
-- View & explore some reads in IGV (show difference on read distributions in full-length transcript & 3'end data)
+**Working with SAM/BAM files**  
+Several tools exist that enabkle you to perform operations on a BAM file. `Samtools` is perhaps the most widely used of these, and is used widely. You can find the documentation [here](http://www.htslib.org/doc/samtools.html). 
+
+For example, we may wich to sort our BAM file by coordinate (required by several tools that accept BAM as input):
+```bash
+samtools sort s.bam
+``` 
+
+We may then wish to index our BAM, which will create a file with the same name, but the suffix `.bai`. An index 
+```bash
+samtools index s.sorted.bam
+``` 
+In practice, we can ask programs like STAR to give us indexed and sorted BAM files as output from the alignment, however this is not the case with all aligners. 
+
+Another useful thing we might want to do with our BAM file is to count how many alignments have specific FLAG types (unique alignments, secondary, unmapped, properly paired). 
+```bash
+samtools flagstat s.sorted.bam 
+``` 
+
+We can even use the specific FLAGs in the BAM file to extract specific alignments. For example, you might want to produce BAM files where all of the reads mapping to the forward and reverse strands are in separate files: 
+```bash
+# use -f option in view to filter for reads with FWD alignment flag (20)
+samtools view -f 20 s.sorted.FWD.bam
+
+# use -f option in view to filter OUT reads with FWD alignment flag (20), ultimately giving REV reads 
+samtools view -F 20 s.sorted.REV.bam
+``` 
+
+You might just want to count how many reads have a particular SAM flag
+```bash
+# count how many reads are NOT a primary alignment (FLAG=256)
+samtools view -c -F 256 s.sorted.bam
+```
 
 <br>
 
@@ -378,6 +467,8 @@ Exercise:
 # Generate the gene expression matrix of raw read counts
 
 The final step in the pre-processing of RNA-seq data for differential expression analysis is to concatenate your read counts into a gene expression matrix that contains the counts from all your samples. We will do this at the command line, however there are also ways to directly read the output of programs like htseq-count and RSEM directly into R without concatenating them into a matrix before hand. 
+
+![](../figures/ge-matrix.png)
 
 Have a look at the htseq-count output files 
 ```bash
