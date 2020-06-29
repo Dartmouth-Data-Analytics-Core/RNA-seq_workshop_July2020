@@ -43,7 +43,7 @@ conda env create -f /scratch/rnaseq1/environment.yml
 When you are ready activate the conda environment, which you will need for the work we are doing for day 1 of the workshop you can use the following command. 
 
 ```bash
-conad activate ranseq1/
+conda activate ranseq1/
 ```
 
 You will see that the activate command has worked when it reads (rnaseq1) rather than (base) to the left of the prompt. 
