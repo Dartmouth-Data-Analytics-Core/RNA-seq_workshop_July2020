@@ -1,7 +1,13 @@
 
-## Read count quantification  
+# Part 5 - Read count quantification 
 
-For most downstream analyses in RNA-seq, especially differential expression, we care about how many reads aligned to a specific gene, as this tells us about its expression level, which we can then compare to other samples. Inherently, this means that we essentially want to make these data *count-based*, so that we can use statistical models to compare these counts between our experimental conditions of interest. 
+### Learning objectives: 
+- Gain understanding of how reads are counted to quantify expression levels in RNA-seq
+- Learn how to quantify read counts using `htseq-count`
+- Create a gene expression matrix from read count quantifications for the entire dataset
+
+## Principle of quantifying read counts for RNA-seq 
+For most downstream analyses in RNA-seq, especially differential expression, we care about how many reads aligned to a specific gene, as this tells us about its expression level, which we can then compare to other samples. Inherently, this means that we want to make these data *count-based*, so that we can use statistical models to compare these counts between our experimental conditions of interest. 
 
 ![](../figures/quant_principle.png)
 
