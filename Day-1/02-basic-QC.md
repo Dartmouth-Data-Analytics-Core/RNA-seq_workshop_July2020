@@ -1,4 +1,10 @@
-### Pre-processing and quality control of raw data 
+# Part 2 - Pre-processing and quality control (QC) of raw data 
+
+### Learning objectives: 
+- Understand the FASTQ file format and the formatting sequence information it stores
+- Learn how to perform basic operations on FASTQ files in the command-line 
+
+## Quality-control of raw data 
 
 Before you begin working with genomic data it is important to asses the quality of the data, look for possible contamination, and get an idea of what you can expect the assembled product to look like. The distribution of base qualities, the distribution of read lengths, GC bias, and duplication rates are all informative metrics for assessing raw sequencing data. 
 
@@ -26,15 +32,16 @@ MultiQC is very flexible and comprehensive, and will process output from many bi
 
 
 
-### Read pre-processing & trimming  
-#### Principles of read trimming: Downstream steps are more efficient
+## Read pre-processing & trimming
+
+### Principles of read trimming: Downstream steps are more efficient
 Read trimming is used to clean up the library of raw reads. Trimming can be used to trim adapter sequences, polyA tails, low quality bases, or reads that are too short. Mostly trimming is used to remove low quality bases, generally 20 is the lowest filter we would recommend for quality trimming. 
 
 
 ![Read alignment](../figures/read_processing.png)
 
 
-#### Example command for read trimming with cutadapt 
+### Example command for read trimming with cutadapt 
 (If you use Cutadapt, please cite DOI:10.14806/ej.17.1.200)
 
 Usage:
