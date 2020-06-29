@@ -39,6 +39,11 @@ library(circlize)
 library(xtable)
 library(kableExtra)
 ```
+### The Data set
+
+The dataset that we are using comes from [this paper](https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0099625). This data was collected from human airway smooth muscle cells to test gene pathways effected by exposure to Glucocorticoid, which have been historically used for their anti-inflammatory effects to treat asthmatics. Four cell lines were treated with either a control vehicle (untreated), dexamethasone (dex), albuterol (alb), or both dexamethasone and albuterol (co-treated) for 18 hours before transcriptomes were extracted. 
+
+How many replicates does this experiment have?
 
 ### Read in raw count data 
 
