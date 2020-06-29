@@ -9,13 +9,7 @@ output:
 
 ### Differential expression analysis in R 
 
-After exploring our data, we are ready to run the differential expression analysis. As our exploratory analysis showed the Alb treated and co-treated samples did not consistently cluster together, we have decided to focus on the comparison between untreated samples and Dex tx samples. We will continue using *DESeq2* to perform the analysis. 
-
-
-
-Replace with image???
-ADD EXERCISES??
-CLEAN UP MARKDOWN
+After exploring our data, we are ready to run the differential expression analysis. As our exploratory analysis showed the Alb treated and co-treated samples did not cluster together, so going forward we will focus on the comparison between untreated samples and Dex treated samples. We will continue using *DESeq2* to perform the analysis. 
 
 
 
@@ -58,7 +52,7 @@ load("DESeq2.rdata")
 
 ### Apply the DESeq2 procedure to the data 
 
-Now we apply the DEseq() function to the dataset to perform the analysis. This function is the main powerhouse of the DESeq2 package and does **a lot** under the hood, which it is important you understand the general principles of before running your own analysis. 
+Now we apply the DEseq() function to the dataset to perform the analysis. This function is the main powerhouse of the DESeq2 package and does **a lot** under the hood. It is important you understand the general principles of this analysis of before running your own analysis. 
 
 * estimation of size factors (`estimateSizeFactors()`)
 * estimation of dispersion (`estimateDispersions`)
@@ -79,17 +73,22 @@ hist(counts(dds, normalized=FALSE)[,5], breaks = 500, col="blue",
      main = "Count distribution for sample X")
 ```
 
-Perhaps the most obvious feature of this distribution is the large number of genes with very low count values, which occurs as there are many genes expressed at relatively low levels compared to the more highly expressed genes, which are fewer in number, but cause the distribution to have a long right tail, ultimately caising the dynamic range of RNA-seq data to be very large. 
+Perhaps the most obvious feature of this distribution is the large number of genes with very low count values. This occurs as there are many genes expressed at low levels relative to the highly expressed genes, which are fewer in number. This causes the distribution to have a long right tail, ultimately caising the dynamic range of RNA-seq data to be very large. 
 
-These features of how RNA-seq data is distributed are important in informing which statistical model we use to test differential expression. Importantly, we can see from the histogram that the data is **not** normally distributed, therefore any statistical model based on the normal distribution won't model these data appropriately. By looking again at the matrix of raw counts, it is actually clear that RNA-seq is integer count data, therefore we should use a statistical model for count-based data. 
+These features of how RNA-seq data is distributed are important in selecting the statistical model used to test differential expression. Importantly, we can see from the histogram that the data is **not** normally distributed, therefore any statistical model based on the normal distribution is not appropriate for this dataset. By looking again at the matrix of raw counts, it is actually clear that RNA-seq is integer count data, therefore we should use a statistical model for count-based data. 
 
 ```{r}
 head(counts(dds, normalized=FALSE))
 ```
+At this point it might be useful to define a few terms that are really important to know in order to understand how these statistical models are applied. Each of these terms are calculated from the count matrix by DESeq2 and are used to fit the appropriate statistical model to the data, and compare counts within and between samples.
 
-Usually, the most appropriate statistical model for DE analysis of RNA-seq data is a variation of the binomial distribution (e.g. probability of getting 10 heads in you toss a coin 20 times), called the negative binomial (NB) distribution. One feature of RNA-seq data in particular makes the NB distribution a good fit for such data: overdispertion, i.e. the variance is usually greater than the mean for RNA-seq data. 
+*mean - the average count of a gene across samples
+*variance - the spread of count values across samples for a gene
+*dispersion - the amount that the variance deviates from the mean
 
-We can visualize overdispersion in RNA-seq data by plotting the mean-variance relationship for a group of rpelicates in our data. 
+Usually, the most appropriate statistical model for DE analysis of RNA-seq data is a variation of the binomial distribution (e.g. probability of getting 10 heads when you toss a coin 20 times), called the negative binomial (NB) distribution. One feature of RNA-seq data in particular makes the NB distribution a good fit for such data: overdispertion, i.e. the variance is usually greater than the mean for RNA-seq data. 
+
+We can visualize overdispersion in RNA-seq data by plotting the mean-variance relationship for a group of replicates in our data. 
 ```{r}
 # calculate mean and varaince for group of replicates
 mean_counts <- apply(counts(dds, normalized=FALSE)[,1:3], 1, mean)
@@ -127,14 +126,14 @@ Note: The above example for plotting NB distributions at various disperions was 
 
 It is clear that as the disperion increases, the varaition around the mean also increases. The mean, variance, and dispersion are linked by the equation: 
 
-variance = mean + dispersion x 2 mean-squrd ( var = mu + disp. * mu^2 )
+variance = mean + dispersion x 2 mean-squared ( var = mu + disp. * mu^2 )
 
 In order to accurately model differential expression for the genes in our dataset, DESeq2 uses this equation to obtain estimates for the dispersion of each gene within each sample group (e.g. Control and Dex separately). **However,** for the small number of replicates avaiable in RNA-seq data, these estimates of dispersion at the gene-level are often inaccurate (yet another reason to use more replicates..). 
 
-To improve these gene-level estimates of dispersion, DESeq2 uses another statistical model called empirical bayes to 'shrink' these inital dispersion estimates toward a *'prior'* mean that is calculated by fitting a curve to the inital dispersion estimates. This procedure is able to produce more accuarate estimates of disperion as it shares information across genes with similar expression levels to predict a more approriate dispersion for those genes. This is rational as the formula linking the mean, variance, and dispersion tells us that the variance is the only thing affecting the magnitude of the dispersion for genes with the similar mean expression. 
+To improve these gene-level estimates of dispersion, DESeq2 uses another statistical model called empirical bayes to 'shrink' these inital dispersion estimates toward a *'prior'* mean, which is calculated by fitting a curve to the inital dispersion estimates. This procedure is able to produce more accuarate estimates of disperion as it shares information across genes with similar expression levels to predict a more approriate dispersion for those genes. This is rational as the formula linking the mean, variance, and dispersion tells us that the variance is the only thing affecting the magnitude of the dispersion for genes with the similar mean expression. 
 
 The major factors affecting how much a gene's dispersion is shrunk toward the prior mean are:
-1. the number of sample in the group under consideration (use more replicates!)
+1. the number of samples in the group under consideration (use more replicates!)
 2. how far the inital dispersion is from the prior mean
 
 ![DEseq2 dispersion estimation](../figures/dispersion_estimation.png)
@@ -148,29 +147,29 @@ We can plot the dispersion estimates for our own data using:
 plotDispEsts(dds)
 ```
 
-This is an example of a well calibrated set of dispersion estimates: the final MAP estimates are well scattered around the fitted line, and the dispersion trend decreases with increasing mean expression. 
+This is an example of a well calibrated set of dispersion estimates due to these two features: the final MAP estimates are well scattered around the fitted line, and the dispersion trend decreases with increasing mean expression. 
 
-If there was a lot more structure in these plots, we would be concerned that the model is not estimating dispersions well for our data, indicating something may be wrong with the dataset, e.g. outlier samples, a batch effect, low quality samples/data, potential contamination etc. 
+If the MAP estimates were more structured in these plots, we would be concerned that the model is not estimating dispersions well for our data, indicating something may be wrong with the dataset, e.g. outlier samples, a batch effect, low quality samples/data, potential contamination etc. 
 
 **It is important to confirm your dispersion estimates are well calibrated before performing your differential expression analysis, as accurate estimation of dispersion is critical in controlling the false-positive rate in experiments with smaller sample sizes (most RNA-seq experiments)**. 
 
 ### Differential expression analysis - Hypothesis testing
 
-Now that we understand how the dispersions are estimated, we are ready to fit the data and test each gene for differential expression. We fit the data using a generalized linear model (GLM) of the negative binomial family. GLM's are a family of statistical models that generalize linear regression such that response variables can be modelled by distributions other than the normal distribution (which we know isn't approrpiate for RNA-seq data). Essentially, the GLM allows us to model a *response variable* (in this case, the experimental group) as a linear combination of a set of variables, including gene expression across samples. 
+Now that we understand how the dispersions are estimated, we are ready to fit the data and test each gene for differential expression. We fit the data using a generalized linear model (GLM) of the negative binomial family. GLM's are a family of statistical models that generalize linear regression such that response variables can be modeled by distributions other than the normal distribution (which we know isn't approrpiate for RNA-seq data). Essentially, the GLM allows us to model a *response variable* (in this case, the experimental group) as a linear combination of a set of variables, gene expression across samples. 
 
 ![DEseq2 formula](../figures/neg-binom.png)
 
 In order to fit the GLM, we need the mean count of each gene across the samples in each experimental group, and the dispersion of that gene in those groups. The mean count is a combination of the expected expression level and the size factor, so that our model is corrected for library size and composition. 
 
-The process of fitting the model to the expression and dispersion values for each gene results in final set of *model coefficients* for each sample group, which can be interpreted as the log2 fold-change in expression for that gene between the baseline group, and each comparison group. 
+The process of fitting the model to the expression and dispersion values for each gene results in final set of *model coefficients* for each sample group, which can be interpreted as the log2 fold-change in expression for that gene between the baseline group and each comparison group. 
 
 Each of the model coefficients has an associated *standard error* associated with it, which we can use to calculate a P-value and perform a process called hypothesis testing. Through hypothesis testing we test the *null hypothesis* that the log2 fold-change between experimental groups for an individual gene is not significnatly different from 0 (no change in expression). The default test used by DESeq2 for hypothesis testing is the *Wald-test*, which is implemented as follows:  
 
-1. The *coefficient (log 2 fold-change)* is divided by the *standard error*  
+1. The *coefficient (log 2 fold-change)* is divided by the *standard error* (measure of statistical accuracy of the measurement). 
 2. The resulting *Z-statistic* is compared to a standard normal distribution (mean = 0, sd = 1) in order to compute a P-value. 
 3. If the P-value is less than our pre-determined threshold for significance, we reject the null hypothesis and accept the alternative, that the gene is significantly DE. 
 
-**Note:** DESeq2 can also implement a *likelihood ratio test* (LRT), which is used to compare expression accross multiple groups. For example, if you collected samples over a range of time points and you wanted to test if gene expression changed significantly over these time points, you coul use the LRT instead of the wald-test. 
+**Note:** DESeq2 can also implement a *likelihood ratio test* (LRT), which is used to compare expression accross more than two groups. For example, if you collected samples over a range of time points and you wanted to test if gene expression changed significantly over these time points, you could use the LRT instead of the wald-test. 
 
 (`DESeq2`) already performed all of the steps for hypothesis testing using the wald-test for us when we ran the (`DESeq2()`) function. All we have to do is tell DESeq2 which results we want to look at, which can be done using the (`results()`) function, and specifying the coefficients that we want by using the (`names`) agument. 
 ```{r}
@@ -192,7 +191,7 @@ A couple of things to note here:
 ### Note on P-values: 
 P-value thresholds do not need to be set at 0.05 for every experiment. You can be more or less stringent than this dependning on the nature of your experiment: if you want to be very conservative and restrict your results to few results that are likely to be true positives, you may wish to restrict the results to a more stringent threshold. If your experiment is very preliminary and you care less about capturing some false positives than missing true positives, you may wish to relax your threshold.  
 
-**Additional note:** To extract the results, we could also use the (`contrast`) argument in the a similar way to how we used the (`names`) agument. The first group specified to (`contrast`) is used as the numerator in calculating the fold change, and the second group is used as the denominator, therefore the second group is used as the baseline for the comparison. 
+**Additional note:** To extract the results, we could also use the (`contrast`) argument in a similar way to how we used the (`names`) agument. The first group specified to (`contrast`) is used as the numerator in calculating the fold change, and the second group is used as the denominator, therefore the second group is used as the baseline for the comparison. 
 ```{r}
 res <- results(dds, alpha = 0.05, 
   contrast = c("group", "Dex", "untreated"), 
@@ -218,7 +217,7 @@ You may have noticed I am using (`na.rm=TRUE`) in the (`sum()`) function above. 
 table(is.na(res$padj))
 ```
 
-This is not a mistake, but rather part of a deliberate filtering process conducted by DESeq2, in order to flag genes that have little or no change of being differentially expressed. This is value as it means we can correct for fewer total tests and increase our statistical power to identofy true positive.The three ways which DESeq2 filters results are:   
+This is not a mistake, but rather part of a deliberate filtering process conducted by DESeq2, in order to flag genes that have little or no change of being differentially expressed. This is of value as it means we can correct for fewer total tests and increase our statistical power to identify true positives.The three ways which DESeq2 filters results are:   
 - Genes with counts = 0 in all samples
 - Genes with extreme outliers (determined using Cook's distance)
 - *Independent filtering* (identifying genes with low counts)
@@ -284,7 +283,7 @@ res_ord$strand <- as.character(anno$Strand[mat1])
 
 # Volcano plot
 
-Volcano plots are a useful visualization for exploring your results, and plot the log2 fold change (x-axis) against the -log10 P-value. Since the -log10() of a really small number is a very large value, any gene that has a very small P-value and was significantly differentially expressed, will appear higher up along the y-axis. In contrast, the -log10 of 1 (`-log10(1)`) is equal to (`0`), therefore genes with low statistical significance (P-values approaching 1) will appear lower down on the y-axis. 
+Volcano plots are a useful visualization for exploring your results, the log2 fold change (x-axis) is plotted against the -log10 P-value. Since the -log10() of a really small number is a very large value, any gene that has a very small P-value and was significantly differentially expressed, will appear higher up along the y-axis. In contrast, the -log10 of 1 (`-log10(1)`) is equal to (`0`), therefore genes with low statistical significance (P-values approaching 1) will appear lower down on the y-axis. 
 
 Similarly, genes with larger fold changes will appear further along the x-axis, in both directions. Genes with a positive fold change represent genes whose expression was greater than the group of the experimental design variable used as baseline, while genes with a negative fold change represent genes whose expression was lower than in the baseline group. The fold-change value of genes with non-significant fold changes is not meaningful, as there is not enough statistical confidence in these fold changes. 
 ```{r, message=FALSE}
@@ -299,7 +298,7 @@ abline(h=-log10(0.05), lty = 2, col = "black") # nominal P-value
 ```
 Here we can clearly see that there are quite a few genes above our significance threshold in both the up and downregulation directions (_ve and -ve fold changes), that also have absolute log2 fold change values of at least 2 or more. Of particular interest, there seem to be a few genes with very large fold change values & -log10 P-values, making them especially interesting as their effect size is large AND our confidence in this fold change is good. 
 
-It is a little hard to make specific inferences from this plot at the individual gene level, so some labels for interesting data points ( and some colors) would definitely improve this volcano plot, and make it more overall more informative. We will use the **ggpolot2** R package to do this, and we will color each point based on a combination of fold change and P-value, as these determine which genes are of most interest to us. 
+It is a little hard to make specific inferences from this plot at the individual gene level, so some labels for interesting data points ( and some colors) would definitely improve this volcano plot, and make it more informative. We will use the **ggpolot2** R package to do this, and we will color each point based on a combination of fold change and P-value, as these determine which genes are of most interest to us. 
 ```{r}
 # save a dataframe from the results() output
 res_tmp <- as.data.frame(res_ord)
@@ -400,7 +399,7 @@ write.csv(as.data.frame(res_order_FDR_05), file="DE_results.FDR.0.05.csv")
 
 ### Why must we correct for multiple hypothesis testing? 
 
-P-values are defined as the probability that we would observe a result as extreme as the one we observed, simply due to chance. In the case of RNA-seq, we are testing the probability that we would observe the log2 FC that we do for a given gene, if this result is due to chance. Therefore if we use 0.05 as a P-value threshold, and we test 20,000 genes for DE, this means that 5% of those genes we tested will have a log 2 FC that has a P-value < 0.05 simply due to chance. 5% of 20,000 is 1000 genes, which is obviously an unacceptable amount of false-positives to make! 
+P-values are defined as the probability that we would observe a result as extreme as the one we observed, simply due to chance. In the case of RNA-seq, we are testing the probability that we would observe the log2 FC that we do for a given gene, if this result is due to chance. Therefore if we use 0.05 as a P-value threshold, and we test 20,000 genes for DE, this means that 5% of those genes we tested will have a log 2 FC that has a P-value < 0.05 simply due to chance. 5% of 20,000 is 1000 genes, which is obviously an unacceptable amount of false-positives. 
 
 We address this problem through multiple testing correction. While several methods that control different aspects of the multiple testing problem, we commonly use methods that control the false-discovery rate (FDR) in RNA-seq DE experiments. Controlling the false discovery rate at 10% means that we are accepting that 1 in 10 of the genes with a significant adjusted P-value, is actually a false-positive, and not truly differentially expressed. RNA-seq DE studies are usually hypothesis generating in nature, so this is usually an acceptable compromise, however if your experiment requires more stringency, you may wish to use a method that controls the family-wise error rate (FWER), such as **Bonferonni** correction. 
 
@@ -458,7 +457,7 @@ This example highlights the short coming of hypothesis testing approaches, and d
 
 ### Other visualizations - MA plots
 
-MA plots are also useful ways to visualize results from a DE analysis of RNA-seq data. These involve plotting the log2 fold-change (the so called M-value, representing the *M* in *MA-plot*) against the average expression level of a gene (the *A* in *MA-plot*). The MA-plot allows us to inspect our the full range of expression values over which we detected significant DEGs, and what the magnitude of these fold-changes is. In a typical experiment, we expect to see DEGs across most of the range of expression values. To help identify genes that were significantly DE, any gene with an adjusted P-value of < 0.05 (or whatever threshold is set) is colored in red. 
+MA plots are also useful ways to visualize results from a DE analysis of RNA-seq data. These involve plotting the log2 fold-change (the so called M-value, representing the *M* in *MA-plot*) against the average expression level of a gene (the *A* in *MA-plot*). The MA-plot allows us to inspect the full range of expression values over which we detected significant DEGs, and what the magnitude of these fold-changes is. In a typical experiment, we expect to see DEGs across most of the range of expression values. To help identify genes that were significantly DE, any gene with an adjusted P-value of < 0.05 (or whatever threshold is set) is colored in red. 
 ```{r}
 plotMA(res_ord, ylim=c(-6,6), main = "Raw Log2 Fold change")
 ```
@@ -488,7 +487,7 @@ We can see that significantly DE genes are detected across the full range of exp
 
 Comparing to the raw LFCs, we can also see that the majority of genes with lower expression values have have their LFCs shrunk toward zero. This is important as genes with low counts may simply end up with a large LFC since this is easy to do at small count values, but these are unlikely to be accurate fold-changes, so we don't want to prioritize their importance by giving them a large LFC. It's always good to look at the shrunken estimates, to confirm that you don't have a lot of DEGs at very small count values. If you do, you may want to look at the expression levels for those genes to investigate these findings in more detail. 
 
-As the mean or counts increases, it is evident that the level of shrinkage is less, although may still be high for genes with greater dispersion estimates. As we move toward the more highly expessed genes, you can see how more genes at lower fold change values are able to be identified as significant, which is due to the fact that there is more information avaiable for these genes, so we can be more confident during hypothesis tetsing of these genes. 
+As the mean or counts increase, it is evident that the level of shrinkage is less, although may still be high for genes with greater dispersion estimates. As we move toward the more highly expessed genes, you can see how more genes at lower fold change values are able to be identified as significant, which is due to the fact that there is more information avaiable for these genes, so we can be more confident during hypothesis tetsing of these genes. 
 
 **Note:** This shrinkage does not really change the hypothesis testing, therefore is performed independently, as is for use in prioritizing your results further for visual inspection or some sort of functional analysis (e.g. pathway analysis). 
 
@@ -535,7 +534,7 @@ draw(ht1, row_title = "Genes", column_title = "Hierachical clustering of DEGs (p
 
 ## Recap of the full workflow
 
-While we got into more of the details and ran some extra code, the entire DESeq2 workflows boils down to just a few functions run sequentially. Lets do a quick recap of these functions to help consolidate what we have learnt. 
+In the above analysis we got into the details of how the statistics behind differential expreission work and ran some extra code to demonstrate the utility of these statistics. However, the entire DESeq2 workflows boils down to just a few functions run sequentially. Lets do a quick recap of these functions to help consolidate what we have learnt. 
 
 Read in the data:
 ```{r, eval=F}
