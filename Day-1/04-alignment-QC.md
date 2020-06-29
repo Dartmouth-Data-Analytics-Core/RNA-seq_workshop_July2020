@@ -94,3 +94,7 @@ multiqc .
 Locate the qc_report.html file in `RNA-seq_workshop_July2020/misc/` and open it in a web-broswer. 
 
 How does the quality look? Do you think there is cause for concern for any samples? 
+
+
+TO DO: DESCRIBE QC REPORT RESULTS 
+
