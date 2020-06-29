@@ -1,17 +1,19 @@
-## Day 1 
+# Wrap-up - Day 1 
 
-To DO: 
-- trimming section
-- extra exercises throughout 
-
-### Recap 
+PIPING COMMANDS TOGETHER...?
 
 
+### Recap: 
+We have implemented the basic steps involved in *data-reduction* of an RNA-seq dataset from raw FASTQ files to a gene expression matrix. Tomorrow, we will focus on the statistical analysis of this count data to identify differentially expressed genes, and perform a basic functional enrichment analysis. 
+
+![](day1_summary.png)
 
 ### Homework: 
 - Catch-up if needed
-- Exercises (if time)
-- Bring questions of discussion points for end of day 2
+- Edit the code and try steps with different settings 
+- Bring questions of discussion points for end of day-2
+
+
 
 
 ### Extra exercises
