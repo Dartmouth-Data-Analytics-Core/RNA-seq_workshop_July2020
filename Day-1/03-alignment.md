@@ -95,9 +95,9 @@ For the purposes of this workshop and saving time, we have pre-built created a s
 ```bash 
 STAR --runThreadN 16 \
 --runMode genomeGenerate \
---genomeDir hg38_index \
---genomeFastaFiles Homo_sapiens.GRCh38.dna.primary_assembly.fa \
---sjdbGTFfile Homo_sapiens.GRCh38.97.gtf \
+--genomeDir hg38_chr22_index \
+--genomeFastaFiles Homo_sapiens.GRCh38.dna.primary_assembly.chr22.fa \
+--sjdbGTFfile Homo_sapiens.GRCh38.97.chr22.gtf \
 --sjdbOverhang 99 \
 ```
 
@@ -118,16 +118,18 @@ Once you have generated an index, it is best not to do anything with it, except 
 We are ready to align our reads to the genome. 
 
 ```bash
-STAR --genomeDir /dartfs-hpc/rc/myind \
---sjdbGTFfile /dartfs-hpc/rc/mygene \
---sjdbOverhang 100 \
---runThreadN 10 \
---outFilterType BySJout \
---outSAMtype SAM \
---readFilesIn trimed_R1_fastq \
+STAR --genomeDir /scratch/rnaseq1/hg38_chr22_index \
+--readFilesIn trimed_R1.fastq.gz trimed_R2.fastq.gz \
 --readFilesCommand zcat \
---outFileNamePrefix Sample_ID\
+--sjdbGTFfile /scratch/rnaseq1/Homo_sapiens.GRCh38.97.chr22.gtf \
+--runThreadN 10 \
+--outSAMtype SAM \
+--outFilterType BySJout \
+--outFileNamePrefix SRR1 \
+--sjdbOverhang 100
 ```
+
+> *NOTE:* I usually set `outSAMtype` to `BAM SortedByCoordinate`, so that I do not need to convert the defaulkt SAM file output by STAR to BAM, then sort it. However, since we want to look inside the file at the alignments, we are creatuing a SAM first, and will convert to a BAM afterwards. 
 
 Option details: 
 - `--genomeDir`: the path to the directory with genome indices
@@ -142,7 +144,7 @@ Option details:
 
 Now, simply wait...
 
-There are a number of other options you may wish to specify, dependning on your application and downstream analysis. These are the barebones options suggested for RNA-seq differential expression analysis. Again, I encourage you to go look through the [user manual](https://github.com/alexdobin/STAR/blob/master/doc/STARmanual.pdf) if you plan to use STAR. 
+There are a number of other options you may wish to specify, dependning on your application and downstream analysis. These are the barebones options suggested for RNA-seq and optimized for mammalian genomes. Again, I encourage you to go look through the [user manual](https://github.com/alexdobin/STAR/blob/master/doc/STARmanual.pdf) if you plan to use STAR. 
 
 **Aligment output**
 
