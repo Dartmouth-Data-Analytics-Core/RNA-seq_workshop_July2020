@@ -435,10 +435,14 @@ Now navigate to the IGV web app, and follow the below steps:
 
 
 ### Post-alignment quality control 
-Once you have your reads aligned you need to assess the quality of your alignment. Before running FastQC or MultiQC it is prudent to get more information about the aligned files. Picard has some useful tools for assesing the quality of an alignment. 
+Once you have aligned your reads, it is important to assess how well our reads could be mapped to the reference genome. The primary metric of a successful alignment is the **percentage of uniquely mapped reads**, and while this depends on the organism and reference genome you map to, a good quality sample is expected to have ~75% of its read uniquely mapped. As we did above,  
+
 
 
 #### CollectRNASeqMetrics 
+
+
+
 This tool will generate a file with several metrics relating to the quality of the alignment. These metrics can be used to diagnose problems with the library that can either be mitigated or taken into consideratoin in assessing the alignment of the data. Metrics reported include the dsitribution of bases within transcripts, the total number and fraction of nucleotides within genomic regions (UTR, introns, exons, intragenic regions, etc.), the number of bases that pass wuality filters, median coverage, the ratio of 5' to 3' biases, and the number of reads designated to the correct strand. 
 
 ```bash 
@@ -454,29 +458,52 @@ java -jar picard.jar CollectRnaSeqMetrics I=input.bam O=output.RNA_Metrics REF_F
  STRAND= For strand-specific library prep. For unpaired reads, use FIRST_READ_TRANSCRIPTION_STRAND if the reads are expected to be on the transcription strand.
  
  RIBOSOMAL_INTERVALS= Location of rRNA sequences in genome, in interval_list format. If not specified no bases will be identified as being ribosomal. Format described here: http://samtools.github.io/htsjdk/javadoc/htsjdk/htsjdk/samtools/util/IntervalList.html
+
+
  
-#### MarkDuplicates
-This tool detects duplicate reads that might have been generated during library preparation or the sequencing run. Duplicates are reads that originate from a single piece of DNA. Duplicate reads are idnetified by comparing the sequences in the 5' end of both reads and read pairs. A high rate of duplicate reads left in your library will skew the count matrix you generate downstream, and ultimately affect the differential expression analysis. If one or more of your libraries have a high proportion of duplicate reads it may be worth removing them before generating a count matrix. 
+### Duplicates in RNA-seq 
+
+Library preparation for RNA-seq generally involves PCR amplification of the input material to ultimately generate enough cDNA for sequencing. PCR amplification can introduce bias into RNA-seq libraries as it is known that not all fragments are amplified as efficiently as others, and is affected by features such as GC content and fragment length. Furthermore, on certain Illumina sequencers, an independent type of duplicate can occur, called *optical duplicates*, where large clusters formed on the flowcell during sequencing are called as two separate clusters. While removal of true duplicate reads would be the ideal solution toward correcting for this type of bias, their identification is complicated by the fact that we expect read duplicates to occur in RNA-seq data through independent sampling of RNA fragments. In particular, for genes that are expressed at high levels, it is likely reads with the same start- and end-positions will occur, even though these reads originate from separate RNA fragments and therefore should be counted independently during quantification of expression. Therefore, identfication of true duplicates reads from those originating from independent sampling is not possible in most RNA-seq data, and cannot be done effectively for single-end datasets. 
+
+#### Duplicate removal 
+
+Generally, most people **do not** remove duplicates from their RNA-seq data, as several studies have shown that their presence does not substantially bias differential expression analysis or dramatrically reduce statistical power, [provided the library is sufficiently complex](https://www.nature.com/articles/srep25533). Furthermore, de-duplication could introduce its own form of bias as read duplicates from separate RNA fragments will be incorrectly merged. 
+
+Despite these considerations, there is still value in checking the levels of read duplication among your aligned reads, to ensure extreme levels of duplication do not exist. We can do this with the [**MarkDuplicates**](https://gatk.broadinstitute.org/hc/en-us/articles/360036834611-MarkDuplicates-Picard-) from *Picard Tools*. *MarkDuplicates* works by comparing the coordinates, orientation, and sequence of read pairs in an input SAM/BAM file. Completion of *MarkDuplicates* will generate a text file with the suffix `xxx.markduplicates_metrics.txt` that documents key duplication statistics that can be included in our QC report.  
+
+To run *MarkDuplicates*, we call the jar file for *Picard tools* and specify the input SAM/BAM file. 
 ```bash 
-java -Xmx32G -jar picard.jar MarkDuplicates I=myInBam O=myOutBam M=myTxt OPTICAL_DUPLICATE_PIXEL_DISTANCE=100 CREATE_INDEX=false
+java -Xmx32G -jar picard.jar \
+MarkDuplicates \
+I=myInBam \
+O=myOutBam \
+M=myTxt \
+OPTICAL_DUPLICATE_PIXEL_DISTANCE=100 \
+CREATE_INDEX=false
 ```
-I= input aligned bam file
 
-O= output with duplicate reads marked
+**Option descriptions**: 
+`I`=input aligned bam file
+`O`=output with duplicate reads marked
+`M`=file to write duplication metrics to
+`OPTICAL_DUPLICATE_PIXEL_DISTANCE`= The maximum offset between two duplicate clusters in order to consider them optical duplicates
+`CREATE_INDEX`=(TRUE/FALSE) Whether to create a BAM index when writing a coordinate-sorted BAM file.
 
-M= file to write duplication metrics to
+We then just need to make sure the `xxx.markduplicates_metrics.txt` file in included a subdirectory when we run `MultiQC`, and it will be included in the report. 
 
-OPTICAL_DUPLICATE_PIXEL_DISTANCE= The maximum offset between two duplicate clusters in order to consider them optical duplicates
+**Additional note:** If you have very low levels of starting material that will require a lot of PCR amplification, if you plan to sequence **very** deeply, or if removal of true duplicate reads is of particular importance to your experiment, you should consider using a library preparation method that leverages unique molecular identifiers (UMIs), which allow true read duplicates to be effectively identified and removed.  
 
-CREATE_INDEX= (TRUE/FALSE) Whether to create a BAM index when writing a coordinate-sorted BAM file.
+#### Generating the QC report with MultiQC
 
-- RNA-seq QC metrics 
-- Discuss a bad QC report 
-- Using MultiQC to synthesize a QC report 
+Viewing each the output from the aligner, `CollectRNASeqMetrics`, `MarkDuplicates`, etc. would obvbiously be very tideous, so we need some way of aggregating all of these data into one place so that we can compare across the whole dataset. 
 
-<br>
+`MultiQC` is a very useful tool that synthesizes interactive reports using the output from many commonly used bioinformatics tools. When `MultiQC` is called on a directory, it will search through all subdirectories for file types that it recognizes, and include them in its report. The result is a browsable, sharable, and interactive HTML file containing all of the QC results from our entire dataset. 
 
-### Duplicate removal 
+`MultiQC` is simply run in the command line by specifying the oparent directory where all of the fikles you wish to be included in your report are located. 
+```bash
+multiqc . 
+```
+
 
 
 
