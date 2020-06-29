@@ -1,5 +1,10 @@
+# Part 1 - Working with FASTQ files
 
-### FASTQ file format
+### Learning objectives: 
+- Understand the FASTQ file format and the formatting sequence information it stores
+- Learn how to perform basic operations on FASTQ files in the command-line 
+
+## FASTQ file format
 
 FASTQ files are arguably the workhorse format of bioinformatics. FASTQs are used to store sequence reads generated in next-generatoon sequencing (NGS) experiments. Similarly to FASTA files, FASTQ files contain a herder line, followed by the sequence read, however individual quality of base calls from the sequencer are included for each record in a FASTQ file. 
 
@@ -46,7 +51,9 @@ Most downstream analysis tools will recognize that such files are paired-end, an
 
 It is critical that the R1 and R2 files have **the same number of records in both files**. If one has more records than the other, which can sometimes happen if there was an issue in the demultiplexing process, you will experience problems using these files as paired-end reads in downstream analyses. 
 
-### Working with FASTQ files 
+## Working with FASTQ files 
+
+### Basic operations 
 
 While you don't normally need to go looking within an individual FASTQ file, it is very important to be able to manipulate FASTQ files in you are going to be doing any more involved bioinformatics. There are a lot of operations we can do with a FASTQ file to gain more information about our experiment, and being able to interact with FASTQ files can be useful for troubleshooting problems that might come up in your analyses. 
 
