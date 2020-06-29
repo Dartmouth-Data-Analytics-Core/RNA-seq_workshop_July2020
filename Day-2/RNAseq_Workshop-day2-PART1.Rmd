@@ -70,7 +70,7 @@ If you collected 3'-end data, e.g. with the Lexogen QuantSeq assay, you should n
 
 ### Read in sample metadata
 
-We also need to read in the sample annotation that we downloaded from the SRA, which contains sample labels, experimental labels, and sequencing run information, etc. 
+We also need to read in the sample annotation (metadata) that we downloaded from the SRA, which contains sample labels, experimental labels, and sequencing run information, etc. 
 ```{r}
 # read in the file from the SRA that has sample/experimental labels 
 sra_res <- read.csv("/Users/OwenW/Desktop/sra_result.csv", row.names=1)
@@ -97,7 +97,10 @@ colData <- colData[order(colData$SRR),]
 head(colData)
 ```
 
-Now that we have the sample metadata loaded, we need to clean up some variables to get the information we need for downstream analysis. 
+Now that we have the sample metadata loaded, we need to clean up some variables to get the information we need for downstream analysis. In this case the experiment title tells us which group each sample belongs, this is important so that we can make the correct comparisons later in our analysis. This information is used to create our experimental design.
+
+The design formula lets DESeq2 know your experimental design and what groups you want to compare in the differential expression analysis. It requires a variable that is present in colData to be specified, and will be used for the statistical analysis in DESeq2. This variable should be a (`factor`) class variable, with the reference group for your comparison set as the first level of the variable.
+
 ```{r}
 # lets chop up the 'Experiment.Title' variable to extrat the experimental group labels for the experiment 
 colData$group <- sapply(as.character(colData$Experiment.Title), function(x) strsplit(x, "1_")[[1]][2])
@@ -119,8 +122,7 @@ Three elements are required to generate the (`DESeqDataSet`):
 - matrix of raw counts
 - sample metadata (colData)
 - a design formula 
-
-The design formula let's DESeq2 know your experimental design and what groups you want to compare in the differential expression analysis. It requires a variable that is present in colData to be specified, and will be used for the statistical analysis in DESeq2. This varuiable should be a (`factor`) class variable, with the reference group for your comparison set as the first level of the variable. 
+ 
 
 Lets create the (`DESeqDataSet`) object. 
 ```{r}
@@ -166,7 +168,7 @@ Before comparing expression levels of specific genes between samples, and perfor
 
 1. Library size/sequencing depth  
 
-Although we generally try to pool samples together at similar concentrations in a sequencing run, some samples will end up being sequenced more than others, leading to slight differences in how many reads are produced for that sample, and therefore sequencing depth and size. Furthermore, if samples are sequenced on separate runs, their sequencing depths may be very different. If we don't account for this variation in sequencing depth, we might conclude some genes are expressed at greater levels in a samplen that has simply been sequenced to a higher depth.  
+Although we generally try to pool samples together (each sample is tagged with a barcode and samples are combined) at similar concentrations in a sequencing run, some samples will end up being sequenced more than others, leading to slight differences in how many reads are produced for that sample, and therefore sequencing depth and size. Furthermore, if samples are sequenced on separate runs, their sequencing depths may be very different. If we don't account for this variation in sequencing depth, we might conclude some genes are expressed at greater levels in a sample that has simply been sequenced to a higher depth.  
 
 ![Library size example](../figures/library_size.png)
 
@@ -184,7 +186,7 @@ To correct for library size AND library composition, DESeq2 uses a algorithm ref
 4. Subtract average log count value from log of count for each cell (due to the laws of working with logarithms, this is essentially calculating the ratio of the counts for gene X in 1 sample to the average counts for gene X across all samples)
 5. Calculate the median of the ratios in each sample (column)
 6. Take exponents of medians to get the **size factors** for each sample/library. 
-7. Divide the count for each gene in each sample by the scaling factor calculated for that sample. 
+7. Divide the count for each gene in each sample by the size factor calculated for that sample. 
 
 This procedure will generate a matrix of read counts that are corrected for both **library size** and **library composition**, and are stored in our (`DESeqDataset`) object. DESeq2 uses the function (`estimateSizeFactors()`) to perform this algorithm and calculate size factors for each sample. Lets do this for our (`DESeqDataset`). 
 ```{r}
@@ -193,7 +195,7 @@ dds <- estimateSizeFactors(dds)
 
 Note: [This video](https://www.youtube.com/watch?v=UFB993xufUU) from StatQuest provides an excellent summary of the steps performed by (`estimateSizeFactors()`) in order to calculate these size factors.  
 
-Once we have calculated the size factors, it can be helpful to look at their distribution to get a feel for how they vary and how much normalization between the sample is required. 
+Once we have calculated the size factors, it can be helpful to look at their distribution to get a feel for how they vary and how much normalization between the samples is required. 
 ```{r}
 sizeFactors(dds)
 hist(sizeFactors(dds), 
@@ -243,34 +245,34 @@ DUSP1 expression is consistently higher in the DEX samples than the untreated, s
 
 ### Exploratory data analysis & quality control
 
-Before we run the differential expression analysis, we should explore our dataset to learn a little more about it. Importantly, we should determine how samples are related to each other based on their gene expression profiles, make sure our replicates cluster together, assess the potential for any batch effects that may exist, and more generally build expectations for the DE analysis. For these exploratory analyses, we use several unsupervised methods to assess how our samples cluster relative to one another. These unsupervised approached include **principal components analysis (PCA)**, and **unsupervised Hierarchical clustering** and are commonly referred to as *data reduction* appraoches. 
+Before we run the differential expression analysis, we should explore our dataset to learn a little more about it. Importantly, we should determine how samples are related to each other based on their gene expression profiles, ensure replicates cluster together, assess the potential for any batch effects (technical variation between samples run on different machines or by different technicians) that may exist, and more generally build expectations for the DE analysis. For these exploratory analyses, we use several unsupervised methods to assess how our samples cluster relative to one another. These unsupervised approached include **principal components analysis (PCA)**, and **unsupervised Hierarchical clustering** and are commonly referred to as *data reduction* appraoches. 
 
 ### Principal components analysis (PCA)
 
-PCA is a mathematical procedure that calculates vectors which explain the most varition in the dataset (in this case, variation in gene expression), and places samples along these vectors. We would expect samples that are more similar to each other, e.g. replicates, to be very close to each other along these axes of varaition, while we might expect samples in different treatment groups to be further away. Each vector that is calculated is called a principal component (PC), and each principal component explains less varaition in our dataset than the last. e.g, PC1 explains more variation in gene expression differences between the samples than PC2. If we plot PC1 against PC2, samples will 'cluster' with other samples that have similar gene expression profiles, and be further away from samples with more distant expression profiles. 
+PCA is a mathematical procedure that calculates vectors that explain varition in the dataset (in this case, variation in gene expression), and orders samples along these vectors. We would expect samples that are more similar to each other, e.g. replicates, to be very close to each other along these axes of varaition, while we might expect samples in different treatment groups to be further away. Each vector that is calculated is called a principal component (PC), and each principal component explains less varaition in our dataset than the last. e.g, PC1 explains more variation in gene expression differences between the samples than PC2. If we plot PC1 against PC2, samples will 'cluster' with other samples that have similar gene expression profiles, and be further away from samples with more distant expression profiles. 
 
 ![PCA example](../figures/pca_example.png)
 
 Again, StatQuest has an excellent [video](https://www.youtube.com/watch?v=_UVHneBUBW0) that explains the fundamental concepts of PCA, and provoides more details how to the PCs themselves are calculated. 
 
-To perform mathematical procedures such as PCA, it is better to work with a transformed version of the counts, rather than the original untransformed values. DESeq2 actually utilizes its own transformation procedure, called the regularized logatrithm (rlog) implemented in the (`rlog()`) function. The rlog is similar in principle to a standard log transformation of the data, but is able to more appropriately transform the counts for gene with low expression values. 
+To perform mathematical procedures such as PCA, it is better to work with a transformed version of the counts, rather than the original untransformed values. DESeq2 actually utilizes its own transformation procedure, called the regularized logatrithm (rlog) implemented in the (`rlog()`) function. The rlog is similar in principle to a standard log transformation of the data, but is able to more appropriately transform the counts for genes with low expression values. 
 
-DESeq2 is also capable of implementing the variance stabilising transformation (VST) for count data, and is generally suggested for larger datasets due to increase speed. 
+DESeq2 is also capable of implementing a variance stabilising transformation (VST) for count data, this is generally recommended for larger datasets due to increased speed. 
 
-For this analysis, we will use the rlog, which produces values on the log2 scale and are also normalized for library size during the rlog procedure. Lets perform the rlog transformation on our data. 
+For this analysis, we will use the rlog, which produces values on the log2 scale that are also normalized for library size during the rlog procedure. Lets perform the rlog transformation on our data. 
 ```{r}
 rld <- rlog(dds, blind = FALSE)
 head(assay(rld))
 ```
 
-We can illustrate the benefit of using the rlog over standard log transformation (+ a pseudo-count for genes with 0 counts) by comparing the transformed values for two samples against each other. 
+We can illustrate the benefit of using the rlog over standard log transformation (+ a pseudo-count for genes with 0 counts where the log of 0 is infinity) by comparing the transformed values for two samples against each other. 
 ```{r}
 par(mfrow=c(1,2))
 plot(log2(cts[,1]+1), log2(cts[,2]+1), col = "cornflowerblue", xlab = "Sample 1", ylab = "Sample 2", main = "Log2 + 1")
 plot(assay(rld)[,1], assay(rld)[,2], col = "indianred", xlab = "Sample 1", ylab = "Sample 2", main = "rlog")
 ```
 
-We can use these transformed values to investigate how many features (genes) in our dataset exhibit variability across samples. This is useful to know as we only want to use variable features for PCA, since genes that don't explain any variation in the dataset aren't useful for helping us explore differences between the samples. 
+We can use these transformed values to investigate how many features (genes) in our dataset exhibit variability across samples. This is useful to know as we only want to use variable features for PCA. Genes that don't explain any variation in the dataset aren't useful for helping us explore differences between the samples. 
 ```{r}
 # calculate gene expression level variance between samples 
 var <- rev(rowVars(assay(rld))[order(rowVars(assay(rld)))])
@@ -280,7 +282,7 @@ plot(var, las = 1, main="Sample gene expression variance", xlab = "Gene", ylab =
 abline(v=1000, col="red") ; abline(v=500, col="green") ; abline(v=250, col="blue")
 ```
 
-Looks like 500 is approximately the number of genes at which the variance starts to spike upwards, so this is a good number of variable features to use. Lets restrict the dataset to these genes for purposes of the PCA. Now lets extract and visualize the variance explained by each PC to determine which are most informative. 
+At around 500 the variance starts to spike upwards, so this is the number of variable features (genes) to use. Lets restrict the dataset to 500 genes for purposes of the PCA. Now lets extract and visualize the variance explained by each PC to determine which are most informative. 
 ```{r}
 # modify variable feature number to be used in PCA and hierachical clutering based on no. of most variable features 
 var_feature_n <- 500 
@@ -324,13 +326,13 @@ plot(pca_df[, 1], pca_df[, 2],
 text((pca_df[, 2])~(pca_df[, 1]), labels = pca_df$group, cex=0.6, font=2, pos=4)
 ```
 
-Looking at the plot, we can see some clear clustering by treatment group for some of the samples. For example, **untreated** samples appear to have much lower PC1 values than all the **Dex** samples, suggesting there some of the largest variability in gene expression differences between samples in this dataset explains differences between **untreated** and **Dex** treated samples, and we should expect the most substantial differential expression to be found for the **untreated** vs **Dex** analysis. 
+Looking at the plot, we can see some clear clustering by treatment group for some of the samples. For example, **untreated** samples appear to have much lower PC1 values than all the **Dex** samples, suggesting that some of the largest variability in gene expression differences between samples in this dataset explains differences between **untreated** and **Dex** treated samples. Therefore we expect the most substantial differential expression to be found for the **untreated** vs **Dex** analysis. 
 
-The **Alb** treated samples, and the co-treated samples **(Alb_Dex)** do not seem to consistently cluster along PC1 and PC2. One explanation for this could be that treatment with **Alb** or co-tx with **Alb + Dex** do not lead to consistent gene expression changes across study subjects. This is often the case with *in vivo* data sets, rather than those collected in *in vitro* systems such as cell culture, and may mean that a greater number of replicates is required to accurately assess the impact of such treatment of gene expression, as there are usually a greater number of uncontrollable variables in *in vivo* datasets (e.g. genotype). 
+The **Alb** treated samples, and the co-treated samples **(Alb_Dex)** do not seem to consistently cluster along PC1 and PC2. One explanation for this could be that treatment with **Alb** or co-treatment with **Alb + Dex** have incocnsistent effects on gene expression across study subjects. This is often the case with *in vivo* data sets, rather than those collected in *in vitro* systems such as cell culture. This could indicate that a greater number of replicates is required to accurately assess the impact of such treatment on gene expression, as there are usually a greater number of uncontrollable variables in *in vivo* datasets (e.g. genotype). 
 
-Another explanation could be there is another variable that explains a substantial amount of variability in the dataset, which is unrelated to sample groupings, such as a batch effect, that is driving the clustering observed in the PCA plot. For example, if the two Alb tx samples with high values for PC1 and PC2 were known to have been processed in a different batch to the Alb tx sample with lower values for these PCs, we could infer that the re is a batch effect that is driving the differences between these samples, rather than an interesting biological factor. Since no batch information was decribed or provided for this dataset, this may not be the case for these data, however they still as a useful example for exploring this concept. 
+Another explanation could be there is another variable, unrelated to sample groupings by treatment, that explains a lot of the variability in the dataset, such as a batch effect, that is driving the clustering observed in the PCA plot. For example, if the two Alb treated samples with high values for PC1 and PC2 were known to have been processed in a different batch to the Alb treated sample with lower values for these PCs, we could infer that there is a batch effect that is driving the differences between these samples. Unfortunately, no batch information was provided for this dataset, so we cannot confidnetly attribute the lack of clustering to batch effects. 
 
-It is interesting that 4 samples, 1 from each tx group, have much higher PC2 values than all other samples. This is a pattern we might expect to see if these 4 samples were processed in a separate batch, and the gene expression variation captured by PC2 is related to the batch effect, rather than our biological factor of interest (tx group). For purposes of this example, lets create a fake variable for sample batch, and include this on the PCA plot. 
+It is interesting that 4 of the samples, 1 from each treatment group, have much higher PC2 values than all other samples. This is a pattern we might expect to see if these 4 samples were processed in a separate batch, and the gene expression variation captured by PC2 is related to the batch effect, rather than our biological factor of interest (treatment group). For purposes of this example, lets create a fake variable for sample batch, and include this on the PCA plot. 
 
 ```{r}
 pca_df$batch <- NA
@@ -355,10 +357,10 @@ legend(1.5, 11.5, levels(pca_df$group), pch = 16, col = pca_df$col)
 text((pca_df[, 2])~(pca_df[, 1]), labels = pca_df$group, cex=0.6, font=2, pos=4)
 ```
 
-If this was a real batch variable, this would clearly indicate a batch effect. If batch is not accounted for in the differential expression analysis, these samples will increase the per gene variance (and therefore dispersion paracmeter in the negative-binomial model) and prevent the detection of genes that are truly differentially expressed between our experimental conditions of interest, effectively reducing statistical power. This could lead to both false-negatives and false-positives.
+If this was a real batch variable, this would clearly indicate a batch effect. If batch effects are not accounted for in the differential expression analysis, these samples will increase the per gene variance (and therefore dispersion paracmeter in the negative-binomial model) and prevent the detection of genes that are truly differentially expressed between our experimental conditions of interest, effectively reducing statistical power. This could lead to both false-negatives and false-positives.
 
 If you detect a batch effect in your data, you can try to: 
-* use a statistical prcedure to remove the batch effect from your data
+* use a statistical procedure to remove the batch effect from your data
 * adjust for batch as a term in your statistical model when running differential expression 
 * remove the samples driving the batch effect, if you have a particular reason to suspect these specific samples 
 
@@ -370,9 +372,9 @@ If your experiment includes multiple batches, you should always include them in 
 
 Hierarchical clustering is another complimentary approach to explore the relationships between your samples. While supervised clustering approaches exist, we will perform an unsupervised analysis so that we do not impose any restrictions on the clustering of the samples. 
 
-Hierachical clustering is often associated with heatmaps, as it is a useful way to explore the results of hierachical clustering. Here we represent genes are rows, and individual samples as columns. The denrograms on the rows and the columns represent the 'distances' calculated between each of the genes/samples. Presenting the data in this way is useful as it allows us to identify samples whose gene expression programs are similar to each other, but also modules of genes that change similarly across our samples, and may share some common function of interest. 
+Hierachical clustering is often associated with heatmaps, as it is a useful way to explore the results of hierachical clustering. Here we represent genes are rows, and individual samples as columns. The denrograms on the rows and the columns represent the 'distances' calculated between each of the genes/samples. Presenting the data in this way is useful as it allows us to identify samples whose patterns of gene expression are similar to each other, but also modules of genes that change in a similar way across our samples, and may share some common function of interest. 
 
-The first step in a hierachical clustering analaysis is to *scale your data*. This means that expression levels are all transformed onto the same scale before clustering. This is important to do as we can only visualize so many colors at once, and a very highly expressed gene would mean that all the other genes would essentially invisible on this scale. Scaling for clustering in this way is typically performed by calculating Z-scores, where the mean for each gene across all the samples is subtracted from each of the individual expression values for each gene, which centers the values around 0. We then divide these values by the standard deviation to make sure the data is more tightly grouped, which helps us represent lots of genes in the same scale. 
+The first step in a hierachical clustering analaysis is to *scale your data*. This means that expression levels are all transformed onto the same scale before clustering. This is important to do as we can only visualize so many colors at once, and a very highly expressed gene would mean that all the other genes would essentially invisible on this scale. Scaling for clustering in this way is typically performed by calculating Z-scores, where the mean for each gene across all the samples is subtracted from each of the individual expression values for each gene, this centers the expression values around 0. We then divide these values by the standard deviation to make sure the data is more tightly grouped, and we can represent lots of genes in the same scale. 
 
 ![Hierarchical clustering example](../figures/heatmaps.png)
 
@@ -457,7 +459,7 @@ ht1 = Heatmap(mat_scaled, name = "Expression", col = col,
 draw(ht1, row_title = "Genes", column_title = "Top 500 most variable genes")
 ```
 
-There does indeed seem to be relatively good clustering between untreated and Dex samples, suggesting there are unique gene expression programs defining the Dex samples from the untreated. However, one of these samples in the Dex group seems to be clustered further away from the other Dex samples. Why could this be, perhaps it is the sample that clustered away from the other samples on the PCA. We can add an annotation bar for the fake batch effect we created earlier to this plot to help us figure this out. 
+There does indeed seem to be relatively good clustering between untreated and Dex samples, suggesting there are unique gene expression programs defining the Dex samples from the untreated. However, one of these samples in the Dex group seems to be clustered further away from the other Dex samples. This could be the Dex treated sample that clustered away from the other Dex treated samples on the PCA. We can add an annotation bar for the fake batch effect we created earlier to this plot to confirm this. 
 
 ```{r}
 colData_sub$batch <- "Batch 1"
@@ -481,9 +483,9 @@ ht2 = Heatmap(mat_scaled, name = "Expression", col = col,
 draw(ht2, row_title = "Genes", column_title = "Top 500 most variable genes")
 ```
 
-It seems that this is in fact the case, and these 2 samples are also outliers based on the hierachical clustering, which would support the presence of a batch effect if these data were infact collected in multiple batches. 
+Based on our newly labeled plot it does seem that these 2 samples are outliers based on the hierachical clustering, which would support the presence of a batch effect if these data were infact collected in multiple batches. Again without the metadata to indicate this is a batch effect using a method to correct for a batch effect is inappropriate. In this case I would reach out to the seqeuncing center or authors of the paper where the data was published and ask for additional metadata to confirm our suspicion about batch effects in this data.
 
-We may also wish to cluster based on the pairwise correlations between gene expression samples, as this is again another complimenatry aproach to help us understand how the samples gene expression programs are rleated to each other. 
+We may also wish to cluster based on the pairwise correlations between gene expression samples, another complimenatry aproach to help us understand how patterns of gene expression in the samples are rleated to each other. 
 
 ```{r}
 rld_cor <- cor(assay(rld)[topVarGenes[1:50], ind_to_keep])   
