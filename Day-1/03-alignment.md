@@ -118,15 +118,15 @@ Once you have generated an index, it is best not to do anything with it, except 
 We are ready to align our reads to the genome. 
 
 ```bash
-STAR --genomeDir /scratch/rnaseq1/hg38_chr22_index \
---readFilesIn trimed_R1.fastq.gz trimed_R2.fastq.gz \
+STAR --genomeDir /scratch/rnaseq_wksp/hg38_chr22_index \
+--readFilesIn SRR1039508_1.trim.fastq.gz SRR1039508_1.trim.fastq.gz \
 --readFilesCommand zcat \
---sjdbGTFfile /scratch/rnaseq1/Homo_sapiens.GRCh38.97.chr22.gtf \
+--sjdbGTFfile /scratch/rnaseq_wksp/Homo_sapiens.GRCh38.97.chr22.gtf \
 --runThreadN 10 \
 --outSAMtype SAM \
 --outFilterType BySJout \
---outFileNamePrefix SRR1 \
---sjdbOverhang 100
+--outFileNamePrefix SRR1039508_ \
+--sjdbOverhang 99
 ```
 
 > *NOTE:* I usually set `outSAMtype` to `BAM SortedByCoordinate`, so that I do not need to convert the defaulkt SAM file output by STAR to BAM, then sort it. However, since we want to look inside the file at the alignments, we are creatuing a SAM first, and will convert to a BAM afterwards. 
@@ -158,48 +158,51 @@ Once the alignment has finished, you should have a number of new files in your d
 It is very important to do a detailed quality control review of your alignments across all your samples to identify any potential issues. We are going to (later) build a detailed multi-sample QC report using an independent tool, however we can have a quick look at the `Log.final.out` file from STAR as this contains the major mapping stats that we want to look at to assess how well reads were mapped to the reference. 
 
 ```bash
-cat x.final.out 
+cat SRR1039508.Log.final.out
 ``` 
 
 **Working with SAM/BAM files**  
 We can also have a look around our SAM file to get to know it a bit better. Several tools exist that enable you to perform operations on SAM/BAM files. `Samtools` is perhaps the most widely used of these, and is used widely. You can find the documentation [here](http://www.htslib.org/doc/samtools.html). 
 
-For example, we may wich to sort our BAM file by coordinate (required by several tools that accept BAM as input):
+For example, we may wich to sort our SAM file by coordinate (required by several tools that accept BAM as input):
 ```bash
-samtools sort s.bam
+samtools sort SRR1039508.Aligned.out.sam -o SRR1039508.Aligned.out.sorted.sam
 ``` 
 
-We may then wish to index our BAM, which will create a file with the same name, but the suffix `.bai`. An index 
+In practice, we can ask programs like STAR to give us indexed and sorted BAM files as output from the alignment, however this is not the case with all aligners. Now that we've looked at the alignments, we should convert our SAM to BAM for indexing and downstream analysis 
 ```bash
-samtools index s.sorted.bam
+samtools view -S -b SRR1039508.Aligned.out.sorted.sam > SRR1039508.Aligned.out.sorted.bam
 ``` 
-In practice, we can ask programs like STAR to give us indexed and sorted BAM files as output from the alignment, however this is not the case with all aligners. 
+
+We should also index this BAM, which will create a file with the same name, but the suffix `.bai`. 
+```bash
+samtools index SRR1039508.Aligned.out.sorted.bam
+``` 
 
 Another useful thing we might want to do with our BAM file is to count how many alignments have specific FLAG types (unique alignments, secondary, unmapped, properly paired). 
 ```bash
-samtools flagstat s.sorted.bam 
+samtools flagstat SRR1039508.Aligned.out.sorted.bam
 ``` 
 
 We can even use the specific FLAGs in the BAM file to extract specific alignments. For example, you might want to produce BAM files where all of the reads mapping to the forward and reverse strands are in separate files: 
 ```bash
 # use -f option in view to filter for reads with FWD alignment flag (20)
-samtools view -f 20 s.sorted.FWD.bam
+samtools view -f 20 SRR1039508.Aligned.out.sorted.bam -o SRR1039508.Aligned.out.sorted.FWD.bam
+samtools view -c SRR1039508.Aligned.out.sorted.FWD.bam
 
 # use -f option in view to filter OUT reads with FWD alignment flag (20), ultimately giving REV reads 
-samtools view -F 20 s.sorted.REV.bam
+samtools view -F 20 SRR1039508.Aligned.out.sorted.bam -o SRR1039508.Aligned.out.sorted.REV.bam
+samtools view -c SRR1039508.Aligned.out.sorted.REV.bam
+
 ``` 
+samtools view -c -f 20 SRR1039508.Aligned.out.sorted.bam 
 
 You might just want to count how many reads have a particular SAM flag
 ```bash
 # count how many reads are NOT a primary alignment (FLAG=256)
-samtools view -c -F 256 s.sorted.bam
+samtools view -c -F 256 SRR1039508.Aligned.out.sorted.REV.bam
 ```
 
-Finally, if we wish, we could convert out SAM to a BAM (usually I just go straight to BAM..)
-```bash
-# count how many reads are NOT a primary alignment (FLAG=256)
-samtools view -c -F 256 s.sorted.bam
-```
 
 <br>
 
