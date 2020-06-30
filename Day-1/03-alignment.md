@@ -74,16 +74,6 @@ N = skipping
 
 So for example, alignment in row 3 of our SAM file example above (`5S6M`) would describe an alignment where 5 bases are soft-clipped, followed by 6 matching bases. 
 
-Now lets have a look at the header for our SAM file:
-```bash 
-samtools view -H tmp.chr22.sam  | head
-```
-
-Lets also have look at the first few alignment records in our BAM file
-```bash 
-samtools view tmp.chr22.sam  | head
-```
-
 #### STAR (Spliced Transcripts Alignment to a Reference)
 STAR is a very flexible, efficient, and quick read aligner. It uses a method of seed searching, clustering, stitching, and scoring to find the most probable match in the reference sequence for each read. A seed is the longest possible match between a read and the reference sequence. By using multiple seeds on a single read, reads are able to span hundreds of base pairs across splice junctions. Once a read is mapped into multiple seeds STAR attempts to map the remaining unmapped portions of the read by extending the seed match allowing for indels and mismatches. Any portion of the read that cannot be mapped is assumed to be contamination, leftover adapter sequences, or an incorrect base call and these bases are clipped (called soft-clipping). I encourage you to go look through the [user manual](https://github.com/alexdobin/STAR/blob/master/doc/STARmanual.pdf) if you plan to use STAR. 
 
@@ -91,14 +81,14 @@ STAR is a very flexible, efficient, and quick read aligner. It uses a method of 
 
 Before running an alignment with STAR, you need to create an index of your reference genome, and specify the location of this index when you run the aligner. The index is in principle similar to how one might index a book, so that specific items or information can be found more quickly. For the genome index, we are indexing the genome so that the aligner can narrow down where a read may map to, help us to quickly index the genome and speed up mapping. 
 
-For the purposes of this workshop and saving time, we have pre-built created a small genome index consisting of only chromosome 22. In practice you would use the entire genome. Generating the index can be time consuming so we won't run it now, but the command to do this would be: 
+For the purposes of this workshop and saving time, we have pre-built created a small genome index consisting of only chromosome 20, and will be using a subset of the total reads sequenced for sample `SRR1039508` which are known to align to chromosome 20. In practice you would use the entire genome to generate the index. This step is time consuming so we won't run it now, but the command used to create the index we will use is: 
 ```bash 
 STAR --runThreadN 16 \
 --runMode genomeGenerate \
---genomeDir hg38_chr22_index \
---genomeFastaFiles Homo_sapiens.GRCh38.dna.primary_assembly.chr22.fa \
---sjdbGTFfile Homo_sapiens.GRCh38.97.chr22.gtf \
---sjdbOverhang 99 \
+--genomeDir hg38_chr20_index \
+--genomeFastaFiles Homo_sapiens.GRCh38.dna.primary_assembly.chr20.fa \
+--sjdbGTFfile Homo_sapiens.GRCh38.97.chr20.gtf \
+--genomeSAindexNbases 11
 ```
 
 Option details: 
@@ -115,18 +105,17 @@ Once you have generated an index, it is best not to do anything with it, except 
 
 #### Aligning the reads
 
-We are ready to align our reads to the genome. 
+We are ready to align our reads to the genome, using the subset of reads sequenced for sample `SRR1039508` that are known to align to chromosome 20 (files: `SRR1039508_1.trim.chr20.fastq.gz` and `SRR1039508_2.trim.chr20.fastq.gz`). 
 
 ```bash
-STAR --genomeDir /scratch/rnaseq_wksp/hg38_chr22_index \
---readFilesIn SRR1039508_1.trim.fastq.gz SRR1039508_1.trim.fastq.gz \
+STAR --genomeDir hg38_chr20_index \
+--readFilesIn SRR1039508_1.trim.chr20.fastq.gz SRR1039508_2.trim.chr20.fastq.gz \
 --readFilesCommand zcat \
---sjdbGTFfile /scratch/rnaseq_wksp/Homo_sapiens.GRCh38.97.chr22.gtf \
+--sjdbGTFfile Homo_sapiens.GRCh38.97.chr20.gtf \
 --runThreadN 10 \
 --outSAMtype SAM \
 --outFilterType BySJout \
---outFileNamePrefix SRR1039508_ \
---sjdbOverhang 99
+--outFileNamePrefix SRR1039508.
 ```
 
 > *NOTE:* I usually set `outSAMtype` to `BAM SortedByCoordinate`, so that I do not need to convert the defaulkt SAM file output by STAR to BAM, then sort it. However, since we want to look inside the file at the alignments, we are creatuing a SAM first, and will convert to a BAM afterwards. 
@@ -142,7 +131,7 @@ Option details:
 - `--readFilesCommand`: uncompression command to apply to read files
 - `--outFileNamePrefix`: prefix for outfiles generated in the run
 
-Now, simply wait...
+Now, wait...
 
 There are a number of other options you may wish to specify, dependning on your application and downstream analysis. These are the barebones options suggested for RNA-seq and optimized for mammalian genomes. Again, I encourage you to go look through the [user manual](https://github.com/alexdobin/STAR/blob/master/doc/STARmanual.pdf) if you plan to use STAR. 
 
@@ -164,12 +153,22 @@ cat SRR1039508.Log.final.out
 **Working with SAM/BAM files**  
 We can also have a look around our SAM file to get to know it a bit better. Several tools exist that enable you to perform operations on SAM/BAM files. `Samtools` is perhaps the most widely used of these, and is used widely. You can find the documentation [here](http://www.htslib.org/doc/samtools.html). 
 
-For example, we may wich to sort our SAM file by coordinate (required by several tools that accept BAM as input):
+Lets use `Samtools` to have a look at the header for our SAM file
+```bash 
+samtools view -H SRR1039508.Aligned.out.sam  | head
+```
+
+Lets also have look at the first few alignment records in our BAM file
+```bash 
+samtools view SRR1039508.Aligned.out.sam | head
+```
+
+It is common to sort SAM/BAM files as this is required by many downstream tools that take alignment files as input. 
 ```bash
 samtools sort SRR1039508.Aligned.out.sam -o SRR1039508.Aligned.out.sorted.sam
 ``` 
 
-In practice, we can ask programs like STAR to give us indexed and sorted BAM files as output from the alignment, however this is not the case with all aligners. Now that we've looked at the alignments, we should convert our SAM to BAM for indexing and downstream analysis 
+In practice, we can ask programs like STAR to give us indexed and sorted BAM files as output from the alignment, however this is not the case with all aligners. Now that we've looked at the alignments, we should convert our SAM to BAM for indexing and downstream analysis. 
 ```bash
 samtools view -S -b SRR1039508.Aligned.out.sorted.sam > SRR1039508.Aligned.out.sorted.bam
 ``` 
@@ -186,25 +185,20 @@ samtools flagstat SRR1039508.Aligned.out.sorted.bam
 
 We can even use the specific FLAGs in the BAM file to extract specific alignments. For example, you might want to produce BAM files where all of the reads mapping to the forward and reverse strands are in separate files: 
 ```bash
-# use -f option in view to filter for reads with FWD alignment flag (20)
-samtools view -f 20 SRR1039508.Aligned.out.sorted.bam -o SRR1039508.Aligned.out.sorted.FWD.bam
+# use -F option in view to filter out reads with REV alignment flag (16), leaving only FWD alignments 
+samtools view -F 16 SRR1039508.Aligned.out.sorted.bam -o SRR1039508.Aligned.out.sorted.FWD.bam
 samtools view -c SRR1039508.Aligned.out.sorted.FWD.bam
 
-# use -f option in view to filter OUT reads with FWD alignment flag (20), ultimately giving REV reads 
-samtools view -F 20 SRR1039508.Aligned.out.sorted.bam -o SRR1039508.Aligned.out.sorted.REV.bam
+# use -f option in view to kepp reads with REV alignment flag (16), leaving only REV reads 
+samtools view -f 16 SRR1039508.Aligned.out.sorted.bam -o SRR1039508.Aligned.out.sorted.REV.bam
 samtools view -c SRR1039508.Aligned.out.sorted.REV.bam
-
 ``` 
-samtools view -c -f 20 SRR1039508.Aligned.out.sorted.bam 
 
-You might just want to count how many reads have a particular SAM flag
+You might just want to go straight to counting how many reads have a particular SAM flag
 ```bash
 # count how many reads are NOT a primary alignment (FLAG=256)
 samtools view -c -F 256 SRR1039508.Aligned.out.sorted.REV.bam
 ```
-
-
-<br>
 
 ## Viewing Alignments in IGV
 
@@ -215,10 +209,10 @@ Here, we will create a small subset of a BAM file, download it onto our local ma
 Lets go ahead and subset our BAM file for reads aligning only to chromosome 22. We also need to create an index. 
 ```bash
 # subset for reads just on chr 22 (to make it smaller)
-samtools view -b -@ 8 -o chr22.bam SRR1039508_1.Aligned.sortedByCoord.out.bam 22
+samtools view -b -@ 8 -o chr20.bam SRR1039508.1.Aligned.sortedByCoord.out.bam 20
 
 # index your new bam file 
-samtools index chr22.bam
+samtools index chr20.bam
 ``` 
 
 Now download the files onto your local machine, so that you can load them into the IGV web app. 
@@ -229,21 +223,22 @@ cd rnaseq_wrksp/
 
 # download the file using secure copy (scp)
 ##### modify this for your discovery ID, AND the directory your in 
-scp d41294d@discovery7.dartmouth.edu:/dartfs-hpc/rc/lab/G/GMBSR_bioinfo/workshops/rnaseq-july20/data/bam/chr22.bam* .
+scp d41294d@discovery7.dartmouth.edu:/dartfs-hpc/rc/lab/G/GMBSR_bioinfo/workshops/rnaseq-july20/data/bam/chr20.bam* .
 ##### you will be promoted for your password for discovery/polaris 
 
 # you may also need to modify the permissions 
-chmod a+rwx chr22*
+chmod a+rwx chr20*
 ```
 
 Now navigate to the IGV web app, and follow the below steps:  
 1. Under *'Genomes'* in the top right, select *'GRCh38/hg38'*
 2. Under *'Tracks'* select *'Local file'*, then highlight both the .bam and .bai 
-3. Navigate to chromosome 22, and zoom in on ...
+3. Navigate to chromosome 20, and zoom in to see genes and individual alignments
 4. Use the setting at the side of the track to set colors by *read strand*
+5. In the search bar, type in gene `SAMHD1`
 
 ![IGV](../figures/igv_webapp.png)
 
-- Can you find an example of a highly expressed gene?
 - What do you notice about the orientation of the aligning reads? 
-- Why might this cause ambiguity in read quantification for genes that overlap?  
+- Do you think this gene is expressed in this sample? What about relative to nearby genes?
+- Is there potentially going to be any ambiguity in read quantification for `SAMHD1`, given that our library was generared using a **stranded** protocol? 
