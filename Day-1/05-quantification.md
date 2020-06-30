@@ -6,6 +6,12 @@
 - Learn how to quantify read counts using `htseq-count`
 - Create a gene expression matrix from read count quantifications for the entire dataset
 
+Make a new directory: 
+```bash 
+mkdir quant
+cd quant
+```
+
 ## Principle of quantifying read counts for RNA-seq 
 For most downstream analyses in RNA-seq, especially differential expression, we care about how many reads aligned to a specific gene, as this tells us about its expression level, which we can then compare to other samples. Inherently, this means that we want to make these data *count-based*, so that we can use statistical models to compare these counts between our experimental conditions of interest. 
 
@@ -31,8 +37,8 @@ htseq-count \
 	-f bam \
 	-s no \
 	-r pos \
-	./pipeline.out/alignment/${i}Aligned.sortedByCoord.out.bam \
-	/dartfs-hpc/rc/lab/G/GMBSR_bioinfo/genomic_references/human/ensembl-annotations/Homo_sapiens.GRCh38.97.gtf > ${i}.htseq-counts
+	./../alignment/SRR1039508.Aligned.out.sorted.bam \
+	./../../refs/Homo_sapiens.GRCh38.97.chr20.gtf > SRR1039508.htseq-counts
 ```
 
 There are numerous settings that can be tweaked and turned on/off in htseq-count. I strongly recommend you **read the manual** before running htseq-count so that you understand all the default options and available settings. 
@@ -42,14 +48,14 @@ There are numerous settings that can be tweaked and turned on/off in htseq-count
 Lets have a look at the resulting file. 
 ```bash
 # first few rows 
-head out.htseq.counts
+head SRR1039508.htseq-counts
 
 # importantly, lets check the last few rows as these contain some important info 
-tail -n 12 out.htseq.counts
+tail -n 12 SRR1039508.htseq-counts
 ```
 
 Exercise: 
-- Can you visulaly confirm the read count returned in htseq-count by looking at the .bam file in IGV? 
+- Can you visually confirm the read count returned in htseq-count by looking at the .bam file in IGV? 
 
 # Generate the gene expression matrix of raw read counts
 
@@ -59,6 +65,9 @@ The final step in the pre-processing of RNA-seq data for differential expression
 
 Have a look at the htseq-count output files 
 ```bash
+cd /scratch/rnaseq_wrksp/data/quantification/
+
+ln -s /scratch/rnaseq1/data/htseq-count/*.htseq-counts
 ls -1 *.htseq-counts | sort
 ```
 
@@ -67,21 +76,22 @@ Loop over htseq-count output files and extract the read count column
 # set up an array that we will fill with shorthand sample names
 myarray=()
 
-# loop over count files using a while loop 
 while read x;  do 
 	# split up sample names to remove everything after "_trim"
-	sname=`echo bash misc/split.sh "$x" "_trim"`
+	sname=`echo "$x"`
+	sname=`echo "$sname" | cut -d"_" -f1`
 	# extract second column of file to get read counts only 
-	echo counts for `$sname` being extracted
-	cut -f2 $x > `$sname`.tmp.counts
+	echo counts for "$sname" being extracted
+	cut -f2 $x > "$sname".tmp.counts
 	# save shorthand sample names into an array  
-	sname2=`$sname`
+	sname2="$sname"
 	myarray+=($sname2) 
-done < <(ls -1 *.htseq-counts | sort) 
+done < <(ls -1 *.htseq-counts | sort)
 ```
 
 Paste all gene IDs into a file with each to make the gene expression matrix
 ```bash 
+cut -f1 SRR1039508_1.htseq-counts > gene_IDs.txt
 paste gene_IDs.txt *.tmp.counts > tmp_all_counts.txt
 head tmp_all_counts.txt 
 ```
@@ -98,8 +108,9 @@ cat names.txt
 
 Put sample names in the file with counts to form row headers and complete the gene expression matrix
 ```bash 
+touch all_counts.txt
 cat <(cat names.txt | sort | paste -s) tmp_all_counts.txt > all_counts.txt
-head all_counts
+head all_counts.txt
 ``` 
 
 Remove all the tmp files 
