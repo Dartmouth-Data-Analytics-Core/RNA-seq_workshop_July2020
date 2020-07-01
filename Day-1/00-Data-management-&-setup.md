@@ -84,9 +84,22 @@ mkdir raw_data results scripts
 
 We will use Symbolic links (sym links) to link the raw data in `/dartfs-hpc/scratch/rnaseq1/data/raw-fastq` to the directory we created for ourselves in scratch. Sym links provide a way of linking to distant files from within a directory that they do not actually exist inside. Since most genomics data is very large, it is impractical to move it around and copy it, so we use Sym links to point to files as if they were in our current directroy. 
 
+Look in `/dartfs-hpc/scratch/rnaseq1/data/raw-fastq`
+```bash 
+ls -lah /dartfs-hpc/scratch/rnaseq1/data/raw-fastq
+```
+
+You can see that the raw data for all samples is there, although, as we mentioned, it is very large, and each step in processing individual files can take a long time, so we will only use a subset of these data during the pre-processing of the data on day 1. Specifically, we will be using eight FASTQs from four samples (2 controls, 2 Dex) that only contain reads aligning to chromosome 20. These files are loicated in `/dartfs-hpc/scratch/rnaseq1/data/raw-fastq/subset` and are much smaller and we will be able to complete time consuming steps like read alignment to the reference genome, in a practical time period. 
+
 Set up sym links to the raw FASTQs: 
 ```bash 
-ln -s /dartfs-hpc/scratch/rnaseq1/data/raw-fastq/* ./
+# have a look for the files 
+ls -lah /dartfs-hpc/scratch/rnaseq1/data/raw-fastq/subset/
+
+# set up the sym link 
+ln -s /dartfs-hpc/scratch/rnaseq1/data/raw-fastq/subset* ./
+
+# have a lok at the links in your directory 
 ls -lah 
 ``` 
 
