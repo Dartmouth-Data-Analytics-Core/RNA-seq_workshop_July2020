@@ -19,7 +19,7 @@ We will be using the RNA-seq dataset described in [Himes *et al*, 2014, *PloS On
 
 This is the same dataset used in some of the [tutorial materials](http://bioconductor.org/packages/devel/bioc/vignettes/DESeq2/inst/doc/DESeq2.html) for *DESeq2* (which we will be using for differential expression analysis in R/Bioconductor on day 2). 
 
-[](dataset.png)
+![](../figures/experiment.png)
 
 ## Raw data 
 
@@ -54,13 +54,7 @@ You can find two *.csv* files (`SraRunInfo.csv` and `sra_result.csv`) in the Git
 
 During day 1, we will pre-process the raw sequence data, assess its quality, and reduce it to a matrix of raw read counts. Over day 2, we will perform a detailed exploratory analysis of the data, before conducting a robust differential expression analysis using *DESeq2*. 
 
-![](analysis_overview.png)
-
-
-
-
-
-
+![](../figures/analysis_overview.png)
 
 As we move through day 1, we will be generating a lot of intermediate files for each of these steps. You will all create your own directory in `/dartfs-hpc/scratch/` where you will run your analyses and store you results. Go ahead and initalize a directory for yourself now. 
 
