@@ -32,7 +32,7 @@ Summary level count data (FPKM) is also available from the Gene Expression Omnib
 
 ```bash
 # lets have a look at the project directory containing the raw FASTQs
-ls -lah /dartfs-hpc/scratch/rnaseq2/data/raw-fastq/
+ls -lah /dartfs-hpc/scratch/rnaseq1/data/raw-fastq/
 ```
 
 Since these are paired-end reads (we will talk more about this) each sample has 1 file for read 1 (SRRXXX_1) and 1 file for read 2 (SRRXXX_2). All of the files are `gzipped` in order to reduce the disk space they require, which is important as you can see that they are all generally at least **1GB** (you need a lot of space to process RNA-seq, or other-NGS data). 
