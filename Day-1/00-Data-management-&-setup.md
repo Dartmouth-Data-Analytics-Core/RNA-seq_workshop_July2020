@@ -71,7 +71,7 @@ cd omw
 
 We need to set up some sub-directories where we will conduct each step. The desired directory strcuture for the workshop looks like this: 
 ```bash
-rnaseq1
+omw
   ├── raw_data
   ├── results
   └── scripts
@@ -96,7 +96,8 @@ Set up sym links to the raw FASTQs:
 # have a look for the files 
 ls -lah /dartfs-hpc/scratch/rnaseq1/data/raw-fastq/subset/
 
-# set up the sym link 
+# set up the sym link in your raw_data directory 
+cd raw_data/
 ln -s /dartfs-hpc/scratch/rnaseq1/data/raw-fastq/subset/*fastq.gz ./
 
 # have a lok at the links in your directory 
