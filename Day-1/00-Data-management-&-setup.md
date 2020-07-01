@@ -111,5 +111,6 @@ Activate the conda environment:
 ```bash
 conda activate rnaseq1
 ```
+If you don't know what is rnaseq1, please visit [here](https://github.com/Dartmouth-Data-Analytics-Core/RNA-seq_workshop_July2020/blob/master/welcome-%26-setup.md).
 
 We are now ready to start working with the data and processing the raw FASTQ files. 
