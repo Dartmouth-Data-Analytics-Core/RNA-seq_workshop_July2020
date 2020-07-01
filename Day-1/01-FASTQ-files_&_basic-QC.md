@@ -57,7 +57,7 @@ It is critical that the R1 and R2 files have **the same number of records in bot
 
 While you don't normally need to go looking within an individual FASTQ file, it is very important to be able to manipulate FASTQ files in you are going to be doing any more involved bioinformatics. There are a lot of operations we can do with a FASTQ file to gain more information about our experiment, and being able to interact with FASTQ files can be useful for troubleshooting problems that might come up in your analyses. 
 
-Due to their large size, we often perform gzip copmpression of FASTQ files so that they take up less space, however this means we have to unzip them if we want to look inside them and perform operations on them. We can do this with the `zcat` command. 
+Due to their large size, we often perform gzip copmpression of FASTQ files so that they take up less space, however this means we have to unzip them if we want to look inside them and perform operations on them. We can do this with the `zcat` command and a pipe (|). The pipe command is a way of linking commands, the pipe sends the output from the first command to the second command. `zcat` lists the contents of a zipped file to your screen, and head limits the output to the first ten lines. 
 
 Lets use `zcat` and `head` to have a look at the first few records in our FASTQ file. 
 ```bash
@@ -74,7 +74,7 @@ Paired-end reads should have the same number of records!
 
 What if we want to count how many unique barcodes exist in the FASTQ file. To do this, we would need to print all the sequence lines of each FASTQ entry, then search those for the barcode by specifying a regular expression. To print all the sequence lines (2nd line) of each FASTQ entry, we can use a command called ***sed***, short for ***stream editor***which allows you to streamline edits to text that are redirected to the command. You can find a tutorial on using **sed** [here](https://www.digitalocean.com/community/tutorials/the-basics-of-using-the-sed-stream-editor-to-manipulate-text-in-linux). 
 
-First we can use sed with with the `'p'` argument to tell it that we want the output to be printed, and the `-n` option to tell sed we want to suppress automatic printing (so we don't get the results printed 2x. Piping this to `head` we can get the first line of the first 10 options in the FASTQ file (the header line). We specify `'1-4p'` as we want sed tp *print 1 line, then skip forward 4*. 
+First we can use sed with with the `'p'` argument to tell it that we want the output to be printed, and the `-n` option to tell sed we want to suppress automatic printing (so we don't get the results printed 2x). Piping this to `head` we can get the first line of the first 10 options in the FASTQ file (the header line). We specify `'1-4p'` as we want sed tp *print 1 line, then skip forward 4*. 
 ```bash
 zcat SRR1039508_1.chr20.fastq.gz | sed -n '1~4p' | head -10
 ```
@@ -130,7 +130,7 @@ This will print all of the FASTQ files (gziped) that are in our local directory.
 We could use one of these loops to perform the nucleotide counting task that we performed on a single sample above. 
 ```bash
 ls *.fastq.gz | while read x; do 
-echo processing sample $x; zcat $x | sed -n '2~4p' | head -10000 | grep -o . | sort | uniq -c;
+echo processing sample $x; zcat $x | sed -n '2~4p' | sed -n '1,10000p' | grep -o . | sort | uniq -c;
 done
 ```
 
@@ -146,7 +146,7 @@ nano count_GC_content.sh
 Add our program to the script, using `#!/bin/bash` at the top of our script to let the shell know this is a bash script. We also use the `$` to specify the input variable to the script. `$1` represents the variable that we want to be used in the first argument of the script. Here, we only need to provide the file name, so we only have 1 `$`, but if we wanted to create more variables to expand the functionality of our script, we would do this using `$2`, `$3`, etc. 
 ```bash 
 #!/bin/bash
-echo processing sample "$1"; zcat $1 | sed -n '2~4p' | head -10000 | grep -o . | sort | grep 'C\|G' | uniq -c;
+echo processing sample "$1"; zcat $1 | sed -n '2~4p' | sed -n '1,10000p' | grep -o . | sort | grep 'C\|G' | uniq -c;
 ```
 
 Now run the script, specifying the a FASTQ file as variable 1 (`$1`)
