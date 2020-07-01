@@ -7,8 +7,8 @@
 
 Lets make a new directory to work in: 
 ```bash
-mkdir alignment.qc
-cd alignment.qc
+mkdir results/alignment.qc
+cd results/alignment.qc
 ```
 
 ## Principles of post-alignment QC
@@ -33,11 +33,11 @@ However, there are several other valuable QC metrics that evaluate features of g
 To run CollectRNASeqMetrics on this dataset, we would run:
 ```bash 
 picard CollectRnaSeqMetrics \
-I=./../alignment/SRR1039508.Aligned.out.sorted.bam \
-O=SRR1039508.output.RNA_Metrics \
-REF_FLAT=../../refs/Homo_sapiens.GRCh38.97.chr20.refFlat.txt \
-STRAND=SECOND_READ_TRANSCRIPTION_STRAND \
-RIBOSOMAL_INTERVALS=../../refs/Homo_sapiens.GRCh38.97.rRNA.chr20.interval_list
+  I=./../alignment/SRR1039508.Aligned.out.sorted.bam \
+  O=SRR1039508.output.RNA_Metrics \
+  REF_FLAT=../../../rnaseq1/refs/Homo_sapiens.GRCh38.97.chr20.refFlat.txt \
+  STRAND=NONE \
+  RIBOSOMAL_INTERVALS=../../../rnaseq1/refs/Homo_sapiens.GRCh38.97.rRNA.chr20.interval_list
 ```
 **Option descriptions:**  
 `I`=input aligned bam file  
@@ -65,11 +65,11 @@ Despite these considerations, there is still value in checking the levels of rea
 To run *MarkDuplicates*, we call the jar file for *Picard tools* and specify the input SAM/BAM file. 
 ```bash 
 picard MarkDuplicates \
-I=../alignment/SRR1039508.Aligned.out.sorted.bam \
-O=SRR1039508.Aligned.out.sorted.dups.marked.bam \
-M=SRR1039508.dups.out \
-OPTICAL_DUPLICATE_PIXEL_DISTANCE=100 \
-CREATE_INDEX=false
+  I=../alignment/SRR1039508.Aligned.out.sorted.bam \
+  O=SRR1039508.Aligned.out.sorted.dups.marked.bam \
+  M=SRR1039508.dups.out \
+  OPTICAL_DUPLICATE_PIXEL_DISTANCE=100 \
+  CREATE_INDEX=false
 ```
 
 **Option descriptions**:  
@@ -97,6 +97,9 @@ Viewing each the output from the aligner, `CollectRNASeqMetrics`, `MarkDuplicate
 
 ```bash
 multiqc . 
+
+# copy to your home directory to have a look at it 
+cp *.html $HOME
 ```
 
 Locate the qc_report.html file in `RNA-seq_workshop_July2020/misc/` and open it in a web-broswer. 
