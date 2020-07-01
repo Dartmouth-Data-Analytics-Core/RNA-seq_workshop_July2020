@@ -8,8 +8,8 @@
 
 Make a new directory: 
 ```bash 
-mkdir quant
-cd quant
+mkdir results/quant
+cd results/quant
 ```
 
 ## Principle of quantifying read counts for RNA-seq 
@@ -38,7 +38,7 @@ htseq-count \
 	-s no \
 	-r pos \
 	./../alignment/SRR1039508.Aligned.out.sorted.bam \
-	./../../refs/Homo_sapiens.GRCh38.97.chr20.gtf > SRR1039508.htseq-counts
+	./../../../rnaseq1/refs/Homo_sapiens.GRCh38.97.chr20.gtf > SRR1039508.htseq-counts
 ```
 
 There are numerous settings that can be tweaked and turned on/off in htseq-count. I strongly recommend you **read the manual** before running htseq-count so that you understand all the default options and available settings. 
@@ -47,6 +47,9 @@ There are numerous settings that can be tweaked and turned on/off in htseq-count
 
 Lets have a look at the resulting file. 
 ```bash
+# how many lines 
+wc -l SRR1039508.htseq-counts
+
 # first few rows 
 head SRR1039508.htseq-counts
 
@@ -59,16 +62,23 @@ Exercise:
 
 # Generate the gene expression matrix of raw read counts
 
-The final step in the pre-processing of RNA-seq data for differential expression analysis is to concatenate your read counts into a gene expression matrix that contains the counts from all your samples. We will do this at the command line, however there are also ways to directly read the output of programs like htseq-count and RSEM directly into R without concatenating them into a matrix before hand. 
+The final step in the pre-processing of RNA-seq data for differential expression analysis is to concatenate your read counts into a gene expression matrix that contains the counts from all your samples. We will do this at the command line, however there are also ways to directly read the output of programs like htseq-count and RSEM directly into R without concatenating them into a matrix before hand (discussed on day2). In practice, you would have generated the a `.htseq.counts` file for genes accross the entire genome, and for all your samples. Since we only did this for chr20, we will link to the complete `.htseq.counts` files for all samples, and construct our gene expression matrix using those. 
 
 ![](../figures/ge-matrix.png)
 
 Have a look at the htseq-count output files 
 ```bash
-cd /scratch/rnaseq_wrksp/data/quantification/
+ls /dartfs-hpc/scratch/rnaseq1/data/htseq-count/
+```
 
-ln -s /scratch/rnaseq1/data/htseq-count/*.htseq-counts
-ls -1 *.htseq-counts | sort
+Create a sym link to them:
+```bash 
+# make a sub directory to put them in 
+mkdir all_samples
+cd all_samples
+
+# create the linke 
+ln -s /dartfs-hpc/scratch/rnaseq1/data/htseq-count/*.htseq-counts ./
 ```
 
 Loop over htseq-count output files and extract the read count column 
@@ -76,8 +86,8 @@ Loop over htseq-count output files and extract the read count column
 # set up an array that we will fill with shorthand sample names
 myarray=()
 
-while read x;  do 
-	# split up sample names to remove everything after "_trim"
+while read x;  do
+	# split up sample names to remove everything after "_"
 	sname=`echo "$x"`
 	sname=`echo "$sname" | cut -d"_" -f1`
 	# extract second column of file to get read counts only 
@@ -85,7 +95,7 @@ while read x;  do
 	cut -f2 $x > "$sname".tmp.counts
 	# save shorthand sample names into an array  
 	sname2="$sname"
-	myarray+=($sname2) 
+	myarray+=($sname2)
 done < <(ls -1 *.htseq-counts | sort)
 ```
 
@@ -111,6 +121,7 @@ Put sample names in the file with counts to form row headers and complete the ge
 touch all_counts.txt
 cat <(cat names.txt | sort | paste -s) tmp_all_counts.txt > all_counts.txt
 head all_counts.txt
+wc -l all_counts.txt
 ``` 
 
 Remove all the tmp files 
