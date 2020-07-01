@@ -89,11 +89,7 @@ cat SRR1039508.dups.out
 
 #### Generating the QC report with MultiQC
 
-Viewing each the output from the aligner, `CollectRNASeqMetrics`, `MarkDuplicates`, etc. would obvbiously be very tideous, so we need some way of aggregating all of these data into one place so that we can compare across the whole dataset. 
-
-`MultiQC` is a very useful tool that synthesizes interactive reports using the output from many commonly used bioinformatics tools. When `MultiQC` is called on a directory, it will search through all subdirectories for file types that it recognizes, and include them in its report. The result is a browsable, sharable, and interactive HTML file containing all of the QC results from our entire dataset. 
-
-`MultiQC` is simply run in the command line by specifying the oparent directory where all of the files you wish to be included in your report are located. Lets run `MultiQC` on a few files to get an idea of how it works, and then look at the full report that has been generated for you with all the samples in the dataset. 
+Viewing each the output from the aligner, `CollectRNASeqMetrics`, `MarkDuplicates`, etc. would obvbiously be very tideous, so we need some way of aggregating all of these data into one place so that we can compare across the whole dataset. Like we did earlier, we can use `MultiQC` do synthesize a QC report, as it recognizes output from `CollectRNASeqMetrics` and `MarkDuplicates`. 
 
 ```bash
 multiqc . 
