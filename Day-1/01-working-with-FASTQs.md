@@ -221,7 +221,7 @@ multiqc .
 
 Copy to your home directory and open in a web-broswer: 
 ```
-cp *html $HOME
+cp *multiqc* $HOME
 ```
 
 You can find the MultiQC report run on the complete dataset across all samples in the dataset in the github repository, under `QC-reports`. Lets open it and explore our QC data. 
