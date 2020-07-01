@@ -97,7 +97,7 @@ Set up sym links to the raw FASTQs:
 ls -lah /dartfs-hpc/scratch/rnaseq1/data/raw-fastq/subset/
 
 # set up the sym link 
-ln -s /dartfs-hpc/scratch/rnaseq1/data/raw-fastq/subset/* ./
+ln -s /dartfs-hpc/scratch/rnaseq1/data/raw-fastq/subset/*fastq.gz ./
 
 # have a lok at the links in your directory 
 ls -lah 
