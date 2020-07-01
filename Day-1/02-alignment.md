@@ -1,4 +1,4 @@
-# Part 3 - Read alignment  
+# Part 2 - Read alignment  
 
 ### Learning objectives: 
 - Understand the major principles behind read alignment for RNA-seq data 
