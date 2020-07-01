@@ -1,7 +1,7 @@
 # Part 0 - Dataset & setup
 
 ### Learning objectives: 
-- Familize yourself with the data set, directories, and set up your own
+- Familiarize yourself with the data set, directories, and set up your own working directory
 - Understand the importance of good data management for RNA-seq analysis
 
 Lets login to discovery7 and start and interactive session before we get started.  
@@ -15,7 +15,7 @@ mksub -I -l nodes=1:ppn=4 -l walltime=20:00:00
 
 ## Dataset for the workshop 
 
-We will be using the RNA-seq dataset described in [Himes *et al*, 2014, *PloS One*](https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0099625). This study investigates the mechanism by which glucocorticoids, a major treatment used in asthma care, prevent inflammation of airway smooth muscle cells (ASM). The authors sequenced 4 primary human ASM cell lines that were treated with dexamethasone (Dex), albuterol (Alb), or both dexamethasone and albuterol (co-tx) for 18 hours before sample collection (although only Dex samples are considered in the paper). They then use differential expression analysis to identify >300 differentially expressed genes (DEGs). 
+We will be using the RNA-seq dataset described in [Himes *et al*, 2014, *PloS One*](https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0099625). This study investigates the mechanism by which glucocorticoids, a major treatment used in asthma care, prevent inflammation of airway smooth muscle cells (ASM). The authors sequenced 4 primary human ASM cell lines that were treated with a control vehicle (untreated), dexamethasone (Dex), albuterol (Alb), or both dexamethasone and albuterol (co-treated) for 18 hours before sample collection (although only Dex samples are considered in the paper). They then use differential expression analysis to identify >300 differentially expressed genes (DEGs). 
 
 This is the same dataset used in some of the [tutorial materials](http://bioconductor.org/packages/devel/bioc/vignettes/DESeq2/inst/doc/DESeq2.html) for *DESeq2* (which we will be using for differential expression analysis in R/Bioconductor on day 2). 
 
@@ -35,7 +35,7 @@ Summary level count data (FPKM) is also available from the Gene Expression Omnib
 ls -lah /dartfs-hpc/scratch/rnaseq2/data/raw-fastq/
 ```
 
-Since these are paired-end reads (we will talk more about this) each sample has 1 file for read 1 (SRRXXX_1) and 1 file for read 2 (SRRXXX_2). All of the files are `gzipped` in order to reduce the disk space they require, which is important as you can see that they are all generally at least **1GB** (you need a lot of space to process RNA-seq, or other-NGS data). 
+Since these are paired-end reads (we will talk more about this) each sample has a file for read 1 (SRRXXX_1) and a file for read 2 (SRRXXX_2). All of the files are `gzipped` in order to reduce the disk space they require, which is important as you can see that they are all generally at least **1GB** (you need a lot of space to process RNA-seq, or other-NGS data). 
 
 ## Metadata 
 
