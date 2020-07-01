@@ -12,8 +12,8 @@ OWEN: ADD SOFT CLIPPING FIGURE
 
 Make a new directory to work in: 
 ```bash 
-mkdir alignment
-cd alignment
+mkdir results/alignment
+cd results/alignment
 ```
 
 ## Principles of read alignment for RNA-seq
@@ -117,11 +117,11 @@ Once you have generated an index, it is best not to do anything with it, except 
 We are ready to align our reads to the genome, using the subset of reads sequenced for sample `SRR1039508` that are known to align to chromosome 20 (files: `SRR1039508_1.trim.chr20.fastq.gz` and `SRR1039508_2.trim.chr20.fastq.gz`). 
 
 ```bash
-STAR --genomeDir hg38_chr20_index \
---readFilesIn SRR1039508_1.trim.chr20.fastq.gz SRR1039508_2.trim.chr20.fastq.gz \
+STAR --genomeDir /dartfs-hpc/scratch/rnaseq2/refs/hg38_chr20_index \
+--readFilesIn ../../raw_data/SRR1039508_1.trim.chr20.fastq.gz ../../raw_data/SRR1039508_2.trim.chr20.fastq.gz \
 --readFilesCommand zcat \
---sjdbGTFfile Homo_sapiens.GRCh38.97.chr20.gtf \
---runThreadN 10 \
+--sjdbGTFfile /dartfs-hpc/scratch/rnaseq2/refs/Homo_sapiens.GRCh38.97.chr20.gtf \
+--runThreadN 4 \
 --outSAMtype SAM \
 --outFilterType BySJout \
 --outFileNamePrefix SRR1039508.
@@ -218,7 +218,7 @@ Here, we will create a small subset of a BAM file, download it onto our local ma
 Lets go ahead and subset our BAM file for reads aligning only to chromosome 22. We also need to create an index. 
 ```bash
 # subset for reads just on chr 22 (to make it smaller)
-samtools view -b -@ 8 -o chr20.bam SRR1039508.1.Aligned.sortedByCoord.out.bam 20
+samtools view -b -@ 8 -o chr20.bam SRR1039508.Aligned.out.sorted.bam 20
 
 # index your new bam file 
 samtools index chr20.bam
@@ -232,7 +232,7 @@ cd rnaseq_wrksp/
 
 # download the file using secure copy (scp)
 ##### modify this for your discovery ID, AND the directory your in 
-scp d41294d@discovery7.dartmouth.edu:/dartfs-hpc/rc/lab/G/GMBSR_bioinfo/workshops/rnaseq-july20/data/bam/chr20.bam* .
+scp d41294d@discovery7.dartmouth.edu:/dartfs-hpc/scratch/omw/results/alignment/chr20.bam* .
 ##### you will be promoted for your password for discovery/polaris 
 
 # you may also need to modify the permissions 
