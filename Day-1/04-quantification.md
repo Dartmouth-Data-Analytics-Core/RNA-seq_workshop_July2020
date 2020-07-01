@@ -1,5 +1,5 @@
 
-# Part 5 - Read count quantification 
+# Part 4 - Read count quantification 
 
 ### Learning objectives: 
 - Gain understanding of how reads are counted to quantify expression levels in RNA-seq
