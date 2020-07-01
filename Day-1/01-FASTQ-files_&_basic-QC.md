@@ -61,14 +61,14 @@ Due to their large size, we often perform gzip copmpression of FASTQ files so th
 
 Lets use `zcat` and `head` to have a look at the first few records in our FASTQ file. 
 ```bash
-zcat SRR1039508_1.trim.chr20.fastq.gz | head
-zcat SRR1039508_2.trim.chr20.fastq.gz | head
+zcat SRR1039508_1.chr20.fastq.gz | head
+zcat SRR1039508_2.chr20.fastq.gz | head
 ```
 
 How many records do we have in total? (don't forget to divide by 4..) 
 ```bash
-zcat SRR1039508_1.trim.chr20.fastq.gz | wc -l
-zcat SRR1039508_2.trim.chr20.fastq.gz | wc -l
+zcat SRR1039508_1.chr20.fastq.gz | wc -l
+zcat SRR1039508_2.chr20.fastq.gz | wc -l
 ```
 Paired-end reads should have the same number of records! 
 
@@ -76,26 +76,26 @@ What if we want to count how many unique barcodes exist in the FASTQ file. To do
 
 First we can use sed with with the `'p'` argument to tell it that we want the output to be printed, and the `-n` option to tell sed we want to suppress automatic printing (so we don't get the results printed 2x. Piping this to `head` we can get the first line of the first 10 options in the FASTQ file (the header line). We specify `'1-4p'` as we want sed tp *print 1 line, then skip forward 4*. 
 ```bash
-zcat SRR1039508_1.trim.chr20.fastq.gz | sed -n '1~4p' | head -10
+zcat SRR1039508_1.chr20.fastq.gz | sed -n '1~4p' | head -10
 ```
 
 Using this same approach, we can print the second row for the first 10000 entires of the FASTQ file, and use the ***grep*** command to search for regular expressions in the output. Using the `-o` option for grep, we tell the command that we want it to print lines that match the character string. 
 ```bash
 # print the first 10 lines to confirm we are getting bthe sequence lines 
-zcat SRR1039508_1.trim.chr20.fastq.gz | sed -n '2~4p' | head -10
+zcat SRR1039508_1.chr20.fastq.gz | sed -n '2~4p' | head -10
 
 # pipe the sequence line from the first 10000 FASTQ records to grep to search for our (pretend) adapter sequence
-zcat SRR1039508_1.trim.chr20.fastq.gz | sed -n '2~4p' | head -10000 | grep -o "ATGGGA"
+zcat SRR1039508_1.chr20.fastq.gz | sed -n '2~4p' | head -10000 | grep -o "ATGGGA"
 ```
 
 This is a bit much to count by each, so lets count the how many lines were printed by grep using the ***wc*** (word count) command with the `-l` option specified for lines.
 ```bash
-zcat SRR1039508_1.trim.chr20.fastq.gz | sed -n '2~4p' | head -10000 | grep -o "ATGGGA" | wc -l
+zcat SRR1039508_1.chr20.fastq.gz | sed -n '2~4p' | head -10000 | grep -o "ATGGGA" | wc -l
 ```
 
 Using a similar approach, we could count up all of the instances of individual DNA bases (C,T) called by the sequencer in this sample. Here we use the ***sort*** command to sort the bases printed by grep, grep again to just get the bases we are interested in, then using the ***uniq*** command with the `-c` option to count up the unique elements. 
 ```bash
-zcat SRR1039508_1.trim.chr20.fastq.gz | sed -n '2~4p' | head -10000 | grep -o . | sort | grep 'C\|G' | uniq -c 
+zcat SRR1039508_1.chr20.fastq.gz | sed -n '2~4p' | head -10000 | grep -o . | sort | grep 'C\|G' | uniq -c 
 ```
 Now we have the number of each nuleotide across the reads from the first 1000 records. A quick and easy program to get GC content. GC content is used in basic quality control of sequence from FASTQs to check for potential contamination of the sequencing library. We just used this code to check 1 sample, but what if we want to know for our 4 samples?
 
@@ -155,7 +155,7 @@ Now run the script, specifying the a FASTQ file as variable 1 (`$1`)
 cat count_GC_content.sh
 
 # now run it with bash 
-bash count_GC_content.sh SRR1039508_1.trim.chr20.fastq.gz
+bash count_GC_content.sh SRR1039508_1.chr20.fastq.gz
 ```
 
 No we could use our while loop again to do this for all the FASTQs in our directory 
@@ -181,7 +181,7 @@ cat stout.txt
 
 If this program we write took a long time, we might want to go and do some other stuff while it is running, and close our computer. We can do this using `nohup` which allows us to run a series of commands in the background, but disconnects the process from the shell you initally submit it through, so you are free to close this shell and the process will continue to run until completion. e.g. 
 ```bash
-nohup bash count_GC_content.sh SRR1039508_1.trim.chr20.fastq.gz > result.txt &
+nohup bash count_GC_content.sh SRR1039508_1.chr20.fastq.gz > result.txt &
 
 # show the result 
 cat nohup.out 
