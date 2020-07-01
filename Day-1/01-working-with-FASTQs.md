@@ -61,33 +61,30 @@ Due to their large size, we often perform gzip copmpression of FASTQ files so th
 
 Lets use `zcat` and `head` to have a look at the first few records in our FASTQ file. 
 ```bash
-zcat sample.fastq.gz | head
+zcat SRR1039508_1.trim.chr20.fastq.gz | head
+zcat SRR1039508_2.trim.chr20.fastq.gz | head
 ```
 
 How many records do we have in total? (don't forget to divide by 4..) 
 ```bash
-zcat sample.fastq.gz | wc -l
-```
-
-How do we capture specific lines of each record recursively?
-```bash
-zcat sample.fastq.gz | wc -l
+zcat SRR1039508_1.trim.chr20.fastq.gz | wc -l
+zcat SRR1039508_2.trim.chr20.fastq.gz | wc -l
 ```
 
 What if we want to count how many unique barcodes exist in the FASTQ file. 
 ```bash
-zcat sample.fastq.gz | sed -n '2~4p' | head -10000 | grep -o .
+zcat SRR1039508_1.trim.chr20.fastq.gz | sed -n '2~4p' | head -10000 | grep -o .
 ```
 Using sed with the -n option and '2~4p' will return the 2nd line, skip to 4 lines, and print again, recursively. We can use head to view this for the first 10,000 lines. 
 
 Next, we can use grep to find all of the instances of each nucleotide across these lines. 
 ```bash
-zcat sample.fastq.gz | sed -n '2~4p' | head -10000 | grep -o .
+zcat SRR1039508_1.trim.chr20.fastq.gz | sed -n '2~4p' | head -10000 | grep -o .
 ```
 
 Finally we can sort and count up the unique nucleotides that were found..
 ```bash
-zcat sample.fastq.gz | sed -n '2~4p' | head -10000 | grep -o . | sort | uniq -c
+zcat SRR1039508_1.trim.chr20.fastq.gz | sed -n '2~4p' | head -10000 | grep -o . | sort | uniq -c
 ```
 Now we have the number of each nuleotide across the reads from the first 1000 records. A quick and easy program to get GC content! 
 
@@ -95,7 +92,7 @@ Now we have the number of each nuleotide across the reads from the first 1000 re
 
 What if we wanted to find matches for a specific sequence, maybe after a start codon, in the FASTQ file 
 ```bash
-zcat sample.fastq.gz | grep -o "ATGGGATCA" | sort | uniq -c
+zcat SRR1039508_1.trim.chr20.fastq.gz | grep -o "ATGGGATCA" | sort | uniq -c
 ```
 
 Perhaps this sequence represents some a contaminating sequence from the run that we want to quickly screen all of our samples for (e.g. from bacteria). We can do this by searching for matches and counting how many times it was found, and repeating this process for each sample using a for loop. 
