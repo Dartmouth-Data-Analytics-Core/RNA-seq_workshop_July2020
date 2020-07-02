@@ -269,8 +269,8 @@ cutadapt -a 'A{76}' -o out.trimmed.fastq.gz input.fastq.gz > cutadapt.logout;
 
 Since the polyA and adapter sequence contamination is relatively low for this dataset, we won't trim any specific sequences, although we will perform basic quality and length processing of the raw reads. Lets make a new directory and do this for do this for one sample. 
 ```bash
-mkdir ../trim 
-cd ../trim
+mkdir ../results/trim 
+cd ../results/trim
 
 cutadapt \
 -o SRR1039508_1.trim.chr20.fastq.gz \
