@@ -114,14 +114,14 @@ Once you have generated an index, it is best not to do anything with it, except 
 We are ready to align our reads to the genome, using the subset of reads sequenced for sample `SRR1039508` that are known to align to chromosome 20 (files: `SRR1039508_1.trim.chr20.fastq.gz` and `SRR1039508_2.trim.chr20.fastq.gz`). 
 
 ```bash
-STAR --genomeDir /dartfs-hpc/scratch/rnaseq2/refs/hg38_chr20_index \
---readFilesIn ../../raw_data/SRR1039508_1.trim.chr20.fastq.gz ../../raw_data/SRR1039508_2.trim.chr20.fastq.gz \
---readFilesCommand zcat \
---sjdbGTFfile /dartfs-hpc/scratch/rnaseq2/refs/Homo_sapiens.GRCh38.97.chr20.gtf \
---runThreadN 4 \
---outSAMtype SAM \
---outFilterType BySJout \
---outFileNamePrefix SRR1039508.
+STAR --genomeDir /dartfs-hpc/scratch/rnaseq1/refs/hg38_chr20_index \
+  --readFilesIn ../trim/SRR1039508_1.trim.chr20.fastq.gz ../trim/SRR1039508_2.trim.chr20.fastq.gz \
+  --readFilesCommand zcat \
+  --sjdbGTFfile /dartfs-hpc/scratch/rnaseq1/refs/Homo_sapiens.GRCh38.97.chr20.gtf \
+  --runThreadN 4 \
+  --outSAMtype SAM \
+  --outFilterType BySJout \
+  --outFileNamePrefix SRR1039508.
 ```
 
 > *NOTE:* I usually set `outSAMtype` to `BAM SortedByCoordinate`, so that I do not need to convert the defaulkt SAM file output by STAR to BAM, then sort it. However, since we want to look inside the file at the alignments, we are creatuing a SAM first, and will convert to a BAM afterwards. 
@@ -223,7 +223,7 @@ samtools index chr20.bam
 
 Now download the files onto your local machine, so that you can load them into the IGV web app. 
 ```bash
-# make a directory and go into it 
+# make a directory and go into it (ON YOUR LOCAL MACHINE)
 mkdir rnaseq_wrksp/
 cd rnaseq_wrksp/
 
@@ -248,3 +248,39 @@ Now navigate to the IGV web app, and follow the below steps:
 - What do you notice about the orientation of the aligning reads? 
 - Do you think this gene is expressed in this sample? What about relative to nearby genes?
 - Is there potentially going to be any ambiguity in read quantification for `SAMHD1`, given that our library was generared using a **stranded** protocol? 
+
+## Run the alignment for all samples
+```bash
+ls ../trim/*_1.trim.chr20.fastq.gz | while read x; do
+
+  # save the file name
+  sample=`echo "$x"`
+  # get everything in file name before "/" (to remove '../trim/')
+  sample=`echo "$sample" | cut -d"/" -f3`
+  # get everything in file name before "_" e.g. "SRR1039508"
+  sample=`echo "$sample" | cut -d"_" -f1`
+  echo processing "$sample"
+  
+  # run STAR for each sample 
+  STAR --genomeDir /dartfs-hpc/scratch/rnaseq1/refs/hg38_chr20_index \
+    --readFilesIn ../trim/${sample}_1.trim.chr20.fastq.gz ../trim/${sample}_2.trim.chr20.fastq.gz \
+    --readFilesCommand zcat \
+    --sjdbGTFfile /dartfs-hpc/scratch/rnaseq1/refs/Homo_sapiens.GRCh38.97.chr20.gtf \
+    --runThreadN 4 \
+    --outSAMtype BAM SortedByCoordinate \
+    --outFilterType BySJout \
+    --outFileNamePrefix ${sample}. ;
+done
+
+# index the BAMs 
+samtools index *sorted.bam
+```
+Note that I change `--outSAMtype` to `BAM sortedByCoord` so that we dont have to 
+
+View the reports quickly: 
+```bash 
+cat *Log.final.out
+```
+
+Now we can move on to do a comprehensive QC analysis of our alignments. 
+
