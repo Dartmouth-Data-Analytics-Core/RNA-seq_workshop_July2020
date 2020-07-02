@@ -7,9 +7,6 @@
 - Perform an alignment with `STAR`
 - How to view alignments using the `Integrative genomics Viewer (IGV)` 
 
-
-OWEN: ADD SOFT CLIPPING FIGURE 
-
 Make a new directory to work in: 
 ```bash 
 mkdir results/alignment
