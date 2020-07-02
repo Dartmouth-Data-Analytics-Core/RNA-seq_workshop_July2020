@@ -35,7 +35,7 @@ cd ~
 mkdir -p .conda/pkgs/cache .conda/envs
 ```
 
-Now you will need to create the conda environment that we will be using for the course into your personal directory of accessible conda environments. Please download the [*environment.yml*](https://github.com/Dartmouth-Data-Analytics-Core/DAC-rnaseq-pipeline)This takes about 15 minutes to execute and you will see all of the packages that are loaded into this environment. The number of packages should indicate why conda environments are so useful, imagine having to load all of these packages individually it is much easier to load them with a single command in a conda environment.
+Clone the [*environment.yml*](https://github.com/Dartmouth-Data-Analytics-Core/DAC-rnaseq-pipeline). Now you will need to create the conda environment that we will be using for the course into your personal directory of accessible conda environments.  This takes about 15 minutes to execute and you will see all of the packages that are loaded into this environment. The number of packages should indicate why conda environments are so useful, imagine having to load all of these packages individually it is much easier to load them with a single command in a conda environment.
 
 ```bash
 conda env create -f /dartfs-hpc/scratch/rnaseq1/environment.yml
