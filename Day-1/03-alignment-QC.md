@@ -33,11 +33,11 @@ However, there are several other valuable QC metrics that evaluate features of g
 To run CollectRNASeqMetrics on this dataset, we would run:
 ```bash 
 picard CollectRnaSeqMetrics \
-  I=./../alignment/SRR1039508.Aligned.out.sorted.bam \
+  I=../alignment/SRR1039508.Aligned.out.sorted.bam \
   O=SRR1039508.output.RNA_Metrics \
-  REF_FLAT=../../../rnaseq1/refs/Homo_sapiens.GRCh38.97.chr20.refFlat.txt \
+  REF_FLAT=/dartfs-hpc/scratch/rnaseq1/refs/Homo_sapiens.GRCh38.97.chr20.refFlat.txt \
   STRAND=NONE \
-  RIBOSOMAL_INTERVALS=../../../rnaseq1/refs/Homo_sapiens.GRCh38.97.rRNA.chr20.interval_list
+  RIBOSOMAL_INTERVALS=/dartfs-hpc/scratch/rnaseq1/refs/Homo_sapiens.GRCh38.97.rRNA.chr20.interval_list
 ```
 **Option descriptions:**  
 `I`=input aligned bam file  
@@ -87,20 +87,57 @@ cat SRR1039508.dups.out
 
 **Additional note:** If you have very low levels of starting material that will require a lot of PCR amplification, if you plan to sequence **very** deeply, or if removal of true duplicate reads is of particular importance to your experiment, you should consider using a library preparation method that leverages unique molecular identifiers (UMIs), which allow true read duplicates to be effectively identified and removed.  
 
-#### Generating the QC report with MultiQC
+## Run `CollectRNASeqMetrics` and `MarkDuplicates` on all samples
+
+```bash
+ls ../alignment/*.Aligned.sortedByCoord.out.bam | while read x; do
+
+  # save the file name
+  sample=`echo "$x"`
+  # get everything in file name before "/" (to remove '../alignment/')
+  sample=`echo "$sample" | cut -d"/" -f3`
+  # get everything in file name before "_" e.g. "SRR1039508"
+  sample=`echo "$sample" | cut -d"." -f1`
+  echo processing "$sample"
+
+  # run CollectRnaSeqMetrics
+  picard CollectRnaSeqMetrics \
+    I=../alignment/${sample}.Aligned.sortedByCoord.out.bam \
+    O=${sample}.output.RNA_Metrics \
+    REF_FLAT=/dartfs-hpc/scratch/rnaseq1/refs/Homo_sapiens.GRCh38.97.chr20.refFlat.txt \
+    STRAND=NONE \
+    RIBOSOMAL_INTERVALS=/dartfs-hpc/scratch/rnaseq1/refs/Homo_sapiens.GRCh38.97.rRNA.chr20.interval_list
+
+  # run MarkDuplicates
+   picard MarkDuplicates \
+    I=../alignment/${sample}.Aligned.sortedByCoord.out.bam \
+    O=${sample}.Aligned.sortedByCoord.dups.marked.bam \
+    M=${sample}.dups.out \
+    OPTICAL_DUPLICATE_PIXEL_DISTANCE=100 \
+    CREATE_INDEX=false ;
+done
+```
+
+This will take a few minutes.. read what is being printed to the screen to get an idea for what `Picard` is doing. 
+
+## Make the QC report with MultiQC
 
 Viewing each the output from the aligner, `CollectRNASeqMetrics`, `MarkDuplicates`, etc. would obvbiously be very tideous, so we need some way of aggregating all of these data into one place so that we can compare across the whole dataset. Like we did earlier, we can use `MultiQC` do synthesize a QC report, as it recognizes output from `CollectRNASeqMetrics` and `MarkDuplicates`. 
 
 ```bash
+# move STAR final.out files over to /alignment.qc
+mv ../alignment/*.final.out ./
+
+# run multiqc on /alignment.qc/
 multiqc . 
 
 # copy to your home directory to have a look at it 
 cp *.html $HOME
 ```
 
-Locate the qc_report.html file in `RNA-seq_workshop_July2020/misc/` and open it in a web-broswer. 
+Locate the `qc_report.html` file in `RNA-seq_workshop_July2020/misc/` and open it in a web-broswer. 
 
-How does the quality look? Do you think there is cause for concern for any samples? 
+**How does the quality look? Do you think there is cause for concern for any samples?**
 
 
 TO DO: DESCRIBE QC REPORT RESULTS 
