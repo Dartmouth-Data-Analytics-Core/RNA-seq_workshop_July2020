@@ -275,7 +275,7 @@ done
 # index the BAMs 
 samtools index *sorted.bam
 ```
-Note that I change `--outSAMtype` to `BAM sortedByCoord` so that we dont have to 
+Note that I change `--outSAMtype` to `BAM sortedByCoord` so that we dont have to convert SAM to BAM and run `sort`. 
 
 View the reports quickly: 
 ```bash 
