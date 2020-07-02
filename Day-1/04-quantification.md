@@ -23,6 +23,8 @@ Other methods leverage probablistic modeling in order to quantify the alignments
 
 For our analysis, we will used htseq-count. htseq-count has three distinct modes for handling overlapping features; union, intersection_strict, and intersection_nonempty. You change change these using the `mode` option. The behavious of each setting is described in the figure below, taken from the htseq-count documnetation. Another important (and related) behaviour of htseq-count is how it handles multi-mapping reads (reads that map to > 1 place in the genome). Generally, multimapping reads are discarded during counting to prevent introduction of bias into the counts. 
 
+# Counting modes (from the htseq-count documentation, found [here](https://htseq.readthedocs.io/en/release_0.11.1/count.html))
+
 ![](../figures/htseq-count-mode.png)
 
 One of the most important options in htseq-count is `strandedness`. It is critical to select the correct option for `strandedness` (`-s`) for your dataset, otherwise you may incorrectly use, or throw away, a lot of information. The default setting in htseq-count for `strandedness` is `yes`. This means reads will only be counted as overlapping a feature provided they map to the same strand as the feature. If you data was generated using an unstranded library preparation protocol, as in this experiment, we must set this option to `no`. Failiure to do so would mean you would throw away ~50% of all your reads, as they will be distributed equally across both strands for each feature in an unstranded library.  
@@ -31,14 +33,14 @@ Another important important option in htseq-count is `t` or `type` which specifi
 
 When counting paired-end data (such as in this experiemnt) your .bam files should be sorted before running htseq-count, and you can specify how your .bam is sorted using the `-r` option. `name` indicates they are sorted by read name, `pos` indicates they are sorted by genomic position. 
 
-# Run htseq-count on your .bam file 
+## Run htseq-count on your .bam file 
 ```bash
 htseq-count \
 	-f bam \
 	-s no \
 	-r pos \
-	./../alignment/SRR1039508.Aligned.out.sorted.bam \
-	./../../../rnaseq1/refs/Homo_sapiens.GRCh38.97.chr20.gtf > SRR1039508.htseq-counts
+	../alignment/SRR1039508.Aligned.out.sorted.bam \
+	/dartfs-hpc/scratch/rnaseq1/refs/Homo_sapiens.GRCh38.97.chr20.gtf > SRR1039508.htseq-counts
 ```
 
 There are numerous settings that can be tweaked and turned on/off in htseq-count. I strongly recommend you **read the manual** before running htseq-count so that you understand all the default options and available settings. 
@@ -57,14 +59,37 @@ head SRR1039508.htseq-counts
 tail -n 12 SRR1039508.htseq-counts
 ```
 
-Exercise: 
+Additional exercise: 
 - Can you visually confirm the read count returned in htseq-count by looking at the .bam file in IGV? 
 
-# Generate the gene expression matrix of raw read counts
+## Run htseq-count on the rest of our samples 
+```bash
+ls ../alignment/*.Aligned.sortedByCoord.out.bam | while read x; do
 
-The final step in the pre-processing of RNA-seq data for differential expression analysis is to concatenate your read counts into a gene expression matrix that contains the counts from all your samples. We will do this at the command line, however there are also ways to directly read the output of programs like htseq-count and RSEM directly into R without concatenating them into a matrix before hand (discussed on day2). In practice, you would have generated the a `.htseq.counts` file for genes accross the entire genome, and for all your samples. Since we only did this for chr20, we will link to the complete `.htseq.counts` files for all samples, and construct our gene expression matrix using those. 
+  # save the file name
+  sample=`echo "$x"`
+  # get everything in file name before "/" (to remove '../alignment/')
+  sample=`echo "$sample" | cut -d"/" -f3`
+  # get everything in file name before "_" e.g. "SRR1039508"
+  sample=`echo "$sample" | cut -d"." -f1`
+  echo processing "$sample"
+  
+  htseq-count \
+	-f bam \
+	-s no \
+	-r pos \
+	../alignment/${sample}.Aligned.sortedByCoord.out.bam \
+	/dartfs-hpc/scratch/rnaseq1/refs/Homo_sapiens.GRCh38.97.chr20.gtf > ${sample}.htseq-counts ;
+done
+```
+
+## Generate the gene expression matrix of raw read counts
+
+The final step in the pre-processing of RNA-seq data for differential expression analysis is to concatenate your read counts into a gene expression matrix that contains the counts from all your samples. We will do this at the command line, however there are also ways to directly read the output of programs like htseq-count and RSEM directly into R without concatenating them into a matrix before hand (discussed on day2). 
 
 ![](../figures/ge-matrix.png)
+
+
 
 Have a look at the htseq-count output files 
 ```bash
@@ -86,10 +111,11 @@ Loop over htseq-count output files and extract the read count column
 # set up an array that we will fill with shorthand sample names
 myarray=()
 
+# loop over htseq.counts files and extract 2nd column (the counts) using 'cut' command
 while read x;  do
 	# split up sample names to remove everything after "_"
 	sname=`echo "$x"`
-	sname=`echo "$sname" | cut -d"_" -f1`
+	sname=`echo "$sname" | cut -d"." -f1`
 	# extract second column of file to get read counts only 
 	echo counts for "$sname" being extracted
 	cut -f2 $x > "$sname".tmp.counts
@@ -99,9 +125,11 @@ while read x;  do
 done < <(ls -1 *.htseq-counts | sort)
 ```
 
+This will take a few minutes.. 
+
 Paste all gene IDs into a file with each to make the gene expression matrix
 ```bash 
-cut -f1 SRR1039508_1.htseq-counts > gene_IDs.txt
+cut -f1 SRR1039508.htseq-counts > gene_IDs.txt
 paste gene_IDs.txt *.tmp.counts > tmp_all_counts.txt
 head tmp_all_counts.txt 
 ```
@@ -118,9 +146,16 @@ cat names.txt
 
 Put sample names in the file with counts to form row headers and complete the gene expression matrix
 ```bash 
+# make a file to fill 
 touch all_counts.txt
+
+# use the 'cat' command (concatenate) to put all tmp.counts.txt files into all_counts.txt
 cat <(cat names.txt | sort | paste -s) tmp_all_counts.txt > all_counts.txt
+
+# view head of file 
 head all_counts.txt
+
+# how many lines 
 wc -l all_counts.txt
 ``` 
 
@@ -128,3 +163,10 @@ Remove all the tmp files
 ```bash 
 rm -f *tmp*
 ```
+
+In practice, you would have generated the a `.htseq.counts` file using all genes accross the entire genome, and using all of the samples in the dataset, instead of the four samples we used in these examples. So that we have the complete set of counts available for day 2, we have made a complete raw counts matrix for you to use. You can find this in `/dartfs-hpc/scratch/rnaseq1/data/htseq-counts/`. It is also is the GitHub repo that you downloaded in the `Day-2` folder, as we will be loading it into `R` tomorrow for the differential expression analysis. 
+
+```bash 
+head /dartfs-hpc/scratch/rnaseq1/data/htseq-count/all_counts.txt
+```
+
