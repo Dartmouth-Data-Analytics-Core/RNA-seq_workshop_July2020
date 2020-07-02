@@ -9,8 +9,8 @@ Lets login to discovery7 and start and interactive session before we get started
 # open a secure connection.
 ssh d41294d@discovery7.dartmouth.edu
 
-# start the interactive session
-mksub -I -l nodes=1:ppn=4 -l walltime=20:00:00
+# log onto the J node that you have been assigned
+ssh -Y j0X
 ```
 
 ## Dataset for the workshop 
