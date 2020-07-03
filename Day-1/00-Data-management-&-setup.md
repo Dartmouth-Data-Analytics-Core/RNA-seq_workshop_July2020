@@ -67,6 +67,10 @@ mkdir omw
 
 # go into it
 cd omw
+
+# set an alias so we can get here quicly 
+alias rnaw='cd /dartfs-hpc/scratch/omw/'
+# NOTE: you can add this line to your .bashrc so it get run everytime you log in 
 ``` 
 
 We need to set up some sub-directories where we will conduct each step. The desired directory strcuture for the workshop looks like this: 
