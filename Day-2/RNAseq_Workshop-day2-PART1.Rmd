@@ -6,12 +6,6 @@ output:
       keep_md: TRUE
 ---
 
-
-ADD EXECISES?
-CLEAN UP MARKDOWN
-
-
-
 # Exploratory data analysis 
 ## Bulk RNA-seq data analysis data analysis workshop, July 2020
 
@@ -19,9 +13,7 @@ Several popular R packges designed for exploration and statistical analysis of b
 
 DESeq2 is a very well organized package that applies robust algorithms to perform several aspects of RNA-seq data analysis. If you plan to use DESeq2 for your work, you should read both the tutorials made available on their Bioconductor page, and the original manuscript for DESeq2, in [Love *et al*, 2014](https://genomebiology.biomedcentral.com/articles/10.1186/s13059-014-0550-8) to develop an understanding of the theory behind DESeq2 and the proccesses implemented by its functions. Despite DESeq2's extensive functionality, a different package may be appropriate for the analysis of RNA-seq data with unique experimental designs, for example using linear-mixed effects models to perform differential expression analysis of clustered datasets. 
 
-
 ![Overview](../figures/overview.png)
-
 
 Lets start by loading the packages we will need:
 ```{r, warning=FALSE,error=FALSE,message=FALSE}
@@ -49,8 +41,12 @@ How many replicates does this experiment have?
 
 Now we can read in our data. How you read your data into DESeq2 depends on what format your raw reads counts are in (individual files for each sample, or a gene expression matrix) and how your read counts were quantified (e.g. at the gene or transcript level). DESeq2 provides a specific function (`DESeqDataSetFromHTSeqCount`) to read in gene-level read count abundances from *htseq-count*. 
 ```{r, warning=FALSE,error=FALSE,message=FALSE}
+#### REPLACE THIS TO THE NAME OF THE HOME DIRECTORY ON YOUR COMPUTER
+#### (which should be the username for your account on your machine)
+myhome <- "OwenW"
+
 # read in the matrix we generated using htseq-count 
-cts <- as.matrix(read.table("/Users/OwenW/Desktop/all_counts.txt", 
+cts <- as.matrix(read.table(paste0("/Users/", myhome, "/Desktop/all_counts.txt"), 
                             sep="\t", header = TRUE, row.names=1, 
                             stringsAsFactors = F))
 
@@ -78,7 +74,7 @@ If you collected 3'-end data, e.g. with the Lexogen QuantSeq assay, you should n
 We also need to read in the sample annotation (metadata) that we downloaded from the SRA, which contains sample labels, experimental labels, and sequencing run information, etc. 
 ```{r}
 # read in the file from the SRA that has sample/experimental labels 
-sra_res <- read.csv("/Users/OwenW/Desktop/sra_result.csv", row.names=1)
+sra_res <- read.csv(paste0("/Users/", myhome, "/Desktop/sra_result.csv", row.names=1)
 head(sra_res)
 
 # rename the Sample.Accession column as Sample so that we can merge with the run info, which we will load next 
@@ -86,7 +82,7 @@ sra_res$Sample <- sra_res$Sample.Accession
 head(sra_res)
 
 # read in the file that contains specific info for each sequencing run 
-sra_run <- read.csv("/Users/OwenW/Desktop/SraRunInfo.csv", row.names=1)
+sra_run <- read.csv(paste0("/Users/", myhome, "/Desktop/SraRunInfo.csv"), row.names=1)
 head(sra_run)
 
 # lets set the row names (SRR numbers from the SRA, stands for SRA run accession) as a new variable in the dataframe, as we will need it later 
