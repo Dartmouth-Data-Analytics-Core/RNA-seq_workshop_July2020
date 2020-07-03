@@ -140,13 +140,19 @@ Now go to your local machine and use secure copy (scp) to download the rpeort
 ```bash
 scp d41294d@discovery7.dartmouth.edu:/dartfs-hpc/scratch/omw/results/alignment.qc/multiqc* .
 ```
-Locate the `qc_report.html` file in `RNA-seq_workshop_July2020/misc/` and open it in a web-broswer. 
 
-**You report should look like this:**
+Open this report and have a look at it, but also open the report for post-alignment QC in the github repo you download, located in `RNA-seq_workshop_July2020/QC-reports/`. The report we generated is only for samples mapped to chr20, so the QC metrics will look a little spotty and are less representative of what you would see in a standard experiment. The QC report in the github repo has been generated using **all samples with reads mapping to all chromosomes**. We will have a look through this together now. 
+
+### You report should look like this:
 
 ![](../figures/multiqc_align.png)
 
-**How does the quality look? Do you think there is cause for concern for any samples?**
+### How does the quality look? Do you think there is cause for concern for any samples?**
 
-TO DO: DESCRIBE QC REPORT RESULTS 
+**General notes:**
+- Overall, the quality of these samples looks great. Most samples have at least 20 million aligned reads, with > 90% of the inital read successfully aligned in all samples. 
+- Additionally, >90% of reads map to mRNA features, confirming that our annotation is likely of good quality, and we don't have much contamination from genomic DNA, PCR artifacts, or other species. In the `RnaSeqMetrics` section, you can hover over individual samples and see the proportion of reads mapping to intronic or intergenic sequences is very small. 
+- ~75% of our aligned reads are unique (not duplicates), which is perfectly acceptable in an RNA-seq experiment 
+- Coverage is well normalized over the length of the average gene, indicating we do not have any significant 3'-bias in these data 
 
+**Note:** Since we set the `STRAND` option in `CollectRNASeqMetrics` to `NONE` (as this is an unstranded dataset) there is not section in the report for strand specificity. If you library is stranded, and you told `CollectRNASeqMetrics` the correct strand that you expect your reads to be on, you should see that >99% of your reads are on the expected strand. If they are not, you either specified the wrong strand, or there was a problem in library prep. and your strand-synthesis was not very effective.
