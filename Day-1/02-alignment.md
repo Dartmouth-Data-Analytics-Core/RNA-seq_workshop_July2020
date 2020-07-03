@@ -283,7 +283,12 @@ Note that I change `--outSAMtype` to `BAM sortedByCoord` so that we dont have to
 
 View the reports quickly: 
 ```bash 
-cat *Log.final.out
+ls *Log.final.out | while read x; do
+   yes '' | sed 4q
+   echo Printing $x
+   yes '' | sed 1q
+   cat $x
+done
 ```
 
 Now we can move on to do a comprehensive QC analysis of our alignments. 
