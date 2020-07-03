@@ -10,7 +10,7 @@ Hopefully you all feel that you have made progress toward these goals. You have 
 
 **Some final take-aways from the workshop:**
 - Spend the time to plan, consult, practice, (and money) to generate high quality data that will provide robust inferences 
-- If you are going to do a lot of Bioinformatics, you should get **really** good at the command-line (Bash), otherwise, pre-processing will be slow * painful
+- If you are going to do a lot of Bioinformatics, you should get **really** good at the command-line (Bash), otherwise, pre-processing will be slow & painful
 - Downstream differential expression analysis of a raw count matrix is best done in R, and requires some basic knowledge of statistics 
 - Identify, understand, and check key QC metrics in the pre-processing and DE analysis portions, to ensure the quality of your results
 - **PLEASE** correct for multiple testing!
