@@ -285,12 +285,12 @@ cutadapt \
 
 Now lets run this on all of our samples:
 ```bash 
-ls ../../raw_data/*_1.trim.chr20.fastq.gz | while read x; do
+ls ../../raw_data/*_1.chr20.fastq.gz | while read x; do
 
 # save the file name
 sample=`echo "$x"`
 # get everything in file name after "/" and before "_" e.g. "SRR1039508"
-sample=`echo "$sample" | cut -d"/" -f4|cut -d"_" -f1`
+sample=`echo "$sample" | cut -d"/" -f4| cut -d"_" -f1`
 echo processing "$sample"
 
 # run cutadapt for each sample 
