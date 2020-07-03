@@ -142,8 +142,11 @@ scp d41294d@discovery7.dartmouth.edu:/dartfs-hpc/scratch/omw/results/alignment.q
 ```
 Locate the `qc_report.html` file in `RNA-seq_workshop_July2020/misc/` and open it in a web-broswer. 
 
-**How does the quality look? Do you think there is cause for concern for any samples?**
+**You report should look like this:**
 
+![](../figures/multiqc_align.png)
+
+**How does the quality look? Do you think there is cause for concern for any samples?**
 
 TO DO: DESCRIBE QC REPORT RESULTS 
 
