@@ -61,6 +61,7 @@ Due to their large size, we often perform gzip copmpression of FASTQ files so th
 
 Lets use `zcat` and `head` to have a look at the first few records in our FASTQ file. 
 ```bash
+# unzip and view first few lines of FASTQ file 
 zcat SRR1039508_1.chr20.fastq.gz | head
 zcat SRR1039508_2.chr20.fastq.gz | head
 ```
@@ -106,31 +107,38 @@ Loops allow us repeat operations over a defined variable or set of files. Essent
 Notice that the variable ***i*** set in the conditions for our loop is used to reference all the elements to be looped over in the operation using the term ***$i*** in this **for*** loop example: 
 ```bash 
 # loop over numbers 1:10, printing them as we go
-for i in {1..10}
-do
-   echo "$i"
+for i in {1..10}; do \
+   echo "$i"; \
 done
 ``` 
 
 
 Alternatively, if you do not know how many times you might need to run a loop, using a ***while*** loop may be useful, as it will continue the loop until the boolean (logical) specified in the first line evaluates to `false`. An example would be looping over all of the files in your directory to perform a specific task. e.g. 
 ```bash
-ls *.fastq.gz | while read x; do 
-echo $x is being processed...; zcat $x | head -n 4 
+ls *.fastq.gz | while read x; do \
+   # tell me what the shell is doing 
+   echo $x is being processed...; 
+   # provide an empty line for ease of viewing 
+   echo " "; 
+   zcat $x | head -n 4 ; \
+   echo " "; 
 done
 ```
 
 Perhaps this sequence represents some a contaminating sequence from the run that we want to quickly screen all of our samples for (e.g. from bacteria). We can do this by searching for matches and counting how many times it was found, and repeating this process for each sample using a for loop. 
 ```bash
-ls *.fastq.gz | while read x; do 
-echo $x;zcat $x | sed -n '2~4p' | head -4 | grep -o "ATGGGA" | wc -l;
+ls *.fastq.gz | while read x; do \
+   echo $x
+   zcat $x | sed -n '2~4p' | head -4 | grep -o "ATG" | wc -l
 done
 ```
 
 We could use one of these loops to perform the nucleotide counting task that we performed on a single sample above. 
 ```bash
-ls *.fastq.gz | while read x; do 
-echo processing sample $x; zcat $x | sed -n '2~4p' | sed -n '1,10000p' | grep -o . | sort | uniq -c;
+ls *.fastq.gz | while read x; do \
+   echo " "
+   echo processing sample $x 
+   zcat $x | sed -n '2~4p' | sed -n '1,10000p' | grep -o . | sort | grep 'C\|G' | uniq -c ;
 done
 ```
 
@@ -146,7 +154,7 @@ nano count_GC_content.sh
 Add our program to the script, using a shebang `#!/bin/bash` at the top of our script to let the shell know this is a bash script. As in the loops we use the `$` to specify the input variable to the script. `$1` represents the variable that we want to be used in the first argument of the script. Here, we only need to provide the file name, so we only have 1 `$`, but if we wanted to create more variables to expand the functionality of our script, we would do this using `$2`, `$3`, etc. 
 ```bash 
 #!/bin/bash
-echo processing sample "$1"; zcat $1 | sed -n '2~4p' | sed -n '1,10000p' | grep -o . | sort | grep 'C\|G' | uniq -c;
+echo processing sample "$1"; zcat $1 | sed -n '2~4p' | sed -n '1,10000p' | grep -o . | sort | grep 'C\|G' | uniq -c
 ```
 
 Now run the script, specifying the a FASTQ file as variable 1 (`$1`)
@@ -160,8 +168,8 @@ bash count_GC_content.sh SRR1039508_1.chr20.fastq.gz
 
 Now we can use our while loop again to do this for all the FASTQs in our directory 
 ```bash
-ls *.fastq.gz | while read x; do 
-bash count_GC_content.sh $x
+ls *.fastq.gz | while read x; do \
+   bash count_GC_content.sh $x
 done
 ```
 
@@ -171,8 +179,8 @@ What if we wanted to write the output into a file instead of printing to the scr
 touch stout.txt
 
 # run the loop 
-ls *.fastq.gz | while read x; do 
-bash count_GC_content.sh $x 1>> stout.txt
+ls *.fastq.gz | while read x; do \
+   bash count_GC_content.sh $x 1>> stout.txt 
 done
 
 # view the file 
@@ -181,7 +189,7 @@ cat stout.txt
 
 These example programs run fairly quickly, but stringing together mutiple commands in a bash script is common and these programs take much longer to run. In these cases we might want to close our computer and go and do some other stuff while our program is running. We can do this using `nohup` which allows us to run a series of commands in the background, but disconnects the process from the shell you initally submit it through, so you are free to close this shell and the process will continue to run until completion. e.g. 
 ```bash
-nohup bash count_GC_content.sh SRR1039508_1.chr20.fastq.gz > result.txt &
+nohup bash count_GC_content.sh SRR1039508_1.chr20.fastq.gz &
 
 # show the result 
 cat nohup.out 
@@ -221,9 +229,14 @@ Lets run MultiQC on our FastQC files:
 multiqc .
 ```
 
-Copy to your home directory and open in a web-broswer: 
+Copy to report to your LOCAL MACHINE in a new folder and open in a web-broswer: 
 ```
-cp *multiqc* $HOME
+# make a directory and go into it (ON YOUR LOCAL MACHINE)
+mkdir rnaseq_wrksp/
+cd rnaseq_wrksp/
+
+# use secure copy (scp) to download the files to your local machine 
+scp d41294d@discovery7.dartmouth.edu:/dartfs-hpc/scratch/omw/raw_data/fastqc_results/*multiqc. .
 ```
 
 You can find the MultiQC report run on the complete dataset across all samples in the dataset in the github repository, under `QC-reports`. Lets open it and explore our QC data. 
@@ -273,10 +286,10 @@ mkdir ../results/trim
 cd ../results/trim
 
 cutadapt \
--o SRR1039508_1.trim.chr20.fastq.gz \
--p SRR1039508_2.trim.chr20.fastq.gz \
-../../raw_data/SRR1039508_1.chr20.fastq.gz ../../raw_data/SRR1039508_1.chr20.fastq.gz \
--m 1 -q 20 -j 4 > SRR1039508.cutadapt.report
+   -o SRR1039508_1.trim.chr20.fastq.gz \
+   -p SRR1039508_2.trim.chr20.fastq.gz \
+   ../../raw_data/SRR1039508_1.chr20.fastq.gz ../../raw_data/SRR1039508_1.chr20.fastq.gz \
+   -m 1 -q 20 -j 4 > SRR1039508.cutadapt.report
 ```
 
 - `-m` removes reads that are samller than the minimum threshold
@@ -285,26 +298,31 @@ cutadapt \
 
 Now lets run this on all of our samples:
 ```bash 
-ls ../../raw_data/*_1.chr20.fastq.gz | while read x; do
+ls ../../raw_data/*.chr20.fastq.gz | while read x; do \
 
-# save the file name
-sample=`echo "$x"`
-# get everything in file name after "/" and before "_" e.g. "SRR1039508"
-sample=`echo "$sample" | cut -d"/" -f4| cut -d"_" -f1`
-echo processing "$sample"
+   # save the file name
+   sample=`echo "$x"` 
+   # get everything in file name after "/" and before "_" e.g. "SRR1039508"
+   sample=`echo "$sample" | cut -d"/" -f4 | cut -d"_" -f1` 
+   echo processing "$sample"
 
-# run cutadapt for each sample 
-cutadapt \
-   -o ${sample}_1.trim.chr20.fastq.gz \
-   -p ${sample}_2.trim.chr20.fastq.gz \
-   ../../raw_data/${sample}_1.chr20.fastq.gz ../../raw_data/${sample}_2.chr20.fastq.gz \
-   -m 1 -q 20 -j 4 > $sample.cutadapt.report;
+   # run cutadapt for each sample 
+   cutadapt \
+      -o ${sample}_1.trim.chr20.fastq.gz \
+      -p ${sample}_2.trim.chr20.fastq.gz \
+      ../../raw_data/${sample}_1.chr20.fastq.gz ../../raw_data/${sample}_2.chr20.fastq.gz \
+      -m 1 -q 20 -j 4 > $sample.cutadapt.report
 done
 ```
 
 You should now have trimmed FASTQ files in this directory that we will use for the alignment. You should also be able to see and print each of your reports from cutadapt. 
 ```bash
-cat *cutadapt.report
+ls *cutadapt.report | while read x; do
+   yes '' | sed 4q
+   echo Printing $x
+   yes '' | sed 1q
+   cat $x
+done
 ```
 
 **Additional note:** For data generated at Dartmouth, since much of the data in the Genomics core is generated using an **Illumina NextSeq 500**, we also often use the `--nextseq-trim` option in cutadapt. This works the qulaity threshold BUT ignores Q-scores for streches of G bases, as some Illumina instruments, such as the NextSeq, generate strings of Gs when when the sequencer 'falls off' the end of a fragment and dark cycles occur, and therefore provides more appropriate quality trimming for data generated on these instrucments. 
