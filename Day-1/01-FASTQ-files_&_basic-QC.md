@@ -18,11 +18,11 @@ HJJJJJJJJJJJJJJ########00?GHIJJJJJJJIJJJJJJJJJJJJJJJJJHHHFFFFFD
 
 **Four rows exist for each record in a FASTQ file:**
 - **Row 1:** Header line that stores information about the read (always starts with an `@`), such as the *instrument ID*, *flowcell ID*, *lane on flowcell*, *file number*, *cluster coordinates*, *sample barcode*, etc.
-- **Row 2:** The sequence if bases called
-- **Row 3:** Usually just a `+` and sometimes followed by the read info. in line 1
-- **Row 4:** Individual base qualities (must be same length as line 2
+- **Row 2:** The sequence of bases called
+- **Row 3:** Usually just a `+` and sometimes followed by the read information in line 1
+- **Row 4:** Individual base qualities (must be same length as line 2)
 
-Quality scores, also known as **Phred scores**, in row 4 represent the probability that the associated base call is incorrect, which are defined by the below formaula for current Illumina machines:
+Quality scores, also known as **Phred scores**, in row 4 represent the probability that the associated base call is incorrect, which are defined by the below formula for current Illumina machines:
 ```
 Q = -10 x log10(P), where Q = base quality, P = probability of incorrect base call
 ```
@@ -55,7 +55,7 @@ It is critical that the R1 and R2 files have **the same number of records in bot
 
 ### Basic operations 
 
-While you don't normally need to go looking within an individual FASTQ file, it is very important to be able to manipulate FASTQ files in you are going to be doing any more involved bioinformatics. There are a lot of operations we can do with a FASTQ file to gain more information about our experiment, and being able to interact with FASTQ files can be useful for troubleshooting problems that might come up in your analyses. 
+While you don't normally need to go looking within an individual FASTQ file, it is very important to be able to manipulate FASTQ files if you are going to be doing more involved bioinformatics. There are a lot of operations we can do with a FASTQ file to gain more information about our experiment, and being able to interact with FASTQ files can be useful for troubleshooting problems that might come up in your analyses. 
 
 Due to their large size, we often perform gzip copmpression of FASTQ files so that they take up less space, however this means we have to unzip them if we want to look inside them and perform operations on them. We can do this with the `zcat` command and a pipe (|). The pipe command is a way of linking commands, the pipe sends the output from the first command to the second command. `zcat` lists the contents of a zipped file to your screen, and head limits the output to the first ten lines. 
 
@@ -79,7 +79,7 @@ First we can use sed with with the `'p'` argument to tell it that we want the ou
 zcat SRR1039508_1.chr20.fastq.gz | sed -n '1~4p' | head -10
 ```
 
-Using this same approach, we can print the second row for the first 10000 entires of the FASTQ file, and use the ***grep*** command to search for regular expressions in the output. Using the `-o` option for grep, we tell the command that we want it to print lines that match the character string. 
+Using this same approach, we can print the second line for the first 10000 entires of the FASTQ file, and use the ***grep*** command to search for regular expressions in the output. Using the `-o` option for grep, we tell the command that we want it to print lines that match the character string. 
 ```bash
 # print the first 10 lines to confirm we are getting bthe sequence lines 
 zcat SRR1039508_1.chr20.fastq.gz | sed -n '2~4p' | head -10
@@ -93,17 +93,17 @@ This is a bit much to count by each, so lets count the how many lines were print
 zcat SRR1039508_1.chr20.fastq.gz | sed -n '2~4p' | head -10000 | grep -o "ATGGGA" | wc -l
 ```
 
-Using a similar approach, we could count up all of the instances of individual DNA bases (C,T) called by the sequencer in this sample. Here we use the ***sort*** command to sort the bases printed by grep, grep again to just get the bases we are interested in, then using the ***uniq*** command with the `-c` option to count up the unique elements. 
+Using a similar approach, we could count up all of the instances of individual DNA bases (C,G) called by the sequencer in this sample. Here we use the ***sort*** command to sort the bases printed by grep, grep again to just get the bases we are interested in, then using the ***uniq*** command with the `-c` option to count up the unique elements. 
 ```bash
 zcat SRR1039508_1.chr20.fastq.gz | sed -n '2~4p' | head -10000 | grep -o . | sort | grep 'C\|G' | uniq -c 
 ```
-Now we have the number of each nuleotide across the reads from the first 1000 records. A quick and easy program to get GC content. GC content is used in basic quality control of sequence from FASTQs to check for potential contamination of the sequencing library. We just used this code to check 1 sample, but what if we want to know for our 4 samples?
+Now we have the number of each nuleotide across the reads from the first 10000 records. A quick and easy program to get GC content. GC content is used in basic quality control of sequence from FASTQs to check for potential contamination of the sequencing library. We just used this code to check 1 sample, but what if we want to know for our 4 samples?
 
 ## For & while loops 
 
 Loops allow us repeat operations over a defined variable or set of files. Essentially, you need to tell Bash what you want to loop over, and what operation you want it to do to each item. 
 
-A **for*** loop example: 
+Notice that the variable ***i*** set in the conditions for our loop is used to reference all the elements to be looped over in the operation using the term ***$i*** in this **for*** loop example: 
 ```bash 
 # loop over numbers 1:10, printing them as we go
 for i in {1..10}
@@ -111,6 +111,7 @@ do
    echo "$i"
 done
 ``` 
+
 
 Alternatively, if you do not know how many times you might need to run a loop, using a ***while*** loop may be useful, as it will continue the loop until the boolean (logical) specified in the first line evaluates to `false`. An example would be looping over all of the files in your directory to perform a specific task. e.g. 
 ```bash
@@ -122,10 +123,9 @@ done
 Perhaps this sequence represents some a contaminating sequence from the run that we want to quickly screen all of our samples for (e.g. from bacteria). We can do this by searching for matches and counting how many times it was found, and repeating this process for each sample using a for loop. 
 ```bash
 ls *.fastq.gz | while read x; do 
-echo $x;
+echo $x;zcat $x | sed -n '2~4p' | head -4 | grep -o "ATGGGA" | wc -l;
 done
 ```
-This will print all of the FASTQ files (gziped) that are in our local directory. 
 
 We could use one of these loops to perform the nucleotide counting task that we performed on a single sample above. 
 ```bash
@@ -136,14 +136,14 @@ done
 
 ## Scripting in bash 
 
-So that is pretty useful, but what if we wanted to make it even simpler to run. Maybe we even want to share the program we just wrote with our lab members so that they can execute it on their own FASTQ files. One way to do this would be to write this series of commands into a Bash script, that can be executed at the command line, passing the files you would like to be operated on to the script. 
+So loops are pretty useful, but what if we wanted to make it even simpler to run. Maybe we even want to share the program we just wrote with other lab members so that they can execute it on their own FASTQ files. One way to do this would be to write this series of commands into a Bash script, that can be executed at the command line, passing the files you would like to be operated on to the script. 
 
 To generate the script (suffix `.sh`) we could use the `nano` editor: 
 ```bash 
 nano count_GC_content.sh
 ```
 
-Add our program to the script, using `#!/bin/bash` at the top of our script to let the shell know this is a bash script. We also use the `$` to specify the input variable to the script. `$1` represents the variable that we want to be used in the first argument of the script. Here, we only need to provide the file name, so we only have 1 `$`, but if we wanted to create more variables to expand the functionality of our script, we would do this using `$2`, `$3`, etc. 
+Add our program to the script, using a shebang `#!/bin/bash` at the top of our script to let the shell know this is a bash script. As in the loops we use the `$` to specify the input variable to the script. `$1` represents the variable that we want to be used in the first argument of the script. Here, we only need to provide the file name, so we only have 1 `$`, but if we wanted to create more variables to expand the functionality of our script, we would do this using `$2`, `$3`, etc. 
 ```bash 
 #!/bin/bash
 echo processing sample "$1"; zcat $1 | sed -n '2~4p' | sed -n '1,10000p' | grep -o . | sort | grep 'C\|G' | uniq -c;
@@ -158,16 +158,16 @@ cat count_GC_content.sh
 bash count_GC_content.sh SRR1039508_1.chr20.fastq.gz
 ```
 
-No we could use our while loop again to do this for all the FASTQs in our directory 
+Now we can use our while loop again to do this for all the FASTQs in our directory 
 ```bash
 ls *.fastq.gz | while read x; do 
 bash count_GC_content.sh $x
 done
 ```
 
-What if we wanted to write the output into a file? We could save the output to a *Standard output* (stout) file that we can look at, save to review later, and document our findings. 
+What if we wanted to write the output into a file instead of printing to the screen? We could save the output to a *Standard output* (stout) file that we can look at, save to review later, and document our findings. The `1>>` redirects the output that would print to the screen to a file.
 ```bash
-# make the text file you want to write to
+# create the text file you want to write to
 touch stout.txt
 
 # run the loop 
@@ -179,7 +179,7 @@ done
 cat stout.txt
 ```
 
-If this program we write took a long time, we might want to go and do some other stuff while it is running, and close our computer. We can do this using `nohup` which allows us to run a series of commands in the background, but disconnects the process from the shell you initally submit it through, so you are free to close this shell and the process will continue to run until completion. e.g. 
+These example programs run fairly quickly, but stringing together mutiple commands in a bash script is common and these programs take much longer to run. In these cases we might want to close our computer and go and do some other stuff while our program is running. We can do this using `nohup` which allows us to run a series of commands in the background, but disconnects the process from the shell you initally submit it through, so you are free to close this shell and the process will continue to run until completion. e.g. 
 ```bash
 nohup bash count_GC_content.sh SRR1039508_1.chr20.fastq.gz > result.txt &
 
@@ -191,7 +191,7 @@ cat nohup.out
 
 While the value of these sorts of tasks may not be immediately clear, you can imagine that if we wrote some nice programs like we did above, and grouped them together with other programs doing complimentary tasks, we would make a nice bioinformatics software package. Fortunately, people have already started doing this, and there are various collections of tools that perform specific tasks on FASTQ files. 
 
-One excellent tool that is specifically designed assess quality of FASTQ file is [FastQC](https://www.bioinformatics.babraham.ac.uk/projects/fastqc/). FastQC is composed of a number of analysis modules that calculates various QC metrics from FASTQ files (such as GC content) and summarizes this all into a nice QC report in HTML format, that can be opened in a web browser. 
+One excellent tool that is specifically designed assess quality of FASTQ file is [FastQC](https://www.bioinformatics.babraham.ac.uk/projects/fastqc/). FastQC is composed of a number of analysis modules that calculate various QC metrics from FASTQ files (such as GC content, distribution of base quality, etc.) and summarizes this all into a nice QC report in HTML format, that can be opened in a web browser. 
 
 Lets have a look at some example QC reports from the FastQC documentation: 
 
@@ -214,7 +214,7 @@ ls -lah
 
 **Note**: FastQC does not use the entire dataset, just the first few thousand reads in the FASTQ file, therefore there could be some bias introduced by this, although we assume there isn't since entires are placed into FASTQ files randomly. 
 
-Opening and evaluating an individual .html file for each FASTQ file is obviously going to be tideous and slow. Luckily, someone built a tool to speed this up. [MultiQC](https://multiqc.info/) *MultiQC* searches a specified directory (and subdirectories) for log files that it recognizes and synthesizes these into its own browsable, sharable, interactive .html report that can be opened in a web-browser. *MultiQC* recognizes files from a very wide range of bioinformatics tools (includeing FastQC), and allows us to compare QC metrics generated by various tools across samples and analyze our experiment as a whole. 
+Opening and evaluating an individual .html file for each FASTQ file is obviously going to be tedious and slow. Luckily, someone built a tool to speed this up. [MultiQC](https://multiqc.info/) *MultiQC* searches a specified directory (and subdirectories) for log files that it recognizes and synthesizes these into its own browsable, sharable, interactive .html report that can be opened in a web-browser. *MultiQC* recognizes files from a very wide range of bioinformatics tools (includeing FastQC), and allows us to compare QC metrics generated by various tools across samples and analyze our experiment as a whole. 
 
 Lets run MultiQC on our FastQC files:
 ```bash 
@@ -234,11 +234,11 @@ You can find the MultiQC report run on the complete dataset across all samples i
 
 An additional QC step we can perform before proceeding with the read alignments is to *pre-process* or *trim* the sequences in the FASTQ files to remove sequences that we are not interested in, or were not called confidently by the sequenecer. This step is **optional** in most analysis, although should be based on an empirical decision that leverages the QC assessment of raw FASTQs. For example, if we see we have a large number of adapter seqeunces in our data, or a high proportion of low-quality bases near our read ends, we may wish to trim our raw reads. In the absence of such issues, we could skip this step. 
 
-Another reason this step is optional is that many aligners can account for mismatches or low quality bases at the end of reads during the alignment process. The aligner will *soft-clip* these bases from the alignment when it maps that read (more on this later) so we do not necessairily need to have these bases trimmed off all of the reads. 
+Another reason this step is optional is that many aligners can account for mismatches or low quality bases at the end of reads during the alignment process. The aligner will *soft-clip* these bases from the alignment when it maps that read (more on this later) so we do not necessarily need to have these bases trimmed off all of the reads. 
 
 ### Principles of read trimming: Downstream steps are more efficient
 
-Several algorithms exist for trimming reads in FASTQ format. Generally, these algorithms work by looking for matches to the sequence you specify at the 5' and 3' end of a read. You can specify the minimum number of bases you would like to be considered a match, as the algorithm will trim partial matches to the sequence you specify. Examples opf sequences you might want to remove include: adapter sequences, polyA tails, or low quality bases. 
+Several algorithms exist for trimming reads in FASTQ format. Generally, these algorithms work by looking for matches to the sequence you specify at the 5' and 3' end of a read. You can specify the minimum number of bases you would like to be considered a match, as the algorithm will trim partial matches to the sequence you specify. Examples of sequences you might want to remove include: adapter sequences, polyA tails, or low quality bases. 
 
 ![Read alignment](../figures/read_processing.png)
 
@@ -275,7 +275,7 @@ cd ../results/trim
 cutadapt \
 -o SRR1039508_1.trim.chr20.fastq.gz \
 -p SRR1039508_2.trim.chr20.fastq.gz \
-../raw_data/SRR1039508_1.chr20.fastq.gz ../raw_data/SRR1039508_1.chr20.fastq.gz \
+../../raw_data/SRR1039508_1.chr20.fastq.gz ../../raw_data/SRR1039508_1.chr20.fastq.gz \
 -m 1 -q 20 -j 4 > SRR1039508.cutadapt.report
 ```
 
@@ -285,19 +285,19 @@ cutadapt \
 
 Now lets run this on all of our samples:
 ```bash 
-ls ../raw_data/*_1.trim.chr20.fastq.gz | while read x; do
+ls ../../raw_data/*_1.trim.chr20.fastq.gz | while read x; do
 
 # save the file name
 sample=`echo "$x"`
-# get everything in file name before "_" e.g. "SRR1039508"
-sample=`echo "$sample" | cut -d"_" -f1`
+# get everything in file name after "/" and before "_" e.g. "SRR1039508"
+sample=`echo "$sample" | cut -d"/" -f4|cut -d"_" -f1`
 echo processing "$sample"
 
 # run cutadapt for each sample 
 cutadapt \
    -o ${sample}_1.trim.chr20.fastq.gz \
    -p ${sample}_2.trim.chr20.fastq.gz \
-   ../raw_data/${sample}_1.chr20.fastq.gz ../raw_data/${sample}_2.chr20.fastq.gz \
+   ../../raw_data/${sample}_1.chr20.fastq.gz ../../raw_data/${sample}_2.chr20.fastq.gz \
    -m 1 -q 20 -j 4 > $sample.cutadapt.report;
 done
 ```
