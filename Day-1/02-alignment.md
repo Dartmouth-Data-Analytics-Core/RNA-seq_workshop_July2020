@@ -9,7 +9,11 @@
 
 Make a new directory to work in: 
 ```bash 
-mkdir results/alignment
+# go to our home dir for the wrkshop
+rnaw
+
+# make the directroy and cd into it 
+mkdir results/alignment | cd
 cd results/alignment
 ```
 
@@ -90,11 +94,11 @@ Before running an alignment with STAR, you need to create an index of your refer
 For the purposes of this workshop and saving time, we have pre-built created a small genome index consisting of only chromosome 20, and will be using a subset of the total reads sequenced for sample `SRR1039508` which are known to align to chromosome 20. In practice you would use the entire genome to generate the index. This step is time consuming so we won't run it now, but the command used to create the index we will use is: 
 ```bash 
 STAR --runThreadN 16 \
---runMode genomeGenerate \
---genomeDir hg38_chr20_index \
---genomeFastaFiles Homo_sapiens.GRCh38.dna.primary_assembly.chr20.fa \
---sjdbGTFfile Homo_sapiens.GRCh38.97.chr20.gtf \
---genomeSAindexNbases 11
+  --runMode genomeGenerate \
+  --genomeDir hg38_chr20_index \
+  --genomeFastaFiles Homo_sapiens.GRCh38.dna.primary_assembly.chr20.fa \
+  --sjdbGTFfile Homo_sapiens.GRCh38.97.chr20.gtf \
+  --genomeSAindexNbases 11
 ```
 
 Option details: 
@@ -269,7 +273,7 @@ ls ../trim/*_1.trim.chr20.fastq.gz | while read x; do
     --runThreadN 4 \
     --outSAMtype BAM SortedByCoordinate \
     --outFilterType BySJout \
-    --outFileNamePrefix ${sample}. ;
+    --outFileNamePrefix ${sample}.
 done
 
 # index the BAMs 
