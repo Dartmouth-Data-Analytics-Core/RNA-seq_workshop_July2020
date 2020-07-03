@@ -8,6 +8,10 @@
 
 Make a new directory: 
 ```bash 
+# go to our home worksp dir
+rnaw 
+
+# make folder for quantification
 mkdir results/quant
 cd results/quant
 ```
@@ -39,7 +43,7 @@ htseq-count \
 	-f bam \
 	-s no \
 	-r pos \
-	../alignment/SRR1039508.Aligned.out.sorted.bam \
+	../alignment/SRR1039508.Aligned.sortedByCoord.out.bam \
 	/dartfs-hpc/scratch/rnaseq1/refs/Homo_sapiens.GRCh38.97.chr20.gtf > SRR1039508.htseq-counts
 ```
 
@@ -79,7 +83,7 @@ ls ../alignment/*.Aligned.sortedByCoord.out.bam | while read x; do
 	-s no \
 	-r pos \
 	../alignment/${sample}.Aligned.sortedByCoord.out.bam \
-	/dartfs-hpc/scratch/rnaseq1/refs/Homo_sapiens.GRCh38.97.chr20.gtf > ${sample}.htseq-counts ;
+	/dartfs-hpc/scratch/rnaseq1/refs/Homo_sapiens.GRCh38.97.chr20.gtf > ${sample}.htseq-counts
 done
 ```
 
@@ -89,29 +93,12 @@ The final step in the pre-processing of RNA-seq data for differential expression
 
 ![](../figures/ge-matrix.png)
 
-
-
-Have a look at the htseq-count output files ran on the entire dataset (rather than the subset we have been practicing with)
-```bash
-ls /dartfs-hpc/scratch/rnaseq1/data/htseq-count/
-```
-
-Create a sym link to them:
-```bash 
-# make a sub directory to put them in 
-mkdir all_samples
-cd all_samples
-
-# create the linke 
-ln -s /dartfs-hpc/scratch/rnaseq1/data/htseq-count/*.htseq-counts ./
-```
-
 Loop over htseq-count output files and extract the read count column 
 ```bash
 # set up an array that we will fill with shorthand sample names
 myarray=()
 
-# loop over htseq.counts files and extract 2nd column (the counts) using 'cut' command
+# loop over htseq.counts files and extract 2nd column (the raw read counts) using 'cut' command
 while read x;  do
 	# split up sample names to remove everything after "_"
 	sname=`echo "$x"`
@@ -125,12 +112,15 @@ while read x;  do
 done < <(ls -1 *.htseq-counts | sort)
 ```
 
-This will take a few minutes.. 
-
 Paste all gene IDs into a file with each to make the gene expression matrix
 ```bash 
-cut -f1 SRR1039508_1.htseq-counts > gene_IDs.txt
+# extract ENSG gene IDs from one of the files 
+cut -f1 SRR1039508.htseq-counts > gene_IDs.txt
+
+# use the paste command to put geneIDs and raw counts for all files in 1 file
 paste gene_IDs.txt *.tmp.counts > tmp_all_counts.txt
+
+# check it looks good 
 head tmp_all_counts.txt 
 ```
 
@@ -166,7 +156,10 @@ rm -f *tmp*
 
 In practice, you would have generated the `.htseq.counts` files using all genes accross the entire genome, and using all of the samples in the dataset, instead of the four samples we used in these examples. So that we have the complete set of counts available for day 2, we have made a complete raw counts matrix for you to use. You can find this in `/dartfs-hpc/scratch/rnaseq1/data/htseq-counts/`. It is also is the GitHub repository that you downloaded in the `Day-2` folder, as we will be loading it into `R` tomorrow for the differential expression analysis. 
 
+Have a quick look at it: 
 ```bash 
 head /dartfs-hpc/scratch/rnaseq1/data/htseq-count/all_counts.txt
-```
 
+# how many lines 
+cat /dartfs-hpc/scratch/rnaseq1/data/htseq-count/all_counts.txt | wc -l 
+```
