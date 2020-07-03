@@ -7,6 +7,10 @@
 
 Lets make a new directory to work in: 
 ```bash
+# go to our home dir for the workshop 
+rnaw
+
+# make a new dir for qc
 mkdir results/alignment.qc
 cd results/alignment.qc
 ```
@@ -33,7 +37,7 @@ However, there are several other valuable QC metrics that evaluate features of g
 To run CollectRNASeqMetrics on this dataset, we would run:
 ```bash 
 picard CollectRnaSeqMetrics \
-  I=../alignment/SRR1039508.Aligned.out.sorted.bam \
+  I=../alignment/SRR1039508.Aligned.sortedByCoord.out.bam \
   O=SRR1039508.output.RNA_Metrics \
   REF_FLAT=/dartfs-hpc/scratch/rnaseq1/refs/Homo_sapiens.GRCh38.97.chr20.refFlat.txt \
   STRAND=NONE \
@@ -65,7 +69,7 @@ Despite these considerations, there is still value in checking the levels of rea
 To run *MarkDuplicates*, we call the jar file for *Picard tools* and specify the input SAM/BAM file. 
 ```bash 
 picard MarkDuplicates \
-  I=../alignment/SRR1039508.Aligned.out.sorted.bam \
+  I=../alignment/SRR1039508.Aligned.sortedByCoord.out.bam \
   O=SRR1039508.Aligned.out.sorted.dups.marked.bam \
   M=SRR1039508.dups.out \
   OPTICAL_DUPLICATE_PIXEL_DISTANCE=100 \
@@ -129,12 +133,13 @@ Viewing each of the outputs from the aligner, `CollectRNASeqMetrics`, `MarkDupli
 mv ../alignment/*.final.out ./
 
 # run multiqc on /alignment.qc/
-multiqc . 
-
-# copy to your home directory to have a look at it 
-cp *.html $HOME
+multiqc . --filename "multiqc.alignment.qc"
 ```
 
+Now go to your local machine and use secure copy (scp) to download the rpeort 
+```bash
+scp d41294d@discovery7.dartmouth.edu:/dartfs-hpc/scratch/omw/results/alignment.qc/multiqc* .
+```
 Locate the `qc_report.html` file in `RNA-seq_workshop_July2020/misc/` and open it in a web-broswer. 
 
 **How does the quality look? Do you think there is cause for concern for any samples?**
