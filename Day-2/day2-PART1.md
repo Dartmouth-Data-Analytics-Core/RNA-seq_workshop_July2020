@@ -21,7 +21,7 @@ DESeq2 is a very well organized package that applies robust algorithms to perfor
 NOTE: You must change the below line, and all other lines loading images, to the directory on your computer!!
 
 <center>
-![Overview](/Users/OwenW/Downloads/RNA-seq_workshop_July2020-master/figures/overview.png)
+![Overview](../figures/overview.png)
 </center>
 
 Set the root directory for the whole markdown. THIS MUST BE SET TO THE LOCATION OF THE FOLDER YOU DOWNLOADED!
