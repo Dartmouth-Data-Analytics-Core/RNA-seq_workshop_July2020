@@ -27,7 +27,7 @@ However, there are several other valuable QC metrics that evaluate features of g
 - **Genomic context of reads**: We expect the majority of our reads to map in coding/UTR regions, with few reads in intronic or intergenic regions. If the proportion of intronic or intergenic reads is high, this could suggest your library is contaminated with genomic DNA, or the annotation provided for the reference genome is incomplete. 
 
 <p align="center">
-<img src="../figures/genomic-content.png" title="xxxx" alt="context"
+<img src="../figures/genoic-content.png" title="xxxx" alt="context"
 	width="80%" height="80%" />
 </p>
 </p>
