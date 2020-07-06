@@ -32,7 +32,7 @@ However, there are several other valuable QC metrics that evaluate features of g
 </p>
 </p>
 
-***Fig. 1.** Genomic context of aligned reads can fall into several categories dictated by the annotation used. 
+***Fig. 1.** Genomic context of aligned reads can fall into several categories dictated by the annotation used. *
 
 - **Proportion of ribosomal RNA (rRNA) reads**: rRNA constituties the large majority of RNA present in most cell types, which are usually not of interest in our experiment, therefore we try to reduce their numbers using depletion and polyA slection procedures in library preparation. These procedures are not always 100% effective. If the proportion of rRNA reads is high, you should filter these reads before differential expression analysis, as it may skew the normalization of your count matrix. 
 
@@ -55,6 +55,7 @@ However, there are several other valuable QC metrics that evaluate features of g
 
 ***Fig. 3.** Strand orientation is dependent on library preparation method.*
 
+### CollectRNASeqMetrics (*Picard tools*)
 
 [Picard tools](https://broadinstitute.github.io/picard/) (Star-trek) provides a useful tool, called [*CollectRNASeqMetrics*](https://gatk.broadinstitute.org/hc/en-us/articles/360037057492-CollectRnaSeqMetrics-Picard-) that calculates these metrics, taking the alignment SAM/BAM file as input, and returning a text file with the suffix `.output.RNA_Metrics`. 
 
