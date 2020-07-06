@@ -28,7 +28,7 @@ However, there are several other valuable QC metrics that evaluate features of g
 
 <p align="center">
 <img src="../figures/genoic-content.png" title="xxxx" alt="context"
-	width="80%" height="80%" />
+	width="100%" height="100%" />
 </p>
 </p>
 
