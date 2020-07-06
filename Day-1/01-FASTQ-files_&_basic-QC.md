@@ -4,6 +4,12 @@
 - Understand the FASTQ file format and the formatting sequence information it stores
 - Learn how to perform basic operations on FASTQ files in the command-line 
 
+If you get lost, or do not have enough time to finish the commands before we move to the next session you can create a link to the files needed for the next step with the following command from the scratch directory you have created for yourself.
+
+```bash
+ln -s /dartfs-hpc/scratch/rnaseq1/data/raw-fastq/subset/01/ results/trim/
+```
+
 ## FASTQ file format
 
 FASTQ files are arguably the workhorse format of bioinformatics. FASTQs are used to store sequence reads generated in next-generatoon sequencing (NGS) experiments. Similarly to FASTA files, FASTQ files contain a herder line, followed by the sequence read, however individual quality of base calls from the sequencer are included for each record in a FASTQ file. 
