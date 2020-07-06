@@ -1,4 +1,4 @@
-# Putting it all together (pipelining)#
+# Putting it all together (pipelining) #
 Just like in wet bench experiments it is important that you keep careful track of the programs that were used to process your genomic data. Generally since we process data on the computer we keep a running lab notebook on the computer of all of the commands that were used to process the data. This can simply be a list of each command that was run, or if you want to get sophisticated (and we are all here to learn aren't we) you can write a code that will run through each command succesively using the output from one command to feed into the next command. One of the benefits of writing your code this way is the same code can be used over and over by simply changing the list of sample names in the first lines. 
 
 This is what we are going to try and have you build as "homework" for day 1. I will get you started with the first several commands and then you can try filling in the rest. If you run into trouble leave a slack comment explaining your torubles and we will do our best to get back to you! 
@@ -67,7 +67,7 @@ for x in "${array[@]}"; do \
 done
 ```
 
-### Now you fill in the loops for the rest of the steps ### 
+## Now you fill in the loops for the rest of the steps ## 
 
 ### Run CollectRNASeqMetrics ### 
 
