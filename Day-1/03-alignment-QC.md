@@ -31,11 +31,11 @@ However, there are several other valuable QC metrics that evaluate features of g
 - **Gene body coverage**: Depending on the type of library protocol used, you will have an expectation for the average distribution of reads over gene bodies. For full-length transcript methods, you expect coverage over the entire body of a gene, however for 3'-end methods (e.g. QuantSeq) you expect a heavy 3' bias. Any significant deviations from expected can indicate sample quality problems that may be reflective of issues in library preparation. 
 
 <p align="center">
-<img src="../figures/gene-body.png" alt="htseq-count-mode"
-	title="Comparison between KAPA & Lexogen 3'-end gene body coverage" width="80%" height="80%" />
-</p>	
+<img src="../figures/gene-body.png" title="xxxx" alt="htseq-count-mode"
+	width="80%" height="80%" />
+</p>
 
-Image from: Ma *et al*, 2019, *BMC Genomics*. 
+Fig. 1. Comparison of gene-body coverage for KAPA & Lexogen RNA-seq libarries. Image from: Ma *et al*, 2019, *BMC Genomics*. 
 
 - **Strand specificity**: For stranded library-preparation protocols, we expect almost all the reads to come from the expected strand (e.g. *REV* for KAPA libraries, *FWD* for QuantSeq 3' libraries. For non-stranded protocols, the distribution of reads should be equally split between *FWD* and *REV*. 
 
