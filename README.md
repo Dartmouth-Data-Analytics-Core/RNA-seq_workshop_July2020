@@ -11,9 +11,10 @@ If you have questions about this workshop, or would like to discuss data analysi
 ### Workshop goals: 
 - Develop a working understanding of the analytical workflow for a typical RNA-seq experiment
 - Pre-process raw data in FASTQ format to generate a gene expression matrix
-- Learn how to perform a detailed quality control analysis 
+- Learn how to perform a detailed quality control analysis
+- Develop a working understanding of the fundamental statistics behind a typical differential expression analysis using R/Bioconductor packages 
 - Perform a differential expression analysis using R/Bioconductor packages 
-- Learn how to explore the results and make robust insights from your data  
+- Learn how to explore the results and make robust insights from your data
 
 ### Workshop Contacts: 
 - Shannon Soucy (Shannon.Margaret.Soucy@Dartmouth.edu)
