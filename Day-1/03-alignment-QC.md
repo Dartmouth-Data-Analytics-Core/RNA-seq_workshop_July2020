@@ -24,6 +24,8 @@ cat ../alignment/SRR1039508.Log.final.out
 
 However, there are several other valuable QC metrics that evaluate features of genome alignments and allow us to identify potential issues or biases that may exist in the data. These metrics include: 
 
+- **Proportion of ribosomal RNA (rRNA) reads**: rRNA constituties the large majority of RNA present in most cell types, which are usually not of interest in our experiment, therefore we try to reduce their numbers using depletion and polyA slection procedures in library preparation. These procedures are not always 100% effective. If the proportion of rRNA reads is high, you should filter these reads before differential expression analysis, as it may skew the normalization of your count matrix. 
+
 - **Genomic context of reads**: We expect the majority of our reads to map in coding/UTR regions, with few reads in intronic or intergenic regions. If the proportion of intronic or intergenic reads is high, this could suggest your library is contaminated with genomic DNA, or the annotation provided for the reference genome is incomplete. 
 
 <p align="center">
@@ -33,8 +35,6 @@ However, there are several other valuable QC metrics that evaluate features of g
 </p>
 
 ***Fig. 1.** Genomic context of aligned reads can fall into several categories dictated by the annotation used. *
-
-- **Proportion of ribosomal RNA (rRNA) reads**: rRNA constituties the large majority of RNA present in most cell types, which are usually not of interest in our experiment, therefore we try to reduce their numbers using depletion and polyA slection procedures in library preparation. These procedures are not always 100% effective. If the proportion of rRNA reads is high, you should filter these reads before differential expression analysis, as it may skew the normalization of your count matrix. 
 
 - **Gene body coverage**: Depending on the type of library protocol used, you will have an expectation for the average distribution of reads over gene bodies. For full-length transcript methods, you expect coverage over the entire body of a gene, however for 3'-end methods (e.g. QuantSeq) you expect a heavy 3' bias. Any significant deviations from expected can indicate sample quality problems that may be reflective of issues in library preparation. 
 
