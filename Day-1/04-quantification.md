@@ -16,6 +16,13 @@ mkdir results/quant
 cd results/quant
 ```
 
+If you get lost, or do not have enough time to finish the commands before we move to the next session you can create a link to the files needed for the next step with the following command from the scratch directory you have created for yourself.
+
+```bash
+ls -s /dartfs-hpc/scratch/rnaseq1/data/raw-fastq/subset/04/ results/quant/
+```
+
+
 ## Principle of quantifying read counts for RNA-seq 
 For most downstream analyses in RNA-seq, especially differential expression, we care about how many reads aligned to a specific gene, as this tells us about the genes expression level, which we can then compare to other samples. Inherently, this means that we want to make these data *count-based*, so that we can use statistical models to compare these counts between experimental conditions of interest. 
 
