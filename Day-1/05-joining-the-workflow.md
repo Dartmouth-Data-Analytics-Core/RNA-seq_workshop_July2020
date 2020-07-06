@@ -1,7 +1,7 @@
 # Putting it all together (pipelining) #
 Just like in wet bench experiments it is important that you keep careful track of the programs that were used to process your genomic data. Generally since we process data on the computer we keep a running lab notebook on the computer of all of the commands that were used to process the data. This can simply be a list of each command that was run, or if you want to get sophisticated (and we are all here to learn aren't we) you can write a code that will run through each command succesively using the output from one command to feed into the next command. One of the benefits of writing your code this way is the same code can be used over and over by simply changing the list of sample names in the first lines. Code written this way is generally stored in a text file and written using a text editor. 
 
-![](../figures/terminal_commands.png)
+![](../figures/terminal_commands2.png)
 
 This works well if your samples are small or there aren't many of them, however in most cases you will want to parallelize your dta processing to maximize the computational resources of the cluster. To do this you would submit a pbs job to the que using a pipeline like we have made available [here](https://github.com/Dartmouth-Data-Analytics-Core/DAC-rnaseq-pipeline).
 
