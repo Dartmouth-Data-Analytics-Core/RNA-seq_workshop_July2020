@@ -11,8 +11,8 @@ We will try our best to stick to this schedule, although it is a best guess. We 
 - **8:55 am** - Zoom session starts  
 - **9:00 am** - Welcome, intro., logistics, & introductions  
 - **9:30 am** - 00 - Data management & setup (hands-on)
-- **10:15 am** - 15 minute break 
-- **10:30 am** - Intro. to RNA-seq (Lecture)
+- **10:00 am** - 15 minute break 
+- **10:15 am** - Intro. to RNA-seq (Lecture)
 - **11:00am** - 01 - FASTQ files & basic QC (hands on)
 - **12:00 pm** - Lunch break (1 hour)
 
