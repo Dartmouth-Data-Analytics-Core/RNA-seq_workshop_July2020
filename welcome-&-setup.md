@@ -98,9 +98,7 @@ if (!any(rownames(installed.packages()) == "ComplexHeatmap")){
 library(ComplexHeatmap)
 
 if (!any(rownames(installed.packages()) == "kableExtra")){
-  if (!requireNamespace("BiocManager", quietly = TRUE))
-      install.packages("BiocManager")
-  BiocManager::install("kableExtra")
+      install.packages("kableExtra")
 }
 library(kableExtra)
 
