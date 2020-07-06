@@ -14,7 +14,6 @@ rnaw
 
 # make the directroy and cd into it 
 mkdir results/alignment | cd
-cd results/alignment
 ```
 
 ## Principles of read alignment for RNA-seq
