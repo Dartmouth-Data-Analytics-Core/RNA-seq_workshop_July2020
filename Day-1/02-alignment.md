@@ -16,6 +16,11 @@ rnaw
 mkdir results/alignment 
 cd results/alignment
 ```
+If you get lost, or do not have enough time to finish the commands before we move to the next session you can create a link to the files needed for the next step with the following command from the scratch directory you have created for yourself.
+
+```bash
+ln -s /dartfs-hpc/scratch/rnaseq1/data/raw-fastq/subset02/	results/alignment/
+```
 
 ## Principles of read alignment for RNA-seq
 Aligning millions of reads to very large reference genomes (such as the human genome) is generally done by splitting the reads and reference into a catalog of shorter reads with unique sequnece structures (kmers). It is improtant when selecting an alignement program to ensure that it is appropriate for the dataset you are working with, for example STAR (Spliced Transcripts Alignment to a Reference) is used to align reads that have come from spliced transcripts. A single read from a spliced transcriptome might map across a splice junction, such that the left side of the read and the right side of the read map hundreds of base pairs apart. If your dataset is prokaryotic (non-splicosomal) this would not be the appropriate program for you to align your reads, we would suggest looking into bwa-mem or bowtie2. If you are in a hurry and not interested in obtaining read alignments and only need count data quasi-mapping with a tool like Salmon might be a good option. 
