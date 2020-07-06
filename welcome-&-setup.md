@@ -46,15 +46,16 @@ When you are ready activate the conda environment, which you will need for the w
 ```bash
 conda activate rnaseq1/
 ```
+You will see that the activate command has worked when it reads (rnaseq1) rather than (base) to the left of the prompt. 
 
 There is one more conda environment you will need to create in order to run some of the QC metrics for our alignment. We will install the picard program (yes from Star Trek) using the bioconda channel. 
 
 ```bash
 conda install -c bioconda picard
 ```
-During this installation you will be shown a list of all the dependencies that picard requires (this is why conda environments are so handy) and asked if you would like to proceed with installing these packages in your picard conda environment, type yes to install these packages in our conda environment. 
+During this installation you will be shown a list of all the dependencies that picard requires (this is why conda environments are so handy) and asked if you would like to proceed with installing these packages in your existing rnaseq1 conda environment, type yes to install these packages in your conda environment. 
 
-You will see that the activate command has worked when it reads (rnaseq1) rather than (base) to the left of the prompt. When you are finished using a conda environment it is good practice to deactivate your session with the following command.
+When you are finished using a conda environment it is good practice to deactivate your session with the following command.
 
 ```bash
 conda deactivate
