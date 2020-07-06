@@ -13,7 +13,7 @@ Make a new directory to work in:
 rnaw
 
 # make the directroy and cd into it 
-mkdir results/alignment | cd
+mkdir results/alignment 
 cd results/alignment
 ```
 
