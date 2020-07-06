@@ -104,6 +104,7 @@ Using a similar approach, we could count up all of the instances of individual D
 ```bash
 zcat SRR1039508_1.chr20.fastq.gz | sed -n '2~4p' | head -10000 | grep -o . | sort | grep 'C\|G' | uniq -c 
 ```
+
 Now we have the number of each nuleotide across the reads from the first 10000 records. A quick and easy program to get GC content. GC content is used in basic quality control of sequence from FASTQs to check for potential contamination of the sequencing library. We just used this code to check 1 sample, but what if we want to know for our 4 samples?
 
 ## For & while loops 
@@ -242,7 +243,7 @@ mkdir rnaseq_wrksp/
 cd rnaseq_wrksp/
 
 # use secure copy (scp) to download the files to your local machine 
-scp d41294d@discovery7.dartmouth.edu:/dartfs-hpc/scratch/omw/raw_data/fastqc_results/*multiqc. .
+scp d41294d@discovery7.dartmouth.edu:/dartfs-hpc/scratch/omw/raw_data/fastqc_results/multiqc_report.html .
 ```
 
 You can find the MultiQC report run on the complete dataset across all samples in the dataset in the github repository, under `QC-reports`. Lets open it and explore our QC data. 
