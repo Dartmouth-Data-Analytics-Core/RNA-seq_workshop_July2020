@@ -26,16 +26,23 @@ However, there are several other valuable QC metrics that evaluate features of g
 
 - **Genomic context of reads**: We expect the majority of our reads to map in coding/UTR regions, with few reads in intronic or intergenic regions. If the proportion of intronic or intergenic reads is high, this could suggest your library is contaminated with genomic DNA, or the annotation provided for the reference genome is incomplete. 
 
-- **Proportion of ribosomal RNA (rRNA) reads**: rRNA constituties the large majority of RNA present in most cell types, which are usually not of interest in our experiment, therefore we try to reduce their numbers using depletion and polyA slection procedures in library preparation. These procedures are not always 100% effective. If the proportion of rRNA reads is high, you should filter these reads before differential expression analysis, as it may skew the normalization of your count matrix. 
-
-- **Gene body coverage**: Depending on the type of library protocol used, you will have an expectation for the average distribution of reads over gene bodies. For full-length transcript methods, you expect coverage over the entire body of a gene, however for 3'-end methods (e.g. QuantSeq) you expect a heavy 3' bias. Any significant deviations from expected can indicate sample quality problems that may be reflective of issues in library preparation. 
-
 <p align="center">
 <img src="../figures/gene-body.png" title="xxxx" alt="genebody"
 	width="80%" height="80%" />
 </p>
 
 ***Fig. 1.** Comparison of gene-body coverage for KAPA & Lexogen RNA-seq libarries. Image from: Ma *et al*, 2019, *BMC Genomics*.*
+
+- **Proportion of ribosomal RNA (rRNA) reads**: rRNA constituties the large majority of RNA present in most cell types, which are usually not of interest in our experiment, therefore we try to reduce their numbers using depletion and polyA slection procedures in library preparation. These procedures are not always 100% effective. If the proportion of rRNA reads is high, you should filter these reads before differential expression analysis, as it may skew the normalization of your count matrix. 
+
+- **Gene body coverage**: Depending on the type of library protocol used, you will have an expectation for the average distribution of reads over gene bodies. For full-length transcript methods, you expect coverage over the entire body of a gene, however for 3'-end methods (e.g. QuantSeq) you expect a heavy 3' bias. Any significant deviations from expected can indicate sample quality problems that may be reflective of issues in library preparation. 
+
+<p align="center">
+<img src="../figures/genomic-context.png" title="xxxx" alt="context"
+	width="80%" height="80%" />
+</p>
+
+***Fig. 2.** Comparison of gene-body coverage for KAPA & Lexogen RNA-seq libarries. Image from: Ma *et al*, 2019, *BMC Genomics*.*
 
 - **Strand specificity**: For stranded library-preparation protocols, we expect almost all the reads to come from the expected strand (e.g. *REV* for KAPA libraries, *FWD* for QuantSeq 3' libraries. For non-stranded protocols, the distribution of reads should be equally split between *FWD* and *REV*. 
 
@@ -44,7 +51,7 @@ However, there are several other valuable QC metrics that evaluate features of g
 	width="90%" height="90%" />
 </p>
 
-***Fig. 2.** Strand orientation is dependent on library preparation method.*
+***Fig. 3.** Strand orientation is dependent on library preparation method.*
 
 
 [Picard tools](https://broadinstitute.github.io/picard/) (Star-trek) provides a useful tool, called [*CollectRNASeqMetrics*](https://gatk.broadinstitute.org/hc/en-us/articles/360037057492-CollectRnaSeqMetrics-Picard-) that calculates these metrics, taking the alignment SAM/BAM file as input, and returning a text file with the suffix `.output.RNA_Metrics`. 
