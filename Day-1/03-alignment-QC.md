@@ -182,10 +182,14 @@ Open this report and have a look at it, but also open the report for post-alignm
 ### Do you think there is cause for concern for any samples?
 
 **General notes:**
-- Overall, the quality of these samples looks great. Most samples have at least 20 million aligned reads, with > 90% of the inital read successfully aligned in all samples. 
-- Additionally, >90% of reads map to mRNA features, confirming that our annotation is likely of good quality, and we don't have much contamination from genomic DNA, PCR artifacts, or other species. In the `RnaSeqMetrics` section, you can hover over individual samples and see the proportion of reads mapping to intronic or intergenic sequences is very small. 
-- ~75% of our aligned reads are unique (not duplicates), which is perfectly acceptable in an RNA-seq experiment 
-- Coverage is well normalized over the length of the average gene, indicating we do not have any significant 3'-bias in these data 
-- The only possible issue I would note is that one sample seems to have slightly fewer tital aligned reads than the others, with ~15 million. This isn't necessairily a problem, and is likely related to the amount of input material and/or its quality, and if I have done a good job of tracking sample metadata, such as the the RNA QC scores, I could test this hypothesis. I might also be careful not to make any inferences from this sample that would need to be based off deeper sequencing (e.g. identifying a novel splice junction). 
+- **Overall, the quality of these samples looks great.** Most samples have at least 20 million aligned reads, with > 90% of the inital read successfully aligned in all samples.   
+
+- Additionally, **>90% of reads map to mRNA features,** confirming that our annotation is likely of good quality, and we don't have much contamination from genomic DNA, PCR artifacts, or other species. In the `RnaSeqMetrics` section, you can hover over individual samples and see the proportion of reads mapping to intronic or intergenic sequences is very small.   
+
+- **~75% of our aligned reads are unique** (not duplicates), which is perfectly acceptable in an RNA-seq experiment    
+
+- **Coverage is well normalized over the length of the average gene**, indicating we do not have any significant 3'-bias in these data   
+
+- The only possible issue I would note is that one sample seems to have slightly fewer total aligned reads than the others, with ~15 million. This isn't necessairily a problem, and is likely related to the amount of input material and/or its quality, and if I have done a good job of tracking sample metadata, such as the the RNA QC scores, I could test this hypothesis. I might also be careful not to make any inferences from this sample that would need to be based off deeper sequencing (e.g. identifying a novel splice junction).  
 
 **Note:** Since we set the `STRAND` option in `CollectRNASeqMetrics` to `NONE` (as this is an unstranded dataset) there is not section in the report for strand specificity. If you library is stranded, and you told `CollectRNASeqMetrics` the correct strand that you expect your reads to be on, you should see that >99% of your reads are on the expected strand. If they are not, you either specified the wrong strand, or there was a problem in library prep. and your strand-synthesis was not very effective.
