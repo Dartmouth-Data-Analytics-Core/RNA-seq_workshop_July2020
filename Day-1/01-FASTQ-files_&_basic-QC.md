@@ -127,7 +127,9 @@ ls *.fastq.gz | while read x; do \
    echo $x is being processed...; 
    # provide an empty line for ease of viewing 
    yes '' | sed 1q;  \
+   # unzip w/ zcat and print head of file
    zcat $x | head -n 4;  \
+   # print 3 lines to for ease of viewing 
    yes '' | sed 3q ;
 done
 ```
