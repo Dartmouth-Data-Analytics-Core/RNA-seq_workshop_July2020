@@ -9,10 +9,17 @@
 - Learn how to explore the results and make robust insights from your data
 
 ### Day 1 analysis overview
-![](../figures/analysis_overview.png)
+![](figures/analysis_overview.png)
 
 ### Day 2 overview
-![](../figures/day2_summary.png)
+![](figures/day2_summary.png)
+
+### Some final take-aways from the workshop:
+- Spend the time to plan, consult, practice, (and money) to generate high quality data that will provide robust inferences 
+- If you are going to do a lot of Bioinformatics, you should get **really** good at the command-line (Bash), otherwise, pre-processing will be slow & painful
+- Downstream differential expression analysis of a raw count matrix is best done in R, and requires some basic knowledge of statistics 
+- Identify, understand, and check key QC metrics in the pre-processing and DE analysis portions, to ensure the quality of your results
+- **PLEASE** correct for multiple testing!
 
 ### How to consolidate your learning: 
 - Re-run the code a week or two after the workshop, as this is a great way to consolidate what you have learned at the command-line
@@ -41,5 +48,15 @@ Here is some suggested reading regarding gene ontology and pathway analysis appr
 - [Ten Years of Pathway Analysis: Current Approaches and Outstanding Challenges. *PLoS Computational Biology.* 2012.](https://doi.org/10.1371/journal.pcbi.1002375)
 - [Gene set enrichment analysis: a knowledge-based approach for interpreting genome-wide expression profiles. *PNAS* 2005.](https://doi.org/10.1073/pnas.0506580102) (the original GSEA paper)
 - [Gene Set Enrichment Analysis Made Simple. *Stat Methods Med Red.* 2009.](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC3134237/)
+
+### Feedback: 
+
+We ask that you all complete the survey that has been sent out over email so that we can gauge what worked well and what we need to improve for our next workshop. If you have additional thoughts that were not addressed in the survey, please feel free to contact any one of us, or reach out to the DAC meail directly (*DataAnalyticsCore@groups.dartmouth.edu*). 
+
+<img src="figures/logo.jpg" width="250" height="140" >
+
+We hope to offer this workshop again, as well as workshops covering other types of genomic data analysis and bioinformatics. If you have suggestions for workshops you would like to see, please let us know! 
+
+Please feel free to reach out to us with questions about concepts discussed in the workshop, or for a analysis consultations. Our **bioinformatics office hours** on **Fridays 1-2pm** are a great place to do this! (currently on zoom: https://dartmouth.zoom.us/s/96998379866, pword: *bioinfo*)
 
 ### Now.... Discussion/question time! 
