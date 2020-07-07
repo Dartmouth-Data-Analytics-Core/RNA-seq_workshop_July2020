@@ -284,7 +284,7 @@ ls ../trim/*_1.trim.chr20.fastq.gz | while read x; do
 done
 
 # index the BAMs 
-samtools index *sorted.bam
+samtools index *sortedByCoord.bam
 ```
 Note that I change `--outSAMtype` to `BAM sortedByCoord` so that we dont have to convert SAM to BAM and run `sort`. 
 
