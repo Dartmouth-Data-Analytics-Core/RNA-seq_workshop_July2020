@@ -32,45 +32,46 @@ Although we won't go into the theory here, alignming reads to reference genomes 
 - **Repeitive sequences** in genomes (e.g. start and end of chromosomes)
 - Presence of **intron** in reference genomes, meaning aligners must be able to consider **splice-junctions**
 
-It is important when selecting an aligner to use for your dataset that it is appropriate for your experiment, as numerous aligners exist and make different assumptions and have different strengths/weaknesses. Importantly, some aligners are ***splice-aware*** while others are not. ***Splice-aware*** aligners can generate alignments to a reference genome that span the intronic regions and therefore account for splicing. If your dataset is prokaryotic (non-splicosomal) you would **not** want to use a splice-aware aligner, and instead using an aligner that is not designed to map across intronic regions such as `bwa-mem` or `bowtie2`. 
+It is important when selecting an aligner to use for your dataset that it is appropriate for your experiment, as numerous aligners exist and make different assumptions and have different strengths/weaknesses. Importantly, some aligners are ***splice-aware*** while others are not. ***Splice-aware*** aligners can generate alignments to a reference genome that span the intronic regions and therefore account for splicing, e.g. `STAR` and `HISAT2`. If your dataset is prokaryotic (non-splicosomal) you would **not** want to use a splice-aware aligner, and instead using an aligner that is not designed to map across intronic regions such as `bwa-mem` or `bowtie2`. 
 
 It is also worth noting here that generating alignments is the most time consuming step of the analytical pipeline for most NGS analyses, and for RNA-seq, the field is moving toward quantification of gene expression using novel *'lightweight'* alignment tools, that are **extremely fast**, e.g. [Kallisto](https://pachterlab.github.io/kallisto/about), [Salfish](https://www.nature.com/articles/nbt.2862), and [Salmon](https://combine-lab.github.io/salmon/). These algorithms avoid generation of typical base-by-base alignments, and instead generate ***psuedo-alignments***, which have been shown to produce very accurate estimates of transcript abundances in RNA-seq data. 
 
 ![Read alignment](../figures/read_alignment.png)
+  
 
 #### Concepts for read alignment 
 
-**Read clipping**
+**Read clipping**  
 Aligners are capable of 'clipping' reads from sequence ends if they do not improve the quality of an alignment that exists for the rest of the sequence.  
 
 There are two type of clipping:  
 - *Soft-clipping*: bases at 5' and 3' ends of the read will be kept in the read sequence in the BAM file, but are NOT part of the alignment
 - *Hard-clipping*: bases at 5' and 3' ends of the read will be removed from the BAM file altogether and are NOT part of the alignment 
 
-Such clipping is commonly used by aligners to get rid of sequence contamination, e.g. adapter sequences or polyA tails from mRNAs, so that it does not affect the alignment. At least for RNA-seq, this is why you do not necessairily need to be very aggressive in read trimming and pre-processing steps. 
+Such clipping is commonly used by aligners to get rid of sequence contamination, e.g. ***adapter sequences*** or ***polyA tails*** from mRNAs, so that it does not affect the alignment. At least for RNA-seq, this is why you do not necessairily need to be very aggressive in read trimming and pre-processing steps. 
 
 Clipping can be very advantageous, but also can potentially cause some issues, read more [here](https://sequencing.qcfail.com/articles/soft-clipping-of-reads-may-add-potentially-unwanted-alignments-to-repetitive-regions/). 
 
-**Splicing**
-Several different aligners exist, and one particularly important feature of an aligner is whether or not it is *splie-aware*. Splice-aware aligners, such as `STAR` and `HISAT2` are able to map reads over splice junctions by spanning the intronic region. This is obviously an important characteristic for RNA-seq data. Furthermore, if you provide coordinates of splice-junctions to aligners like STAR, it can improve the mapping over spliced regions and improve detection of novel splice-functions. 
+**Splicing**  
+As discussed above, numerous aligners exist, consisting of both ***splie-aware*** and ***splice-unaware*** aligners. Splice-aware aligners, such as `STAR` and `HISAT2` will produce alignments spanning splice junctions, which is obviously an important characteristic of RNA-seq data that the aligner needs to be able to account for. Furthermore, if you provide coordinates of splice-junctions to aligners like `STAR`, it can improve the mapping over spliced regions and improve detection of novel splice-functions. 
 
-**Genome vs transcriptome mapping?**
+**Genome vs transcriptome mapping?**  
 While there are times when one may want to map to a transcriptome, there are issues with this approach.  
 - If your annotated transcriptome is not complete, you may fail to map some reads simply because the sequences aren't in your reference, which would not an issue if you mapped to the genome. 
 - With multiple splice isoforms it is difficult to disambiguate which splice isoform a read should be aligned to in transcriptome mapping. 
 - You cannot identify novel transcripts this way.
 
-**What input do I need for an alignmnet?**
+**What input do I need for an alignmnet?**  
 At miniumum:  
 - `FASTQ` file(s)
 - A reference genome (`.fasta`)
 
-Optional: 
+Optional:   
 - `.gtf` file for the reference genome that species the genomic feature annotation. As mentioned above, if you know where the splice-junctions in your genome are, you can give this to aligners such as STAR and they will use this information to improve the quality of mapping in these regions. 
 
 ![](../figures/gtf.png)
 
-**Alignment file formats**
+**Alignment file formats**  
 
 Read alignments are stored in the SAM (.sam) and BAM (.bam) file format. SAM stands for *Sequence Alignment/Map* format and is in tab-delimited text format, making it a human readable file (should you dare to look inside, these file are huge). Bam files are the compressed, indexed, binary version of SAM files and are NOT human readable, but are much faster to parse and do complex downstream operations on. You can read all about the SAM/BAM file format specification in the documentation [here](https://samtools.github.io/hts-specs/SAMv1.pdf). While you may never need to actually look inside of a SAM/BAM file, it is important to have an understanding of what information is stored in one. 
 
