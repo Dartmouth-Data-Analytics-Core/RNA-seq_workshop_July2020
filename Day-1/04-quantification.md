@@ -25,19 +25,35 @@ There are a number of methods that one can use to quantify reads overlapping spe
 
 Other methods leverage probablistic modeling in order to quantify the alignments (e.g. [RSEM](https://deweylab.github.io/RSEM/)), which ascibes reads to features with a probability of this being the correct location for a given read. Generally, these methods are used on more complex data (e.g. full-length transcript and/or paired-end data) where transcript estimates are of interest. 
 
-For our analysis, we will used htseq-count. htseq-count has three distinct modes for handling overlapping features; union, intersection_strict, and intersection_nonempty. You change change these using the `mode` option. The behaviour of each setting is described in the figure below, taken from the htseq-count documentation. Another important (and related) behaviour of htseq-count is how it handles multi-mapping reads (reads that map to > 1 place in the genome). Generally, multimapping reads are discarded during counting to prevent introduction of bias into the counts. 
+## htseq-count
 
-### Counting modes (from the htseq-count documentation, found [here](https://htseq.readthedocs.io/en/release_0.11.1/count.html))
+For our analysis, we will used `htseq-count`. The `htseq-count`algorithm follows a specific set of rules to count reads overlapping genomic features, in order to quantify expression over those features (genes). As input, `htseq-count` requires:  
+- Aligned sequencing reads (`SAM/BAM` file)
+- List of genomic features (`GTF` file)
+
+`htseq-count` has numerous options that can be specified to control its behaviour. One important feature that can be controlled is how `htseq-count` will count reads that overlap multiple features, for which it has three distinct modes: `union` (default), `intersection_strict`, and `intersection_nonempty`. You change change these using the `mode` option. 
+
+#### Counting modes (from the htseq-count documentation, found [here](https://htseq.readthedocs.io/en/release_0.11.1/count.html))
 
 <p align="center">
 <img src="../figures/htseq-count-mode.png" alt="htseq-count-mode"
 	title="" width="75%" height="75%" />
 </p>	
 
+**Strandedness:**  
 One of the most important options in htseq-count is `strandedness`. It is critical to select the correct option for `strandedness` (`-s`) for your dataset, otherwise you may incorrectly use, or throw away, a lot of information. The default setting in htseq-count for `strandedness` is `yes`. This means reads will only be counted as overlapping a feature provided they map to the same strand as the feature. If your data was generated using an unstranded library preparation protocol, as in this experiment, we must set this option to `no`. Failiure to do so would mean you would throw away ~50% of all your reads, as they will be distributed equally across both strands for each feature in an unstranded library.  
 
+<p align="center">
+<img src="../figures/strandedness.png" alt="strand"
+	title="" width="85%" height="55%" />
+</p>	
+
+**Feature type:**  
 Another important option in htseq-count is `t` or `type` which specifies which feature type (3rd column of a GTF file) you want to count features over. The default is `exon` which works for GTF files from Ensembl, such as the file we will be using. However, this can be changed to any feature in your GTF file, so theoretically can be used to count any feature you have annotated. 
 
+![](../figures/gtf.png)
+
+**Specifying BAM sorting:**  
 When counting paired-end data (such as in this experiemnt) your .bam files should be sorted before running htseq-count, and you can specify how your .bam is sorted using the `-r` option. `name` indicates they are sorted by read name, `pos` indicates they are sorted by genomic position. 
 
 ## Run htseq-count on your .bam file 
@@ -92,7 +108,7 @@ done
 
 ## Generate the gene expression matrix of raw read counts
 
-The final step in the pre-processing of RNA-seq data for differential expression analysis is to concatenate your read counts into a gene expression matrix that contains the counts from all your samples. We will do this at the command line, however there are also ways to directly read the output of programs like htseq-count and RSEM directly into R without concatenating them into a matrix before hand (discussed on day2). 
+The final step in the pre-processing of RNA-seq data for differential expression analysis is to concatenate your read counts into a gene expression matrix that contains the counts from all your samples. We will do this at the command line, however there are also ways to directly read the output of programs like `htseq-count` and `RSEM` directly into R without concatenating them into a matrix before hand (discussed on Day-2). 
 
 ![](../figures/ge-matrix.png)
 
