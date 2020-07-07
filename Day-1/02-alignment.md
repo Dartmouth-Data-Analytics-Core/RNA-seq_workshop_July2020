@@ -239,16 +239,7 @@ samtools view -c -F 256 SRR1039508.Aligned.out.sorted.REV.bam
 
 The Integrative Genomics Viewer (IGV) from the Broad Institute is an extremely useful tool for visualization of alignment files (as well as other genomic file formats). Viewing your alignments in this way can be used to explore your data, troubleshoot issues you are having downstream of alignment, and inspect coverage and quality of reads in specific regions of interest (e.g. in variant calling). I strongly encourage you to download the IGV for your computer from their [website](http://software.broadinstitute.org/software/igv/) and play around with a BAM file to get familar with all its various features. 
 
-Here, we will create a small subset of a BAM file, download it onto our local machines, and view it using the IGV web app (for speed). You can open the IGV web app in your browser [here](https://igv.org/app/). 
-
-Lets go ahead and subset our BAM file for reads aligning only to chromosome 20. We also need to create an index. 
-```bash
-# subset for reads just on chr 20 (to make it smaller)
-samtools view -b -@ 8 -o chr20.bam SRR1039508.Aligned.out.sorted.bam 20
-
-# index your new bam file 
-samtools index chr20.bam
-``` 
+Here, we will download our BAM onto our local machines, and view it using the IGV web app (for speed). You can open the IGV web app in your browser [here](https://igv.org/app/). 
 
 Now download the files onto your local machine, so that you can load them into the IGV web app. 
 ```bash
@@ -276,7 +267,7 @@ Now navigate to the IGV web app, and follow the below steps:
 
 - What do you notice about the orientation of the aligning reads? 
 - Do you think this gene is expressed in this sample? What about relative to nearby genes?
-- Is there potentially going to be any ambiguity in read quantification for `SAMHD1`, given that our library was generared using a **stranded** protocol? 
+- Is there potentially going to be any ambiguity in read quantification for `SAMHD1`, given that our library was generared using a **unstranded** protocol? 
 - How does `IGV` know where to put these reads, set their orientations, show if they are in a pair, etc. 
 
 ## Run the alignment for all samples
