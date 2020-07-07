@@ -3,11 +3,11 @@ Just like in wet bench experiments it is important that you keep careful track o
 
 ![](../figures/terminal_commands3.png)
 
-This works well if your samples are small or there aren't many of them, however in most cases you will want to parallelize your dta processing to maximize the computational resources of the cluster. To do this you would submit a pbs job to the que using a pipeline like we have made available [here](https://github.com/Dartmouth-Data-Analytics-Core/DAC-rnaseq-pipeline).
+This works well if your samples are small or there aren't many of them, however in most cases you will want to parallelize your data processing to maximize the computational resources of the cluster. To do this you would submit a pbs job to the que using a pipeline like we have made available [here](https://github.com/Dartmouth-Data-Analytics-Core/DAC-rnaseq-pipeline).
 
 ![](https://github.com/Dartmouth-Data-Analytics-Core/DAC-rnaseq-pipeline/blob/master/Workflow.jpg)
 
-As "homework" for day 1 we would like you to build a simple pipeline out of the commands you used to process the samples we worked with today. We will get you started with the first several commands and then you can try filling in the rest. Copy and paste the commands below into a text editor (bbedit, sublime text, notepad ++, kate, etc.) and do your best to fill in the rest of the commands. If you run into trouble leave a slack comment explaining your error(s) and we will do our best to get back to you! 
+As optional 'homework" for day 1 (or after the workshop), we have provided the foundations for writing a simple script that will each of the steps we have performed today, over all of our samples. Using the code for parts 1-4 from Day-1 materials, trying filling in the rest of the commands to complete the pipeline. If you run into trouble leave a slack comment explaining your error(s) and we will do our best to get back to you! 
 
 To start out we are going to create an array with our sample names so that we can use the sample names to control the input and output of each of the commands. 
 Then we will use the array to write several for loops that iterate over the elements of the array to do something with them. 
