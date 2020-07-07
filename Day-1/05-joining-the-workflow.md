@@ -3,7 +3,7 @@ Just like in wet bench experiments it is important that you keep careful track o
 
 ![](../figures/terminal_commands3.png)
 
-This works well if your samples are small or there aren't many of them, however in most cases you will want to parallelize your data processing to maximize the computational resources of the cluster. To do this you would submit a pbs job to the que using a pipeline like we have made available [here](https://github.com/Dartmouth-Data-Analytics-Core/DAC-rnaseq-pipeline).
+This works well if your samples are small or there aren't many of them, however in most cases you will want to parallelize your data processing to maximize the computational resources of the cluster. To do this you would submit a pbs job to the que using a pipeline developed by Frank Wang and made available by the DAC [here](https://github.com/Dartmouth-Data-Analytics-Core/DAC-rnaseq-pipeline).
 
 ![](https://github.com/Dartmouth-Data-Analytics-Core/DAC-rnaseq-pipeline/blob/master/Workflow.jpg)
 
