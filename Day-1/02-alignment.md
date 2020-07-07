@@ -23,7 +23,18 @@ ln -s /dartfs-hpc/scratch/rnaseq1/data/raw-fastq/subset02/	results/alignment/
 ```
 
 ## Principles of read alignment for RNA-seq
-Aligning millions of reads to very large reference genomes (such as the human genome) is generally done by splitting the reads and reference into a catalog of shorter reads with unique sequnece structures (kmers). It is improtant when selecting an alignement program to ensure that it is appropriate for the dataset you are working with, for example STAR (Spliced Transcripts Alignment to a Reference) is used to align reads that have come from spliced transcripts. A single read from a spliced transcriptome might map across a splice junction, such that the left side of the read and the right side of the read map hundreds of base pairs apart. If your dataset is prokaryotic (non-splicosomal) this would not be the appropriate program for you to align your reads, we would suggest looking into bwa-mem or bowtie2. If you are in a hurry and not interested in obtaining read alignments and only need count data quasi-mapping with a tool like Salmon might be a good option. 
+The goal of aliginging reads to a reference genome is to find the ***most likely location in that reference genome where the read originated from***. In the context of RNA-seq, this means we try to find the most likely gene in the reference genome that transcribed the RNA fragment which ultimately ended up in our cDNA library. Doing this for millions of reads allows us to quantify how many RNA fragments were transcribed from a given gene, so we are using the read alignment to measure gene expression. 
+
+Although we won't go into the theory here, alignming reads to reference genomes involves ***mapping*** to identify the most likely position of the read in the reference genome, followed by the ***alignment***, which describes the base-by-base relationship between the read and the reference. Alignments are often imperfect, and are associated with quality scores (MAPQ scores) that describe the quality of the alignment. 
+
+**Challenges of aligining millions of short reads to a refence genome involve:**
+- Mismatches introduced by **genetic variation** and **sequencing errors**
+- **Repeitive sequences** in genomes (e.g. start and end of chromosomes)
+- Presence of **intron** in reference genomes, meaning aligners must be able to consider **splice-junctions**
+
+It is important when selecting an aligner to use for your dataset that it is appropriate for your experiment, as numerous aligners exist and make different assumptions and have different strengths/weaknesses. Importantly, some aligners are ***splice-aware*** while others are not. ***Splice-aware*** aligners can generate alignments to a reference genome that span the intronic regions and therefore account for splicing. If your dataset is prokaryotic (non-splicosomal) you would **not** want to use a splice-aware aligner, and instead using an aligner that is not designed to map across intronic regions such as `bwa-mem` or `bowtie2`. 
+
+It is also worth noting here that generating alignments is the most time consuming step of the analytical pipeline for most NGS analyses, and for RNA-seq, the field is moving toward quantification of gene expression using novel *'lightweight'* alignment tools, that are **extremely fast**, e.g. [Kallisto](https://pachterlab.github.io/kallisto/about), [Salfish](https://www.nature.com/articles/nbt.2862), and [Salmon](https://combine-lab.github.io/salmon/). These algorithms avoid generation of typical base-by-base alignments, and instead generate ***psuedo-alignments***, which have been shown to produce very accurate estimates of transcript abundances in RNA-seq data. 
 
 ![Read alignment](../figures/read_alignment.png)
 
