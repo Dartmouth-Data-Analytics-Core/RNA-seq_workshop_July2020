@@ -1,4 +1,4 @@
-# Part 1 - Working with FASTQ files
+# Part 1 - Working with FASTQ files & basic quality control
 
 ### Learning objectives: 
 - Understand the FASTQ file format and the formatting sequence information it stores
