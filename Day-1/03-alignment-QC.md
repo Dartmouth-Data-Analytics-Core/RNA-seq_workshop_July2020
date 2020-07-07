@@ -77,9 +77,9 @@ picard CollectRnaSeqMetrics \
 **Option descriptions:**  
 `I`=input aligned bam file  
 `O`=output RNAseq metrics  
-`REF_FLAT`=Gene annotations in refFlat form. Format described [here](http://genome.ucsc.edu/goldenPath/gbdDescriptionsOld.html#RefFlat)
-`STRAND`= For strand-specific library prep. (e.g. use `FIRST_READ_TRANSCRIPTION_STRAND` if the reads are expected to be on the transcription strand, as in the 3'-end QuantSeq assay). 
-`RIBOSOMAL_INTERVALS`= Location of rRNA sequences in genome, in interval_list format. If not specified no bases will be identified as being ribosomal. Format described [here](http://samtools.github.io/htsjdk/javadoc/htsjdk/htsjdk/samtools/util/IntervalList.html). 
+`REF_FLAT`=Gene annotations in refFlat form. Format described [here](http://genome.ucsc.edu/goldenPath/gbdDescriptionsOld.html#RefFlat)  
+`STRAND`= For strand-specific library prep. (e.g. use `FIRST_READ_TRANSCRIPTION_STRAND` if the reads are expected to be on the transcription strand, as in the 3'-end QuantSeq assay).  
+`RIBOSOMAL_INTERVALS`= Location of rRNA sequences in genome, in interval_list format. If not specified no bases will be identified as being ribosomal. Format described [here](http://samtools.github.io/htsjdk/javadoc/htsjdk/htsjdk/samtools/util/IntervalList.html).  
 
 ```bash
 cat SRR1039508.output.RNA_Metrics 
@@ -87,9 +87,11 @@ cat SRR1039508.output.RNA_Metrics
 
 ### Duplicates in RNA-seq 
 
-Another feature of RNA-seq data quality that can be evaluated after alignment is the presence of duplicate reads. Library preparation for RNA-seq generally involves PCR amplification of the input material to generate enough cDNA for sequencing. This PCR amplification can introduce bias into RNA-seq libraries as it is known that not all fragments are amplified as efficiently as others. Amplification bias is affected by features such as GC content and fragment length. Furthermore, on certain Illumina sequencers, an independent type of duplicate can occur, called *optical duplicates*, where large clusters formed on the flowcell during sequencing are called as two separate clusters. 
+Another feature of RNA-seq data quality that can be evaluated after alignment is the presence of **duplicate reads**. Library preparation for RNA-seq generally involves ***PCR amplification*** of the input material to generate enough cDNA for sequencing. This PCR amplification can introduce bias into RNA-seq libraries as it is known that **not all fragments are amplified as efficiently as others**. Amplification bias is affected by features such as **GC content** and **fragment length**. 
 
-While removal of true duplicate reads would be the ideal solution toward correcting for this type of bias, their identification is complicated by the fact that we expect read duplicates to occur in RNA-seq data through independent sampling of RNA fragments. In particular, for genes that are expressed at high levels, it is likely reads with the same start- and end-positions will occur, even though these reads originate from separate RNA fragments and therefore should be counted independently during quantification of expression. Therefore, identfication of true duplicate reads from those originating from independent sampling is not possible in most RNA-seq data, and cannot be done effectively for single-end datasets. 
+Furthermore, on certain Illumina sequencers, an independent type of duplicate can occur, called *optical duplicates*, where large clusters formed on the flowcell during sequencing are called as two separate clusters. 
+
+While removal of true duplicate reads would be the ideal solution toward correcting for this type of bias, their **identification is complicated by the fact that we expect read duplicates to occur in RNA-seq data through independent sampling of RNA fragments**. In particular, for genes that are expressed at high levels, it is likely reads with the same start- and end-positions will occur, even though these reads originate from separate RNA fragments and therefore should be counted independently during quantification of expression. Therefore, identfication of true duplicate reads from those originating from independent sampling is not possible in most RNA-seq data, and cannot be done effectively for single-end datasets. 
 
 #### Duplicate removal 
 
