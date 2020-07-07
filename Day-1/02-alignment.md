@@ -25,7 +25,7 @@ ln -s /dartfs-hpc/scratch/rnaseq1/data/raw-fastq/subset02/	results/alignment/
 ## Principles of read alignment for RNA-seq
 The goal of aliginging reads to a reference genome is to find the ***most likely location in that reference genome where the read originated from***. In the context of RNA-seq, this means we try to find the most likely gene in the reference genome that transcribed the RNA fragment which ultimately ended up in our cDNA library. Doing this for millions of reads allows us to quantify how many RNA fragments were transcribed from a given gene, so we are using the read alignment to measure gene expression. 
 
-Although we won't go into the theory here, alignming reads to reference genomes involves ***mapping*** to identify the most likely position of the read in the reference genome, followed by the ***alignment***, which describes the base-by-base relationship between the read and the reference. Alignments are often imperfect, and are associated with quality scores (MAPQ scores) that describe the quality of the alignment. 
+Although we won't go into the theory here, alignming reads to reference genomes involves ***mapping*** to identify the most likely position of the read in the reference genome, followed by the ***alignment***, which describes the base-by-base relationship between the read and the reference. Alignments are often imperfect, and are associated with quality scores (***MAPQ scores***) that describe the quality of the alignment. 
 
 **Challenges of aligining millions of short reads to a refence genome involve:**
 - Mismatches introduced by **genetic variation** and **sequencing errors**
@@ -39,7 +39,7 @@ It is also worth noting here that generating alignments is the most time consumi
 ![Read alignment](../figures/read_alignment.png)
   
 
-#### Concepts for read alignment 
+### Concepts for read alignment 
 
 **Read clipping**  
 Aligners are capable of 'clipping' reads from sequence ends if they do not improve the quality of an alignment that exists for the rest of the sequence.  
@@ -57,11 +57,11 @@ As discussed above, numerous aligners exist, consisting of both ***splie-aware**
 
 **Genome vs transcriptome mapping?**  
 While there are times when one may want to map to a transcriptome, there are issues with this approach.  
-- If your annotated transcriptome is not complete, you may fail to map some reads simply because the sequences aren't in your reference, which would not an issue if you mapped to the genome. 
+- If your annotated transcriptome is not complete, you may fail to map some reads simply because the sequences aren't in your reference, which would not be an issue if you mapped to the genome. 
 - With multiple splice isoforms it is difficult to disambiguate which splice isoform a read should be aligned to in transcriptome mapping. 
 - You cannot identify novel transcripts this way.
 
-**What input do I need for an alignmnet?**  
+**What input do I need for an alignment?**  
 At miniumum:  
 - `FASTQ` file(s)
 - A reference genome (`.fasta`)
@@ -73,25 +73,31 @@ Optional:
 
 **Alignment file formats**  
 
-Read alignments are stored in the SAM (.sam) and BAM (.bam) file format. SAM stands for *Sequence Alignment/Map* format and is in tab-delimited text format, making it a human readable file (should you dare to look inside, these file are huge). Bam files are the compressed, indexed, binary version of SAM files and are NOT human readable, but are much faster to parse and do complex downstream operations on. You can read all about the SAM/BAM file format specification in the documentation [here](https://samtools.github.io/hts-specs/SAMv1.pdf). While you may never need to actually look inside of a SAM/BAM file, it is important to have an understanding of what information is stored in one. 
+Read alignments are stored in the ***SAM (.sam)*** and )***BAM (.bam))*** file format. )***SAM)*** stands for )***Sequence Alignment/Map)*** format and is in tab-delimited text format, making it a human readable file (should you dare to look inside, these file are huge). )***BAM)*** files are the **compressed, indexed, binary version** of SAM files and are **NOT** human readable, but are much faster to parse and do complex downstream operations on. You can read all about the SAM/BAM file format specification in the documentation [here](https://samtools.github.io/hts-specs/SAMv1.pdf). While you may never need to actually look inside of a SAM/BAM file, it is important to have an understanding of what information is stored in one. 
 
 Both formats contain a number of slots for each read alignment that describe key information about the alignment. 11 slots are mandatory, while others are optional and depend on the aligner used, and the settings used in that alignment.
 
 ![SAM file](../figures/sam-file.png)
 The image for the example BAM file is take from the [SAM/BAM file format documentation](https://samtools.github.io/hts-specs/SAMv1.pdf)
 
-Notes on select fields:
+#### Notes on select fields:
 
-**FLAG** encodes important information about the read, for example, is it a primary, secondary, or supplementary alignment. Since a single read will likely have a number of properties that we want to 'flag', SAM files use a special way of encoding the FLAG field to pack as much information as possible into a single number. While we won't go into detail on this here, it works by decomposing large numbers into their constituents. I encourage you to go read more about FLAGs and how they are specified.  
+**FLAG**:  
+Encodes important information about the read, for example, is it a ***primary***, ***secondary***, or ***supplementary*** alignment. Since a single read will likely have a number of properties that we want to ***'flag'***, SAM files use a special way of encoding the FLAG field to pack as much information as possible into a single number. While we won't go into detail on this here, SAM/BAM file use a *bit-wise* system to combine information across flags into a **single integer**. I encourage you to go read more about FLAGs and how they are specified in the SAM/BAM documentation. 
 
-This command will provide basic information on FLAGs from samtools. 
+The Broad institute provides an [excellent tool](https://broadinstitute.github.io/picard/explain-flags.html) for decomposing SAM flags into the proprties of the read that make up a specific `FLAG` value. 
+
+This command will provide basic information on FLAGs from samtools.
 ```bash 
 samtools flags
 ```
+The values shown here relate the the [hexadecimal system](https://www.electronics-tutorials.ws/binary/bin_3.html)
 
-**MAPQ** corresponds to the quality of the mapping. These are calculated in the same way as the Phred scores `Q = -10 x log10(P)`, although are generally considered to be a best guess form the aligner. A MAPQ of 255 is used where mapping quality is not available. Some aligners also use specific values to represent certain types of alignments, which may affect use of downstream tools, so it is worth understanding those that are specific to your aligner. 
+**MAPQ**:   
+Corresponds to the quality of the mapping. These are calculated in the same way as the Phred scores `Q = -10 x log10(P)`, although are generally considered to be a best guess form the aligner. A MAPQ of 255 is used where mapping quality is not available. Some aligners also use specific values to represent certain types of alignments, which may affect use of downstream tools, so it is worth understanding those that are specific to your aligner. 
 
-**CIGAR** is an alphanumerical string that tells you information about the alignment. For relatively short reads, these are nice, but for long reads, they are a headache. Numbers correspond to number of bases, and letters correspond to features of those bases.  
+**CIGAR**  
+An alphanumerical string that tells you information about the alignment. For relatively short reads, these are nice, but for long reads, they are a headache. Numbers correspond to number of bases, and letters correspond to features of those bases.  
 
 Letter key for CIGAR strings: 
 M = match or mismatch  
@@ -103,7 +109,7 @@ N = skipping
 
 So for example, alignment in row 3 of our SAM file example above (`5S6M`) would describe an alignment where 5 bases are soft-clipped, followed by 6 matching bases. 
 
-#### STAR (Spliced Transcripts Alignment to a Reference)
+### STAR (Spliced Transcripts Alignment to a Reference)
 STAR is a very flexible, efficient, and quick read aligner. It uses a method of seed searching, clustering, stitching, and scoring to find the most probable match in the reference sequence for each read. A seed is the longest possible match between a read and the reference sequence. By using multiple seeds on a single read, reads are able to span hundreds of base pairs across splice junctions. Once a read is mapped into multiple seeds STAR attempts to map the remaining unmapped portions of the read by extending the seed match allowing for indels and mismatches. Any portion of the read that cannot be mapped is assumed to be contamination, leftover adapter sequences, or an incorrect base call and these bases are clipped (soft-clipping). I encourage you to go look through the [user manual](https://github.com/alexdobin/STAR/blob/master/doc/STARmanual.pdf) if you plan to use STAR. 
 
 #### Constructing a genome index 
@@ -271,6 +277,7 @@ Now navigate to the IGV web app, and follow the below steps:
 - What do you notice about the orientation of the aligning reads? 
 - Do you think this gene is expressed in this sample? What about relative to nearby genes?
 - Is there potentially going to be any ambiguity in read quantification for `SAMHD1`, given that our library was generared using a **stranded** protocol? 
+- How does `IGV` know where to put these reads, set their orientations, show if they are in a pair, etc. 
 
 ## Run the alignment for all samples
 ```bash
