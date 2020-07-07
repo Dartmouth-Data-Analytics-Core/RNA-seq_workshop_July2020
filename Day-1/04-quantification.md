@@ -103,9 +103,9 @@ myarray=()
 
 # loop over htseq.counts files and extract 2nd column (the raw read counts) using 'cut' command
 while read x;  do
-	# split up sample names to remove everything after "_"
+	# split up sample names to remove everything after "-"
 	sname=`echo "$x"`
-	sname=`echo "$sname" | cut -d"_" -f1`
+	sname=`echo "$sname" | cut -d"-" -f1`
 	# extract second column of file to get read counts only 
 	echo counts for "$sname" being extracted
 	cut -f2 $x > "$sname".tmp.counts
