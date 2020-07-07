@@ -126,9 +126,9 @@ ls *.fastq.gz | while read x; do \
    # tell me what the shell is doing 
    echo $x is being processed...; 
    # provide an empty line for ease of viewing 
-   echo " "; 
-   zcat $x | head -n 4 ; \
-   echo " "; 
+   yes '' | sed 1q;  \
+   zcat $x | head -n 4;  \
+   yes '' | sed 3q ;
 done
 ```
 
@@ -143,7 +143,7 @@ done
 We could use one of these loops to perform the nucleotide counting task that we performed on a single sample above. 
 ```bash
 ls *.fastq.gz | while read x; do \
-   echo " "
+   yes '' | sed 1q 
    echo processing sample $x 
    zcat $x | sed -n '2~4p' | sed -n '1,10000p' | grep -o . | sort | grep 'C\|G' | uniq -c ;
 done
