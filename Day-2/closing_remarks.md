@@ -24,24 +24,22 @@
 
 ### I have my differentially expressed genes, what do I do now? 
 
-**It depends!** 
+**It depends!** What you do with your DEG results is dependent on your scientific question and hypothesis being tested. Two common downstream applications to use your DEGs for include: 
 
+**1. Integrative genomics**  
+You may have collected other types of genomics data (e.g. ChIP-seq, ATAC-seq) for your samples, or a public dataset exists from samples that are appropriate to integrate your RNA-seq data with. Once you have a confident set of DEGs, you can take an integrative genomics approach to answer questions that may not be able to be addressed with either type if data alone. 
 
+For example, if you collected ChIP-seq for a specific transcription factor (TF) with paired RNA-seq data, you may wish to use your significant DEGs to identify genes whose expression is turned on/off by this TF under some treatment condition. 
 
+**2. Gene ontology (GO) & pathway analyses**  
+Unless you have very few significant DEGs, it may be difficult to identify complex patterns of functional gene regulation from looking at your list of DEGs. GO and pathway analysis methods are a very diverse collection of approaches that use statstical methodology to identify sets of genes, grouped using some sort of functional connection to each other (e.g. same biological pathway) that are *enriched* under one of the experimental conditions. 
 
-- Gene ontology and pathway analysis
+Such methods can provide a lot of insight into the biological and molecular process controlling a phenptype, however there is an enormous range of tools that were designed for a specific applications (predominantly microarray data, **NOT** RNA-seq) and are not all appropriate for all data types. Selecting the appropriate tool then using it correctly are non-trivial and are commonly applied incorrectly in the literature. We encourage you to read more about these methods if you plan to use one in your own analysis, and we plan to cover this topic in future workshops. 
 
-- Over-representation analysis (DAVID)
-- Functional-class scoring (GSEA)
-- Pathway topology methods (SPIA)
-
-Link to some reading 
-
-
-- Network analysis 
-
-
-We plan to include functional analysis topics in future workshops from the DAC. 
-
+Here is some suggested reading regarding gene ontology and pathway analysis approaches:  
+- [Gene set analysis approaches for RNA-seq data: performance evaluation and application guideline. *Briefings in Bioinformatics.* 2016.](https://doi.org/10.1093/bib/bbv069)
+- [Ten Years of Pathway Analysis: Current Approaches and Outstanding Challenges. *PLoS Computational Biology.* 2012.](https://doi.org/10.1371/journal.pcbi.1002375)
+- [Gene set enrichment analysis: a knowledge-based approach for interpreting genome-wide expression profiles. *PNAS* 2005.](https://doi.org/10.1073/pnas.0506580102) (the original GSEA paper)
+- [Gene Set Enrichment Analysis Made Simple. *Stat Methods Med Red.* 2009.](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC3134237/)
 
 ### Now.... Discussion/question time! 
