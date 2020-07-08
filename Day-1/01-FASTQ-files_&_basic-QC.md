@@ -295,7 +295,7 @@ cd ../results/trim
 cutadapt \
    -o SRR1039508_1.trim.chr20.fastq.gz \
    -p SRR1039508_2.trim.chr20.fastq.gz \
-   ../../raw_data/SRR1039508_1.chr20.fastq.gz ../../raw_data/SRR1039508_1.chr20.fastq.gz \
+   ../../raw_data/SRR1039508_1.chr20.fastq.gz ../../raw_data/SRR1039508_2.chr20.fastq.gz \
    -m 1 -q 20 -j 4 > SRR1039508.cutadapt.report
 ```
 
