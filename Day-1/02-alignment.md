@@ -16,10 +16,10 @@ rnaw
 mkdir results/alignment 
 cd results/alignment
 ```
-If you get lost, or do not have enough time to finish the commands before we move to the next session you can create a link to the files needed for the next step with the following command from the scratch directory you have created for yourself.
+If you get lost, or do not have enough time to finish the commands before we move to the next session you can copy the files needed for the next step with the following command from the scratch directory you have created for yourself.
 
 ```bash
-ln -s /dartfs-hpc/scratch/rnaseq1/data/raw-fastq/subset/02/*	results/alignment/
+cp /dartfs-hpc/scratch/rnaseq1/data/raw-fastq/subset/02/*	results/alignment/
 ```
 
 ## Principles of read alignment for RNA-seq
