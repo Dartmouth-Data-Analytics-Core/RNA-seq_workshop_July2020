@@ -4,10 +4,10 @@
 - Understand the FASTQ file format and the formatting sequence information it stores
 - Learn how to perform basic operations on FASTQ files in the command-line 
 
-If you get lost, or do not have enough time to finish the commands before we move to the next session you can create a link to the files needed for the next step with the following command from the scratch directory you have created for yourself.
+If you get lost, or do not have enough time to finish the commands before we move to the next session you can copy the files needed for the next step with the following command from the scratch directory you have created for yourself.
 
 ```bash
-ln -s /dartfs-hpc/scratch/rnaseq1/data/raw-fastq/subset/01/* results/trim/
+cp /dartfs-hpc/scratch/rnaseq1/data/raw-fastq/subset/01/* results/trim/
 ```
 
 ## FASTQ file format
