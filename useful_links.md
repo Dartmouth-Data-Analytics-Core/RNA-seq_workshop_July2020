@@ -19,4 +19,4 @@
 
 ### Other
 - [Conda](https://docs.conda.io/en/latest/)
-
+- [Introduction to RNA-Seq using high-performance computing, workshop by Harvard Chan Bioinformatics Core](https://hbctraining.github.io/Intro-to-rnaseq-hpc-O2/schedule/)
