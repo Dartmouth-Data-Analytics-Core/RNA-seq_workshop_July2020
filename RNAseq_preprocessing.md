@@ -16,7 +16,7 @@ Several algorithms exist for trimming reads in FASTQ format. Generally, these al
 ![Read alignment](figures/read_processing.png)
 
 __________________
-## Principles of read alignment for RNA-seq
+## Read alignment for RNA-seq
 The goal of aliginging reads to a reference genome is to find the ***most likely location in that reference genome where the read originated from***. In the context of RNA-seq, this means we try to find the most likely gene in the reference genome that transcribed the RNA fragment which ultimately ended up in our cDNA library. Doing this for millions of reads allows us to quantify how many RNA fragments were transcribed from a given gene, so we are using the read alignment to measure gene expression. 
 Although we won't go into the theory here, aligning reads to reference genomes involves ***mapping*** to identify the most likely position of the read in the reference genome, followed by the ***alignment***, which describes the base-by-base relationship between the read and the reference. Alignments are often imperfect, and are associated with quality scores (***MAPQ scores***) that describe the quality of the alignment. 
 
@@ -58,7 +58,7 @@ STAR is a very flexible, efficient, and quick read aligner. It uses a method of 
 Before running an alignment with STAR, you need to create an index of your reference genome, and specify the location of this index when you run the aligner. The index is in principle similar to how one might index a book, so that specific items or information can be found more quickly. For the genome index, we are indexing the genome so that the aligner can narrow down where a read may map to and speed up mapping. 
 
 ________________
-## Principles of post-alignment QC
+## Post-alignment QC
 Once you have aligned your reads, it is important to assess how well our reads could be mapped to the reference genome. The primary metric of a successful alignment is the **percentage of uniquely mapped reads**, and while this depends on the organism and reference genome you map to, a good quality sample is expected to have ~75% of its reads uniquely mapped. Other useful alignment metrics include:
 - **Proportion of ribosomal RNA (rRNA) reads**: rRNA constituties the large majority of RNA present in most cell types, which are usually not of interest in our experiment, therefore we try to reduce their numbers using depletion and polyA slection procedures in library preparation. These procedures are not always 100% effective. If the proportion of rRNA reads is high, you should filter these reads before differential expression analysis, as it may skew the normalization of your count matrix. 
 
