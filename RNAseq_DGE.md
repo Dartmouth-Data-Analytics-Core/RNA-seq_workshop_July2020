@@ -78,7 +78,7 @@ Hierachical clustering is often associated with **heatmaps**, as it is a useful 
 The first step in a hierachical clustering analaysis is to *scale your data*. This means that expression levels are all transformed onto the same scale before clustering. This is important to do as we can only visualize so many colors at once, and a very highly expressed gene would mean that all the other genes would essentially invisible on this scale. Scaling for clustering in this way is typically performed by calculating Z-scores, where the mean for each gene across all the samples is subtracted from each of the individual expression values for each gene, this centers the expression values around 0. We then divide these values by the standard deviation to make sure the data is more tightly grouped, and we can represent lots of genes in the same scale. 
 
 <center>
-![](/Users/OwenW/Downloads/RNA-seq_workshop_July2020-master/figures/heatmaps.png)
+![](figures/heatmaps.png)
 </center>
 
 _____________
@@ -121,7 +121,7 @@ Since we need to model our counts using the negative-binomial distribution, the 
 
 **The DESeq2 model:**
 </center>
-![](/Users/OwenW/Downloads/RNA-seq_workshop_July2020-master/figures/neg-binom.png)
+![](figures/neg-binom.png)
 </center>
 
 In order to fit the GLM, we need the **mean count of each gene** across the samples in each experimental group, and the **dispersion of that gene** in those groups. The mean count is a combination of the expected expression level and the size factor, so that our model is corrected for **library size and composition**. 
