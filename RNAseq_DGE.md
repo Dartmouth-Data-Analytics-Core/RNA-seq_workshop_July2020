@@ -1,4 +1,4 @@
-#Differential gene expression in R using DESeq2
+# Differential gene expression in R using DESeq2
 
 Several popular R packges designed for exploration and statistical analysis of bulk RNA-seq data exist, including [*EdgeR*](https://www.bioconductor.org/packages/release/bioc/html/edgeR.html), [*limma-voom*](http://bioconductor.org/packages/release/bioc/html/limma.html), [*DESeq2*](https://bioconductor.org/packages/release/bioc/html/DESeq2.html). For the purposes of this outline, we will use DESeq2 to perform the parts of the analysis, including reading in the data, normalization of read counts, and fitting statistical models to test differential expression. [Detailed tutorials](https://bioconductor.org/packages/release/bioc/vignettes/DESeq2/inst/doc/DESeq2.html) for using DESeq2 can be found on its Bioconductor page. 
 
